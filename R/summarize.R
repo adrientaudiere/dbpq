@@ -104,7 +104,13 @@ list_ranks_db <- function(file, rank_prefix = "k__") {
 summarize_db <- function(
   file,
   rank_prefixes = c(
-    "k__", "p__", "c__", "o__", "f__", "g__", "s__"
+    "k__",
+    "p__",
+    "c__",
+    "o__",
+    "f__",
+    "g__",
+    "s__"
   )
 ) {
   dna <- Biostrings::readDNAStringSet(file)
@@ -132,9 +138,12 @@ summarize_db <- function(
   message("Sequences: ", n_seq)
   message(
     "Sequence length: ",
-    min(Biostrings::width(dna)), "-",
+    min(Biostrings::width(dna)),
+    "-",
     max(Biostrings::width(dna)),
-    " (mean: ", round(mean(Biostrings::width(dna)), 1), ")"
+    " (mean: ",
+    round(mean(Biostrings::width(dna)), 1),
+    ")"
   )
   for (r in names(rank_counts)) {
     message("  ", r, ": ", rank_counts[[r]], " sequences with annotation")

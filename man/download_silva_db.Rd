@@ -6,8 +6,9 @@
 \usage{
 download_silva_db(
   dest_dir = ".",
-  version = NULL,
+  version = "138.2",
   target = c("SSU", "LSU"),
+  format = c("dada2", "dada2_species", "raw"),
   verbose = TRUE
 )
 }
@@ -15,9 +16,18 @@ download_silva_db(
 \item{dest_dir}{(Character, default \code{"."}) Directory to save the
 downloaded file.}
 
-\item{version}{(Character) SILVA version number (e.g., \code{"138.2"}).}
+\item{version}{(Character, default \code{"138.2"}) SILVA version number.}
 
 \item{target}{(Character, default \code{"SSU"}) One of \code{"SSU"} or \code{"LSU"}.}
+
+\item{format}{(Character, default \code{"dada2"}) One of:
+\itemize{
+\item \code{"dada2"}: dada2-formatted training set from Zenodo (NR99,
+recommended for \code{dada2::assignTaxonomy()}).
+\item \code{"dada2_species"}: species assignment file for
+\code{dada2::addSpecies()}.
+\item \code{"raw"}: raw SILVA NR99 FASTA with taxonomy from arb-silva.de.
+}}
 
 \item{verbose}{(Logical, default \code{TRUE}) Print progress messages.}
 }
@@ -25,12 +35,38 @@ downloaded file.}
 The path to the downloaded file (invisibly).
 }
 \description{
-Downloads the SILVA ribosomal RNA database (16S/18S).
+Downloads the SILVA ribosomal RNA database (16S/18S). By default,
+downloads the dada2-formatted training sets from Zenodo (maintained by
+Benjamin Callahan). Alternatively, downloads raw SILVA exports from
+arb-silva.de.
+}
+\details{
+The dada2-formatted files are maintained by Benjamin Callahan on Zenodo
+and are the recommended format for \code{dada2::assignTaxonomy()} and
+\code{dada2::addSpecies()}. See
+\url{https://benjjneb.github.io/dada2/training.html} for details.
+
+SILVA data is free for academic use. Commercial use requires a license.
+See \url{https://www.arb-silva.de/silva-license-information/}.
+
+Please cite: Quast C et al. (2013) The SILVA ribosomal RNA gene
+database project. Nucleic Acids Research 41:D590-D596.
+\doi{10.1093/nar/gks1219}
 }
 \examples{
 \dontrun{
-download_silva_db()
+# Download dada2-formatted SILVA for assignTaxonomy()
+download_silva_db(dest_dir = "databases")
+
+# Download species assignment file
+download_silva_db(dest_dir = "databases", format = "dada2_species")
+
+# Download raw SILVA NR99 FASTA
+download_silva_db(dest_dir = "databases", format = "raw")
 }
+}
+\seealso{
+\code{\link[=format2dada2]{format2dada2()}}, \code{\link[=format2sintax]{format2sintax()}}
 }
 \author{
 Adrien Taudière

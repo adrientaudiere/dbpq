@@ -17,11 +17,13 @@ Depends:
 Imports:
     Biostrings,
     dplyr,
+    jsonlite,
     purrr,
     stringr,
     tibble,
     tidyr,
-    tools
+    tools,
+    utils
 Suggests:
     dada2,
     knitr,

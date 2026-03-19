@@ -4,13 +4,25 @@
 \alias{download_pr2_db}
 \title{Download a PR2 reference database}
 \usage{
-download_pr2_db(dest_dir = ".", version = NULL, verbose = TRUE)
+download_pr2_db(
+  dest_dir = ".",
+  version = NULL,
+  format = c("dada2", "mothur", "UTAX"),
+  marker = c("SSU", "plastid"),
+  verbose = TRUE
+)
 }
 \arguments{
 \item{dest_dir}{(Character, default \code{"."}) Directory to save the
 downloaded file.}
 
-\item{version}{(Character) PR2 version number.}
+\item{version}{(Character) PR2 version number (e.g., \code{"5.0.0"}). If
+\code{NULL} (default), the latest release is fetched from GitHub.}
+
+\item{format}{(Character, default \code{"dada2"}) One of \code{"dada2"}, \code{"mothur"},
+or \code{"UTAX"}.}
+
+\item{marker}{(Character, default \code{"SSU"}) One of \code{"SSU"} or \code{"plastid"}.}
 
 \item{verbose}{(Logical, default \code{TRUE}) Print progress messages.}
 }
@@ -18,12 +30,29 @@ downloaded file.}
 The path to the downloaded file (invisibly).
 }
 \description{
-Downloads the PR2 protist ribosomal reference database.
+Downloads the PR2 protist ribosomal reference database from GitHub
+releases. PR2 provides 18S rRNA gene sequences for protists and other
+eukaryotes.
+}
+\details{
+PR2 releases are hosted on GitHub at
+\url{https://github.com/pr2database/pr2database/releases}.
+
+Please cite: Guillou L et al. (2013) The Protist Ribosomal Reference
+database (PR2). Nucleic Acids Research 41:D1108-D1113.
+\doi{10.1093/nar/gks1160}
 }
 \examples{
 \dontrun{
-download_pr2_db()
+# Download latest PR2 in dada2 format
+download_pr2_db(dest_dir = "databases")
+
+# Download specific version in UTAX format
+download_pr2_db(dest_dir = "databases", version = "5.0.0", format = "UTAX")
 }
+}
+\seealso{
+\code{\link[=format2dada2]{format2dada2()}}, \code{\link[=format2sintax]{format2sintax()}}
 }
 \author{
 Adrien Taudière

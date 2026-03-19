@@ -4,11 +4,19 @@
 \alias{download_marjaam_db}
 \title{Download the MaarjAM reference database}
 \usage{
-download_marjaam_db(dest_dir = ".", verbose = TRUE)
+download_marjaam_db(
+  dest_dir = ".",
+  url = "https://maarjam.ut.ee/resources/maarjam_database.fasta",
+  verbose = TRUE
+)
 }
 \arguments{
 \item{dest_dir}{(Character, default \code{"."}) Directory to save the
 downloaded file.}
+
+\item{url}{(Character) Direct download URL for the MaarjAM FASTA file.
+Defaults to the known download endpoint. Override if the URL has
+changed.}
 
 \item{verbose}{(Logical, default \code{TRUE}) Print progress messages.}
 }
@@ -16,11 +24,23 @@ downloaded file.}
 The path to the downloaded file (invisibly).
 }
 \description{
-Downloads the MaarjAM database for arbuscular mycorrhizal fungi (AMF).
+Downloads the MaarjAM database of arbuscular mycorrhizal fungi (AMF)
+virtual taxa (VT) sequences (18S rDNA). The database is maintained at
+the University of Tartu.
+}
+\details{
+MaarjAM does not have a versioned API. The download URL may change.
+If the default URL fails, visit \url{https://maarjam.ut.ee/?action=bDownload}
+to find the current download link and pass it via the \code{url} parameter.
+
+Please cite: Opik M et al. (2010) The online database MaarjAM reveals
+global and ecosystemic distribution patterns in arbuscular mycorrhizal
+fungi (Glomeromycota). New Phytologist 188:223-241.
+\doi{10.1111/j.1469-8137.2010.03334.x}
 }
 \examples{
 \dontrun{
-download_marjaam_db()
+download_marjaam_db(dest_dir = "databases")
 }
 }
 \author{

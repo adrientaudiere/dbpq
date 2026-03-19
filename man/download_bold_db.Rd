@@ -2,16 +2,28 @@
 % Please edit documentation in R/download.R
 \name{download_bold_db}
 \alias{download_bold_db}
-\title{Download a BOLD reference database}
+\title{Download sequences from BOLD Systems}
 \usage{
-download_bold_db(dest_dir = ".", marker = "COI-5P", verbose = TRUE)
+download_bold_db(
+  dest_dir = ".",
+  taxon = NULL,
+  marker = "COI-5P",
+  output_format = "fasta",
+  verbose = TRUE
+)
 }
 \arguments{
 \item{dest_dir}{(Character, default \code{"."}) Directory to save the
 downloaded file.}
 
-\item{marker}{(Character, default \code{"COI-5P"}) The barcode marker to
-download.}
+\item{taxon}{(Character, required) Taxonomic name to query (e.g.,
+\code{"Fungi"}, \code{"Arthropoda"}, \code{"Mammalia"}).}
+
+\item{marker}{(Character, default \code{"COI-5P"}) The barcode marker. Common
+values: \code{"COI-5P"}, \code{"ITS"}, \code{"matK"}, \code{"rbcL"}.}
+
+\item{output_format}{(Character, default \code{"fasta"}) Output format.
+Currently only \code{"fasta"} is supported.}
 
 \item{verbose}{(Logical, default \code{TRUE}) Print progress messages.}
 }
@@ -19,11 +31,32 @@ download.}
 The path to the downloaded file (invisibly).
 }
 \description{
-Downloads reference sequences from BOLD Systems (Barcode of Life Data).
+Downloads reference sequences from BOLD Systems (Barcode of Life Data)
+for a given taxonomic group. Unlike other databases, BOLD does not
+provide a single pre-built reference FASTA — sequences are queried by
+taxon via the BOLD API.
+}
+\details{
+This function uses the BOLD v3 public API. For very large taxonomic
+groups, the download may take a long time or fail due to server limits.
+In such cases, consider using narrower taxonomic queries or the
+\href{https://docs.ropensci.org/bold/}{bold} R package.
+
+Please cite: Ratnasingham S & Hebert PDN (2007) BOLD: The Barcode of
+Life Data System. Molecular Ecology Notes 7:355-364.
+\doi{10.1111/j.1471-8286.2007.01678.x}
 }
 \examples{
 \dontrun{
-download_bold_db()
+# Download COI sequences for Fungi
+download_bold_db(dest_dir = "databases", taxon = "Fungi")
+
+# Download ITS sequences for a specific order
+download_bold_db(
+  dest_dir = "databases",
+  taxon = "Agaricales",
+  marker = "ITS"
+)
 }
 }
 \author{

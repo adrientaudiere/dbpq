@@ -39,11 +39,13 @@ format2sintax <- function(
       (\(x) gsub(pattern_tax, paste0(";", pattern_sintax), x))() |>
       (\(x) gsub("__", ":", x))() |>
       (\(x) gsub(";;", ";", x))() |>
-      (\(x) gsub(
-        paste0(",", pattern_sintax),
-        paste0(";", pattern_sintax),
-        x
-      ))()
+      (\(x) {
+        gsub(
+          paste0(",", pattern_sintax),
+          paste0(";", pattern_sintax),
+          x
+        )
+      })()
     return(new_names)
   } else if (!is.null(fasta_db)) {
     dna <- Biostrings::readDNAStringSet(fasta_db)
@@ -52,11 +54,13 @@ format2sintax <- function(
       (\(x) gsub(pattern_tax, paste0(";", pattern_sintax), x))() |>
       (\(x) gsub("__", ":", x))() |>
       (\(x) gsub(";;", ";", x))() |>
-      (\(x) gsub(
-        paste0(",", pattern_sintax),
-        paste0(";", pattern_sintax),
-        x
-      ))()
+      (\(x) {
+        gsub(
+          paste0(",", pattern_sintax),
+          paste0(";", pattern_sintax),
+          x
+        )
+      })()
 
     names(dna) <- new_names
     if (!is.null(output_path)) {

@@ -226,13 +226,19 @@ cutadapt_rm_primers_db <- function(
       " nucleotides, for a final number of ",
       n_nuc_final,
       " nucleotides.\n The mean width of references sequences is now ",
-      round(mean(Biostrings::width(
-        Biostrings::readDNAStringSet(output)
-      )), 2),
+      round(
+        mean(Biostrings::width(
+          Biostrings::readDNAStringSet(output)
+        )),
+        2
+      ),
       " vs ",
-      round(mean(Biostrings::width(
-        Biostrings::readDNAStringSet(ref_fasta)
-      )), 2),
+      round(
+        mean(Biostrings::width(
+          Biostrings::readDNAStringSet(ref_fasta)
+        )),
+        2
+      ),
       " in the original database."
     )
   }

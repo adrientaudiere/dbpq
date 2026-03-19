@@ -4,23 +4,51 @@
 \alias{download_eukaryome_db}
 \title{Download the Eukaryome reference database}
 \usage{
-download_eukaryome_db(dest_dir = ".", verbose = TRUE)
+download_eukaryome_db(dest_dir = ".", url = NULL, verbose = TRUE)
 }
 \arguments{
 \item{dest_dir}{(Character, default \code{"."}) Directory to save the
 downloaded file.}
 
+\item{url}{(Character) Direct download URL for the Eukaryome file.
+Override if the URL has changed. If \code{NULL} (default), the function
+directs you to the Eukaryome download page.}
+
 \item{verbose}{(Logical, default \code{TRUE}) Print progress messages.}
 }
 \value{
-The path to the downloaded file (invisibly).
+The path to the downloaded file (invisibly), or a message
+with download instructions if no URL is provided.
 }
 \description{
-Downloads the Eukaryome database.
+Downloads the Eukaryome database for eukaryotic organisms. Supports
+multiple markers (SSU 18S, ITS, LSU 28S) and output formats (general
+FASTA, dada2, mothur).
+}
+\details{
+Eukaryome does not provide a stable programmatic download API. Files
+are available at \url{https://eukaryome.org/download/} in several formats:
+\itemize{
+\item General FASTA: \url{https://eukaryome.org/generalfasta/}
+\item dada2 format: \url{https://eukaryome.org/dada2/}
+\item mothur format: \url{https://eukaryome.org/mothur/}
+\item QIIME2 format: \url{https://eukaryome.org/qiime2/}
+}
+
+Visit one of these pages, copy the direct download link, and pass it
+via the \code{url} parameter.
+
+Please cite: Vasar M et al. (2024) Eukaryome: the rRNA gene reference
+database for identification of all eukaryotes. Database.
+\doi{10.1093/database/baae043}
 }
 \examples{
 \dontrun{
-download_eukaryome_db()
+# Download with a specific URL from the Eukaryome website
+download_eukaryome_db(
+  dest_dir = "databases",
+  url = "https://eukaryome.org/files/eukaryome_v1.9_SSU_dada2.fasta.gz"
+)
 }
 }
 \author{
