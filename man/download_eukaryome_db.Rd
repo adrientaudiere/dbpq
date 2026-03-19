@@ -32,6 +32,7 @@ are available at \url{https://eukaryome.org/download/} in several formats:
 \item General FASTA: \url{https://eukaryome.org/generalfasta/}
 \item dada2 format: \url{https://eukaryome.org/dada2/}
 \item mothur format: \url{https://eukaryome.org/mothur/}
+\item SINTAX format: \url{https://eukaryome.org/sintax/}
 \item QIIME2 format: \url{https://eukaryome.org/qiime2/}
 }
 

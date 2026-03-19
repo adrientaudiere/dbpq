@@ -6,29 +6,44 @@
 \usage{
 summarize_db(
   file,
-  rank_prefixes = c("k__", "p__", "c__", "o__", "f__", "g__", "s__")
+  rank_prefixes = c("k__", "p__", "c__", "o__", "f__", "g__", "s__"),
+  tax_format = NULL
 )
 }
 \arguments{
 \item{file}{(Character, required) Path to a FASTA file (plain or gzip).}
 
 \item{rank_prefixes}{(Character vector) Taxonomic rank prefixes to
-summarize. Defaults to kingdom through species.}
+summarize. Defaults to kingdom through species. Ignored if \code{tax_format}
+is provided.}
+
+\item{tax_format}{(Character) If provided, one of \code{"unite"}, \code{"sintax"},
+\code{"greengenes2"}, or \code{"pr2"}. Overrides \code{rank_prefixes}
+with the full set from \code{\link[=tax_prefixes]{tax_prefixes()}}. If \code{"auto"}, the format is
+detected from the file headers using \code{\link[=detect_tax_format]{detect_tax_format()}}. If \code{NULL}
+(default), \code{rank_prefixes} is used as-is.}
 }
 \value{
 A list with components:
 \itemize{
 \item \code{n_sequences}: total number of sequences
 \item \code{length_summary}: summary statistics of sequence lengths
-\item \code{ranks}: a named list of unique count per rank
+\item \code{ranks}: a named integer vector of annotated counts per rank
 }
 }
 \description{
 Provides an overview of a FASTA reference database: number of sequences,
 sequence length distribution, and taxonomic coverage at each rank.
+Supports both prefix-based formats (unite, sintax, greengenes2) and
+positional formats (dada2, pr2).
 }
 \examples{
 # summarize_db("my_database.fasta")
+# summarize_db("my_database.fasta", tax_format = "sintax")
+# summarize_db("my_database.fasta", tax_format = "auto")
+}
+\seealso{
+\code{\link[=tax_prefixes]{tax_prefixes()}}, \code{\link[=detect_tax_format]{detect_tax_format()}}, \code{\link[=list_ranks_db]{list_ranks_db()}}
 }
 \author{
 Adrien Taudière

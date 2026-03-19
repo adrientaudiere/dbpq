@@ -4,15 +4,29 @@
 \alias{list_ranks_db}
 \title{List and count taxonomic ranks from a FASTA database}
 \usage{
-list_ranks_db(file, rank_prefix = "k__")
+list_ranks_db(
+  file,
+  rank_prefix = "k__",
+  tax_format = NULL,
+  rank_position = NULL
+)
 }
 \arguments{
 \item{file}{(Character, required) Path to a FASTA file (plain or gzip).}
 
 \item{rank_prefix}{(Character, default \code{"k__"}) The prefix identifying the
-taxonomic rank to extract (e.g., \code{"k__"} for kingdom, \code{"p__"} for phylum,
-\code{"c__"} for class, \code{"o__"} for order, \code{"f__"} for family, \code{"g__"} for
-genus, \code{"s__"} for species).}
+taxonomic rank to extract (e.g., \code{"k__"} for kingdom, \code{"p__"} for phylum).
+Ignored if \code{tax_format} is provided.}
+
+\item{tax_format}{(Character) If provided, one of \code{"unite"}, \code{"sintax"},
+\code{"greengenes2"}, or \code{"pr2"}. Overrides \code{rank_prefix} with
+the first rank from \code{\link[=tax_prefixes]{tax_prefixes()}}. If \code{NULL} (default), \code{rank_prefix}
+is used as-is.}
+
+\item{rank_position}{(Integer) For positional (prefix-less) taxonomy
+headers, the 1-based position of the rank to extract from the
+semicolon-delimited string. Can be used with \code{tax_format = "pr2"} or
+standalone (without \code{tax_format}). Ignored for prefix-based formats.}
 }
 \value{
 A named integer vector of counts, sorted in decreasing order.
@@ -20,11 +34,16 @@ Names are the taxonomic rank values.
 }
 \description{
 Extracts and counts occurrences of a given taxonomic rank from FASTA
-sequence headers. Requires taxonomy encoded in headers following
-the convention \verb{k__Kingdom;p__Phylum;...} or similar.
+sequence headers. Supports both prefix-based formats (unite, sintax,
+greengenes2) and positional formats (dada2, pr2).
 }
 \examples{
 # list_ranks_db("my_database.fasta", rank_prefix = "p__")
+# list_ranks_db("my_database.fasta", tax_format = "sintax")
+# list_ranks_db("my_database.fasta", tax_format = "pr2", rank_position = 8)
+}
+\seealso{
+\code{\link[=tax_prefixes]{tax_prefixes()}}, \code{\link[=detect_tax_format]{detect_tax_format()}}, \code{\link[=summarize_db]{summarize_db()}}
 }
 \author{
 Adrien Taudière

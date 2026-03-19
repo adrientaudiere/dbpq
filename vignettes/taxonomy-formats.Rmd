@@ -1,0 +1,337 @@
+---
+title: "Taxonomy formats in reference databases"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Taxonomy formats in reference databases}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+Reference databases for metabarcoding encode taxonomic information in
+sequence headers using different conventions. Understanding these formats
+is essential when downloading databases, running taxonomic classifiers,
+and summarizing results with dbpq.
+
+## Taxonomy format overview
+
+dbpq recognizes five taxonomy formats, grouped into two categories:
+**prefix-based** formats (where each rank has a short prefix like `k__`)
+and **positional** formats (where ranks are identified by their position
+in a semicolon-delimited string).
+
+### Prefix-based formats
+
+#### UNITE format (`k__`/`p__` prefixes)
+
+Used by: **UNITE** (general FASTA releases)
+
+Each rank is identified by a two-letter prefix followed by double
+underscores, separated by semicolons:
+
+```
+>AB123456;k__Fungi;p__Ascomycota;c__Sordariomycetes;o__Hypocreales;f__Nectriaceae;g__Fusarium;s__oxysporum
+ATCGATCG...
+```
+
+| Prefix | Rank     |
+|--------|----------|
+| `k__`  | Kingdom  |
+| `p__`  | Phylum   |
+| `c__`  | Class    |
+| `o__`  | Order    |
+| `f__`  | Family   |
+| `g__`  | Genus    |
+| `s__`  | Species  |
+
+
+#### SINTAX / UTAX format
+
+Used by: **UNITE** (SINTAX release), **PR2** (UTAX format),
+**MIDORI2** (SINTAX format), **Eukaryome** (SINTAX format)
+
+Taxonomy is encoded with a `tax=` prefix, single-letter rank codes
+followed by colons, separated by commas:
+
+```
+>AB123456;tax=d:Eukaryota,k:Fungi,p:Ascomycota,c:Sordariomycetes,o:Hypocreales,f:Nectriaceae,g:Fusarium,s:Fusarium_oxysporum
+ATCGATCG...
+```
+
+This format is used by `vsearch --sintax` and the original USEARCH
+UTAX algorithm. Note that SINTAX and UTAX use the same header format
+despite being different classification algorithms.
+
+| Prefix | Rank     |
+|--------|----------|
+| `d:`   | Domain   |
+| `k:`   | Kingdom  |
+| `p:`   | Phylum   |
+| `c:`   | Class    |
+| `o:`   | Order    |
+| `f:`   | Family   |
+| `g:`   | Genus    |
+| `s:`   | Species  |
+
+
+#### Greengenes2 format (`d__`/`p__` prefixes)
+
+Used by: **Greengenes2**
+
+Similar to the UNITE format but starts with `d__` (domain) instead
+of `k__` (kingdom):
+
+```
+>abc123 d__Bacteria;p__Pseudomonadota;c__Gammaproteobacteria;o__Enterobacterales;f__Enterobacteriaceae;g__Escherichia;s__Escherichia coli
+ATCGATCG...
+```
+
+| Prefix | Rank     |
+|--------|----------|
+| `d__`  | Domain   |
+| `p__`  | Phylum   |
+| `c__`  | Class    |
+| `o__`  | Order    |
+| `f__`  | Family   |
+| `g__`  | Genus    |
+| `s__`  | Species  |
+
+
+### Positional formats
+
+Some databases use semicolon-separated taxonomy without any prefix.
+The meaning of each rank is determined by its position in the string.
+The number of levels varies by database.
+
+For these formats, use `rank_position` in `list_ranks_db()` to extract
+a specific rank by position.
+
+#### Unprefixed semicolon-delimited (generic)
+
+Used by: **SILVA** (dada2-formatted), **RDP** (dada2-formatted)
+
+```
+>Bacteria;Proteobacteria;Gammaproteobacteria;Enterobacterales;Enterobacteriaceae;Escherichia;
+ATCGATCG...
+```
+
+The number of levels depends on the specific training set. The
+`dada2::assignTaxonomy()` classifier accepts any number of
+semicolon-separated levels — with or without prefixes — via the
+`taxLevels` argument.
+
+
+#### PR2 format (no prefixes, 9 levels)
+
+Used by: **PR2** (dada2 format)
+
+PR2 uses 9 taxonomic levels specific to protist taxonomy:
+
+```
+>EU293891.1.1750_U Eukaryota;Archaeplastida;Chlorophyta;Chlorophyta_X;Mamiellophyceae;Mamiellales;Bathycoccaceae;Ostreococcus;Ostreococcus_tauri
+ATCGATCG...
+```
+
+| Position | Rank         |
+|----------|-------------|
+| 1        | Domain       |
+| 2        | Supergroup   |
+| 3        | Division     |
+| 4        | Subdivision  |
+| 5        | Class        |
+| 6        | Order        |
+| 7        | Family       |
+| 8        | Genus        |
+| 9        | Species      |
+
+
+## Sequence name placement
+
+Beyond taxonomy encoding, formats differ in where the sequence
+name (accession number, e.g. `AB123456`) appears in the FASTA header:
+
+| Format | Sequence name location | Separator | Example header |
+|--------|----------------------|-----------|----------------|
+| UNITE (`k__`) | Between `>` and first `;` | `;` | `>AB123456;k__Fungi;p__Ascomycota;...` |
+| SINTAX / UTAX | Between `>` and `;tax=` | `;tax=` | `>AB123456;tax=d:Eukaryota,k:Fungi,...` |
+| Greengenes2 | Between `>` and first space | space | `>abc123 d__Bacteria;p__Pseudomonadota;...` |
+| PR2 (positional) | Between `>` and first space | space | `>EU293891.1.1750_U Eukaryota;Archaeplastida;...` |
+| dada2 (positional) | Last taxonomic level (often species) | `;` | `>Bacteria;Proteobacteria;...;Escherichia` |
+
+In prefix-based formats (UNITE, SINTAX, Greengenes2), the sequence
+name is clearly separated from the taxonomy string. In the dada2
+positional format used by SILVA and RDP training sets, there is
+typically no separate accession number — the header contains only
+taxonomy, and the deepest level often serves as a sequence identifier.
+
+This distinction matters when converting between formats: conversion
+functions like `format2sintax()` and `format2dada2()` must correctly
+extract or relocate the sequence name.
+
+
+## Working with taxonomy formats in dbpq
+
+### Detecting the format
+
+```{r, eval = FALSE}
+library(dbpq)
+
+# Auto-detect format from file headers
+detect_tax_format("my_database.fasta")
+#> "unite", "sintax", "greengenes2", "pr2", or "unknown"
+```
+
+### Getting rank information
+
+`tax_prefixes()` returns rank prefixes (character vector) for
+prefix-based formats and rank positions (integer vector) for
+positional formats:
+
+```{r}
+library(dbpq)
+
+# Prefix-based formats
+tax_prefixes("unite")
+tax_prefixes("sintax")
+tax_prefixes("greengenes2")
+
+# Positional format (PR2)
+tax_prefixes("pr2")
+```
+
+### Summarizing databases
+
+```{r, eval = FALSE}
+# UNITE format
+summarize_db("unite_database.fasta", tax_format = "unite")
+
+# SINTAX format (UNITE SINTAX, MIDORI2 SINTAX)
+summarize_db("midori2_sintax.fasta", tax_format = "sintax")
+
+# Greengenes2 format
+summarize_db("greengenes2.fasta", tax_format = "greengenes2")
+
+# PR2 positional format
+summarize_db("pr2_database.fasta", tax_format = "pr2")
+
+# Auto-detect format
+summarize_db("some_database.fasta", tax_format = "auto")
+```
+
+### Listing ranks
+
+```{r, eval = FALSE}
+# Prefix-based: list phyla in a UNITE-format database
+list_ranks_db("database.fasta", rank_prefix = "p__")
+
+# Prefix-based: list phyla in a SINTAX-format database
+list_ranks_db("database.fasta", rank_prefix = "p:")
+
+# Using tax_format for convenience (extracts first rank)
+list_ranks_db("database.fasta", tax_format = "unite")
+
+# Positional: list genera in a PR2 database (position 8)
+list_ranks_db("database.fasta", tax_format = "pr2", rank_position = 8)
+
+# Positional: list phyla in any unprefixed database (position 2)
+list_ranks_db("database.fasta", rank_position = 2)
+```
+
+### Converting between formats
+
+```{r}
+# Convert UNITE (k__) format to SINTAX
+format2sintax(
+  taxnames = "AB123;k__Fungi;p__Ascomycota;c__Sordariomycetes"
+)
+
+# Convert SINTAX to dada2
+format2dada2(
+  taxnames = "AB123;tax=k:Fungi,p:Ascomycota,c:Sordariomycetes",
+  from_sintax = TRUE
+)
+```
+
+## Downloading databases in specific formats
+
+Several databases offer SINTAX-formatted downloads alongside their
+default format:
+
+```{r, eval = FALSE}
+# UNITE: default vs SINTAX
+download_unite_db(dest_dir = "databases")
+download_unite_db(dest_dir = "databases", taxonomic_format = "sintax")
+
+# PR2: dada2 vs UTAX/SINTAX
+download_pr2_db(dest_dir = "databases", format = "dada2")
+download_pr2_db(dest_dir = "databases", format = "sintax")
+
+# MIDORI2: multiple formats available
+download_midori2_db(gene = "CO1", format = "dada2")
+download_midori2_db(gene = "CO1", format = "SINTAX")
+```
+
+For databases that only provide one format, use `format2sintax()` or
+`format2dada2()` to convert:
+
+```{r, eval = FALSE}
+# Download in dada2 format, then convert to SINTAX
+download_silva_db(dest_dir = "databases", format = "dada2")
+format2sintax(
+  fasta_db = "databases/silva_nr99_v138.2_toSpecies_trainset.fa.gz",
+  output_path = "databases/silva_sintax.fasta"
+)
+```
+
+
+## Database formats and classification algorithms
+
+Different taxonomic classifiers expect different input formats.
+The table below shows which formats work with which classifiers,
+including those available via `MiscMetabar::add_new_taxonomy_pq()`:
+
+| Classifier | Expected format | dbpq download | `add_new_taxonomy_pq()` method |
+|------------|----------------|---------------|-------------------------------|
+| `dada2::assignTaxonomy()` | Any `;`-separated taxonomy | `format = "dada2"` | `method = "dada2"` |
+| `dada2::addSpecies()` | `ID Genus species` | `format = "dada2_species"` | `method = "dada2_2steps"` |
+| `vsearch --sintax` | SINTAX (`tax=`) | `taxonomic_format = "sintax"` | `method = "sintax"` |
+| VSEARCH LCA (`--usearch_global`) | Any FASTA | Any | `method = "lca"` |
+| IDTAXA | Custom training set | Convert with `format2dada2()` | `method = "idtaxa"` |
+| BLASTn | Any FASTA | Any | `method = "blastn"` |
+
+### Choosing a database and classifier
+
+**For ITS (fungi):**
+
+- UNITE + dada2: `download_unite_db()` + `method = "dada2"`
+- UNITE SINTAX + vsearch: `download_unite_db(taxonomic_format = "sintax")` + `method = "sintax"`
+
+**For 16S (bacteria/archaea):**
+
+- SILVA: `download_silva_db()` + `method = "dada2"`
+- RDP: `download_rdp_db()` + `method = "dada2"`
+- Greengenes2: `download_greengenes2_db()` + `method = "dada2"`
+
+**For 18S (protists/eukaryotes):**
+
+- PR2: `download_pr2_db()` + `method = "dada2"` or `"sintax"`
+- Eukaryome: `download_eukaryome_db()`
+
+**For COI (metazoa):**
+
+- MIDORI2: `download_midori2_db()`
+- BOLD: `download_bold_db()`
+
+**For rbcL (diatoms):**
+
+- Diat.barcode: `download_diatbarcode_db()` or `diatbarcode` R package
+
+**For 18S AMF (arbuscular mycorrhizal fungi):**
+
+- MaarjAM: `download_marjaam_db()`

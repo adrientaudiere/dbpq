@@ -78,11 +78,17 @@ download_file <- function(url, dest_path, verbose = TRUE) {
 #' @param dest_dir (Character, default `"."`) Directory to save the
 #'   downloaded file.
 #' @param type (Character, default `"dynamic"`) One of `"dynamic"` or
-#'   `"static"`. Dynamic files include singletons.
+#'   `"static"`. Dynamic files include singletons. Only used when
+#'   `taxonomic_format = "default"`.
 #' @param taxon_group (Character, default `"fungi"`) One of `"fungi"` or
 #'   `"eukaryotes"`.
 #' @param version (Character, default `"10.0"`) UNITE version. Use `"10.0"`
 #'   for the 2024 release.
+#' @param taxonomic_format (Character, default `"default"`) One of
+#'   `"default"` or `"sintax"`. When `"default"`, downloads the general
+#'   FASTA release (`.tgz` archive with `k__`/`p__` taxonomy). When
+#'   `"sintax"`, downloads a single FASTA file already formatted for
+#'   VSEARCH SINTAX classification (with `tax=d:...` headers).
 #' @param doi (Character) If provided, overrides version-based URL
 #'   construction with a direct DOI download. Useful for older or
 #'   alternative releases.
@@ -92,9 +98,14 @@ download_file <- function(url, dest_path, verbose = TRUE) {
 #' @export
 #' @author Adrien Taudière
 #' @details
-#' Since UNITE v10.0, the `.tgz` archive contains all clustering
-#' variants (dynamic, 97%, 99%) bundled together. After downloading,
-#' extract the archive and select the appropriate FASTA file.
+#' When `taxonomic_format = "default"`: since UNITE v10.0, the `.tgz`
+#' archive contains all clustering variants (dynamic, 97%, 99%) bundled
+#' together. After downloading, extract the archive and select the
+#' appropriate FASTA file.
+#'
+#' When `taxonomic_format = "sintax"`: the downloaded `.gz` file is a
+#' single FASTA with SINTAX-ready taxonomy headers. This file can be used
+#' directly with `vsearch --sintax`.
 #'
 #' The S3 download URLs use opaque UUIDs that change between releases.
 #' If the automatic URL fails, visit
@@ -107,22 +118,31 @@ download_file <- function(url, dest_path, verbose = TRUE) {
 #' @seealso [format2dada2()], [format2sintax()]
 #' @examples
 #' \dontrun{
-#' # Download UNITE v10.0 dynamic for fungi
+#' # Download UNITE v10.0 default (general FASTA archive) for fungi
 #' download_unite_db(dest_dir = "databases")
 #'
-#' # Download for all eukaryotes
-#' download_unite_db(dest_dir = "databases", taxon_group = "eukaryotes")
+#' # Download UNITE v10.0 SINTAX-formatted for fungi
+#' download_unite_db(dest_dir = "databases", taxonomic_format = "sintax")
+#'
+#' # Download for all eukaryotes in SINTAX format
+#' download_unite_db(
+#'   dest_dir = "databases",
+#'   taxon_group = "eukaryotes",
+#'   taxonomic_format = "sintax"
+#' )
 #' }
 download_unite_db <- function(
   dest_dir = ".",
   type = c("dynamic", "static"),
   taxon_group = c("fungi", "eukaryotes"),
   version = "10.0",
+  taxonomic_format = c("default", "sintax"),
   doi = NULL,
   verbose = TRUE
 ) {
   type <- match.arg(type)
   taxon_group <- match.arg(taxon_group)
+  taxonomic_format <- match.arg(taxonomic_format)
 
   if (!dir.exists(dest_dir)) {
     dir.create(dest_dir, recursive = TRUE)
@@ -131,15 +151,72 @@ download_unite_db <- function(
   if (!is.null(doi)) {
     # User-provided DOI: resolve to download URL
     url <- paste0("https://doi.org/", sub("^https?://doi.org/", "", doi))
+    ext <- ifelse(taxonomic_format == "sintax", ".gz", ".tgz")
     dest_file <- file.path(
       dest_dir,
-      paste0("UNITE_", type, "_", taxon_group, ".tgz")
+      paste0("UNITE_", type, "_", taxon_group, ext)
     )
     message(
       "Using user-provided DOI. You may need to follow redirects manually.\n",
       "Consider downloading from https://unite.ut.ee/repository.php"
     )
     download_file(url, dest_file, verbose = verbose)
+    return(invisible(dest_file))
+  }
+
+  if (taxonomic_format == "sintax") {
+    # Known S3 download URLs for UNITE v10.0 SINTAX FASTA release
+    # Source: nf-core/ampliseq ref_databases.config (sintax_ref_taxonomy)
+    # Note: S3 UUIDs are opaque and change between releases
+    sintax_urls <- list(
+      fungi = paste0(
+        "https://s3.hpc.ut.ee/plutof-public/original/",
+        "b27cffec-1e7d-4584-93d3-12add9fa180b.gz"
+      ),
+      eukaryotes = paste0(
+        "https://s3.hpc.ut.ee/plutof-public/original/",
+        "6f19ddb6-1ac0-4834-a74c-b639688878a4.gz"
+      )
+    )
+
+    url <- sintax_urls[[taxon_group]]
+
+    if (is.null(url)) {
+      stop(
+        "No known SINTAX download URL for UNITE version ",
+        version,
+        " (",
+        taxon_group,
+        ").\n",
+        "Visit https://unite.ut.ee/repository.php for manual download.",
+        call. = FALSE
+      )
+    }
+
+    dest_file <- file.path(
+      dest_dir,
+      paste0(
+        "sh_general_release_sintax_",
+        ifelse(taxon_group == "fungi", "s_", "s_all_"),
+        gsub("\\.", "", version),
+        ".fasta.gz"
+      )
+    )
+
+    download_file(url, dest_file, verbose = verbose)
+
+    if (verbose) {
+      message(
+        "UNITE SINTAX database saved as: ",
+        dest_file,
+        "\n",
+        "This file can be used directly with: ",
+        "vsearch --sintax reads.fasta --db ",
+        dest_file,
+        " --tabbedout out.txt --sintax_cutoff 0.8"
+      )
+    }
+
     return(invisible(dest_file))
   }
 
@@ -363,12 +440,16 @@ download_silva_db <- function(
 #' releases. PR2 provides 18S rRNA gene sequences for protists and other
 #' eukaryotes.
 #'
+#' For more advanced access to PR2 data (e.g., full taxonomy tables,
+#' metadata, or custom queries), see the
+#' [pr2database](https://pr2database.github.io/pr2database/) R package.
+#'
 #' @param dest_dir (Character, default `"."`) Directory to save the
 #'   downloaded file.
 #' @param version (Character) PR2 version number (e.g., `"5.0.0"`). If
 #'   `NULL` (default), the latest release is fetched from GitHub.
 #' @param format (Character, default `"dada2"`) One of `"dada2"`, `"mothur"`,
-#'   or `"UTAX"`.
+#'   `"UTAX"`, or `"sintax"` (alias for `"UTAX"`).
 #' @param marker (Character, default `"SSU"`) One of `"SSU"` or `"plastid"`.
 #' @param verbose (Logical, default `TRUE`) Print progress messages.
 #'
@@ -382,7 +463,8 @@ download_silva_db <- function(
 #' Please cite: Guillou L et al. (2013) The Protist Ribosomal Reference
 #' database (PR2). Nucleic Acids Research 41:D1108-D1113.
 #' \doi{10.1093/nar/gks1160}
-#' @seealso [format2dada2()], [format2sintax()]
+#' @seealso [format2dada2()], [format2sintax()],
+#'   [pr2database](https://pr2database.github.io/pr2database/) R package
 #' @examples
 #' \dontrun{
 #' # Download latest PR2 in dada2 format
@@ -394,11 +476,15 @@ download_silva_db <- function(
 download_pr2_db <- function(
   dest_dir = ".",
   version = NULL,
-  format = c("dada2", "mothur", "UTAX"),
+  format = c("dada2", "mothur", "UTAX", "sintax"),
   marker = c("SSU", "plastid"),
   verbose = TRUE
 ) {
   format <- match.arg(format)
+  # "sintax" is an alias for "UTAX" (same format, different naming conventions)
+  if (format == "sintax") {
+    format <- "UTAX"
+  }
   marker <- match.arg(marker)
 
   if (!dir.exists(dest_dir)) {
@@ -658,6 +744,7 @@ download_marjaam_db <- function(
 #' - General FASTA: <https://eukaryome.org/generalfasta/>
 #' - dada2 format: <https://eukaryome.org/dada2/>
 #' - mothur format: <https://eukaryome.org/mothur/>
+#' - SINTAX format: <https://eukaryome.org/sintax/>
 #' - QIIME2 format: <https://eukaryome.org/qiime2/>
 #'
 #' Visit one of these pages, copy the direct download link, and pass it
@@ -686,6 +773,7 @@ download_eukaryome_db <- function(
       "  - General FASTA: https://eukaryome.org/generalfasta/\n",
       "  - dada2 format:  https://eukaryome.org/dada2/\n",
       "  - mothur format: https://eukaryome.org/mothur/\n",
+      "  - SINTAX format: https://eukaryome.org/sintax/\n",
       "  - QIIME2 format: https://eukaryome.org/qiime2/\n\n",
       "Then call:\n",
       "  download_eukaryome_db(url = 'https://...')"
@@ -695,6 +783,402 @@ download_eukaryome_db <- function(
 
   if (!dir.exists(dest_dir)) {
     dir.create(dest_dir, recursive = TRUE)
+  }
+
+  filename <- basename(url)
+  dest_file <- file.path(dest_dir, filename)
+
+  download_file(url, dest_file, verbose = verbose)
+
+  invisible(dest_file)
+}
+
+
+# ——————————————————————————————————————————————————————————————————————
+# Greengenes2
+# ——————————————————————————————————————————————————————————————————————
+
+#' Download a Greengenes2 reference database
+#'
+#' @description
+#' Downloads the Greengenes2 16S rRNA database. By default, downloads the
+#' dada2-formatted training sets from Zenodo (maintained by Benjamin
+#' Callahan). Alternatively, downloads backbone sequences from the
+#' Greengenes2 FTP server.
+#'
+#' Note that Greengenes2 uses `d__` (domain) instead of `k__` (kingdom)
+#' as the first rank prefix. Use `tax_format = "greengenes2"` with
+#' [summarize_db()] and [list_ranks_db()] for correct parsing.
+#'
+#' @param dest_dir (Character, default `"."`) Directory to save the
+#'   downloaded file.
+#' @param version (Character, default `"2024.09"`) Greengenes2 version
+#'   in `YYYY.MM` format.
+#' @param format (Character, default `"dada2"`) One of:
+#'   - `"dada2"`: dada2-formatted training set from Zenodo (recommended
+#'     for `dada2::assignTaxonomy()`).
+#'   - `"dada2_species"`: species-level training set for
+#'     `dada2::assignTaxonomy()` (includes species).
+#'   - `"fasta"`: plain FASTA sequences from the FTP server.
+#' @param verbose (Logical, default `TRUE`) Print progress messages.
+#'
+#' @returns The path to the downloaded file (invisibly).
+#' @export
+#' @author Adrien Taudière
+#' @details
+#' The dada2-formatted files are maintained by Benjamin Callahan on Zenodo
+#' and are the same source as the SILVA dada2 training sets. See
+#' <https://benjjneb.github.io/dada2/training.html> for details.
+#'
+#' Please cite: McDonald D et al. (2024) Greengenes2 unifies microbial
+#' data in a single reference tree. Nature Biotechnology 42:715-718.
+#' \doi{10.1038/s41587-023-01845-1}
+#' @seealso [format2dada2()], [tax_prefixes()]
+#' @examples
+#' \dontrun{
+#' # Download dada2-formatted Greengenes2
+#' download_greengenes2_db(dest_dir = "databases")
+#'
+#' # Download plain FASTA from FTP
+#' download_greengenes2_db(dest_dir = "databases", format = "fasta")
+#' }
+download_greengenes2_db <- function(
+  dest_dir = ".",
+  version = "2024.09",
+  format = c("dada2", "dada2_species", "fasta"),
+  verbose = TRUE
+) {
+  format <- match.arg(format)
+
+  if (!dir.exists(dest_dir)) {
+    dir.create(dest_dir, recursive = TRUE)
+  }
+
+  # Zenodo record IDs for dada2-formatted Greengenes2
+  zenodo_records <- list(
+    "2024.09" = "14169078"
+  )
+
+  version_us <- gsub("\\.", "_", version)
+
+  if (format %in% c("dada2", "dada2_species")) {
+    record_id <- zenodo_records[[version]]
+    if (is.null(record_id)) {
+      stop(
+        "No known Zenodo record for Greengenes2 v",
+        version,
+        ". ",
+        "Known versions: ",
+        paste(names(zenodo_records), collapse = ", "),
+        ". Visit https://benjjneb.github.io/dada2/training.html",
+        call. = FALSE
+      )
+    }
+
+    if (format == "dada2") {
+      filename <- paste0("gg2_", version_us, "_toGenus_trainset.fa.gz")
+    } else {
+      filename <- paste0("gg2_", version_us, "_toSpecies_trainset.fa.gz")
+    }
+
+    url <- paste0(
+      "https://zenodo.org/records/",
+      record_id,
+      "/files/",
+      filename
+    )
+  } else {
+    # Plain FASTA from Greengenes2 FTP
+    filename <- paste0(version, ".seqs.fna.gz")
+    url <- paste0(
+      "https://ftp.microbio.me/greengenes_release/",
+      version,
+      "/",
+      filename
+    )
+  }
+
+  dest_file <- file.path(dest_dir, filename)
+  download_file(url, dest_file, verbose = verbose)
+
+  invisible(dest_file)
+}
+
+
+# ——————————————————————————————————————————————————————————————————————
+# RDP
+# ——————————————————————————————————————————————————————————————————————
+
+#' Download an RDP reference database
+#'
+#' @description
+#' Downloads the Ribosomal Database Project (RDP) 16S rRNA database.
+#' By default, downloads the dada2-formatted training sets from Zenodo
+#' (maintained by Benjamin Callahan).
+#'
+#' @param dest_dir (Character, default `"."`) Directory to save the
+#'   downloaded file.
+#' @param trainset (Character, default `"19"`) RDP trainset version number.
+#' @param format (Character, default `"dada2"`) One of:
+#'   - `"dada2"`: training set for `dada2::assignTaxonomy()`.
+#'   - `"dada2_species"`: species assignment file for
+#'     `dada2::addSpecies()`.
+#' @param verbose (Logical, default `TRUE`) Print progress messages.
+#'
+#' @returns The path to the downloaded file (invisibly).
+#' @export
+#' @author Adrien Taudière
+#' @details
+#' The dada2-formatted files are maintained by Benjamin Callahan on
+#' Zenodo. See <https://benjjneb.github.io/dada2/training.html> for
+#' details.
+#'
+#' Please cite: Cole JR et al. (2014) Ribosomal Database Project: data
+#' and tools for high throughput rRNA analysis. Nucleic Acids Research
+#' 42:D633-D642. \doi{10.1093/nar/gkt1244}
+#' @seealso [format2dada2()], [download_silva_db()]
+#' @examples
+#' \dontrun{
+#' # Download RDP trainset 19 for assignTaxonomy()
+#' download_rdp_db(dest_dir = "databases")
+#'
+#' # Download species assignment file
+#' download_rdp_db(dest_dir = "databases", format = "dada2_species")
+#' }
+download_rdp_db <- function(
+  dest_dir = ".",
+  trainset = "19",
+  format = c("dada2", "dada2_species"),
+  verbose = TRUE
+) {
+  format <- match.arg(format)
+
+  if (!dir.exists(dest_dir)) {
+    dir.create(dest_dir, recursive = TRUE)
+  }
+
+  # Zenodo record IDs for dada2-formatted RDP
+  zenodo_records <- list(
+    "19" = "14168771",
+    "18" = "4310151",
+    "16" = "801828"
+  )
+
+  record_id <- zenodo_records[[trainset]]
+  if (is.null(record_id)) {
+    stop(
+      "No known Zenodo record for RDP trainset ",
+      trainset,
+      ". ",
+      "Known trainsets: ",
+      paste(names(zenodo_records), collapse = ", "),
+      ". Visit https://benjjneb.github.io/dada2/training.html",
+      call. = FALSE
+    )
+  }
+
+  if (format == "dada2") {
+    filename <- paste0("rdp_train_set_", trainset, ".fa.gz")
+  } else {
+    filename <- paste0("rdp_species_assignment_", trainset, ".fa.gz")
+  }
+
+  url <- paste0(
+    "https://zenodo.org/records/",
+    record_id,
+    "/files/",
+    filename
+  )
+
+  dest_file <- file.path(dest_dir, filename)
+  download_file(url, dest_file, verbose = verbose)
+
+  invisible(dest_file)
+}
+
+
+# ——————————————————————————————————————————————————————————————————————
+# MIDORI2
+# ——————————————————————————————————————————————————————————————————————
+
+#' Download a MIDORI2 reference database
+#'
+#' @description
+#' Downloads the MIDORI2 reference database for eukaryotic mitochondrial
+#' genes (COI, 12S, 16S, Cytb, etc.). MIDORI2 provides pre-formatted
+#' FASTA files for multiple classifiers (dada2, SINTAX, RDP, BLAST).
+#'
+#' @param dest_dir (Character, default `"."`) Directory to save the
+#'   downloaded file.
+#' @param gene (Character, default `"CO1"`) Mitochondrial gene marker.
+#'   Common values: `"CO1"`, `"srRNA"` (12S), `"lrRNA"` (16S), `"Cytb"`.
+#' @param format (Character, default `"dada2"`) One of `"dada2"`,
+#'   `"dada2_species"`, `"SINTAX"`, `"RDP"`, or `"BLAST"`.
+#' @param seq_type (Character, default `"UNIQ"`) One of `"UNIQ"` (all
+#'   unique haplotypes per species) or `"LONGEST"` (single longest
+#'   sequence per species).
+#' @param url (Character) Direct download URL. If `NULL` (default), the
+#'   function provides instructions and the download page URL.
+#' @param verbose (Logical, default `TRUE`) Print progress messages.
+#'
+#' @returns The path to the downloaded file (invisibly), or a message
+#'   with download instructions if no URL is provided.
+#' @export
+#' @author Adrien Taudière
+#' @details
+#' MIDORI2 download URLs include a date-stamped directory path that
+#' changes with each GenBank release, making fully programmatic access
+#' fragile. Visit <https://www.reference-midori.info/download.php> to
+#' find the current download URL for your desired gene and format, then
+#' pass it via the `url` parameter.
+#'
+#' Files are typically named following this pattern:
+#' `MIDORI2_{TYPE}_NUC_SP_GB{VERSION}_{GENE}_{FORMAT}.fasta.gz`
+#'
+#' Please cite: Leray M et al. (2022) MIDORI2: A collection of quality
+#' controlled, preformatted, and regularly updated reference databases
+#' for taxonomic assignment of eukaryotic mitochondrial sequences.
+#' Environmental DNA 4:894-907. \doi{10.1002/edn3.303}
+#' @seealso [format2sintax()], [format2dada2()]
+#' @examples
+#' \dontrun{
+#' # Get instructions for downloading MIDORI2
+#' download_midori2_db()
+#'
+#' # Download with a specific URL
+#' download_midori2_db(
+#'   dest_dir = "databases",
+#'   url = "https://reference-midori.info/download/Databases/..."
+#' )
+#' }
+download_midori2_db <- function(
+  dest_dir = ".",
+  gene = "CO1",
+  format = c("dada2", "dada2_species", "SINTAX", "RDP", "BLAST"),
+  seq_type = c("UNIQ", "LONGEST"),
+  url = NULL,
+  verbose = TRUE
+) {
+  format <- match.arg(format)
+  seq_type <- match.arg(seq_type)
+
+  if (is.null(url)) {
+    format_dir <- switch(
+      format,
+      dada2 = "DADA2",
+      dada2_species = "DADA2_sp",
+      SINTAX = "SINTAX",
+      RDP = "RDP",
+      BLAST = "BLAST"
+    )
+    message(
+      "MIDORI2 download URLs change with each GenBank release.\n",
+      "Please visit the download page to get the URL for your desired ",
+      "gene and format:\n",
+      "  https://www.reference-midori.info/download.php\n\n",
+      "Look for a file matching this pattern:\n",
+      "  MIDORI2_",
+      seq_type,
+      "_NUC_SP_GB{VERSION}_",
+      gene,
+      "_",
+      toupper(format_dir),
+      ".fasta.gz\n\n",
+      "Then call:\n",
+      "  download_midori2_db(url = 'https://...')"
+    )
+    return(invisible(NULL))
+  }
+
+  if (!dir.exists(dest_dir)) {
+    dir.create(dest_dir, recursive = TRUE)
+  }
+
+  filename <- basename(url)
+  dest_file <- file.path(dest_dir, filename)
+
+  download_file(url, dest_file, verbose = verbose)
+
+  invisible(dest_file)
+}
+
+
+# ——————————————————————————————————————————————————————————————————————
+# DIAT.barcode
+# ——————————————————————————————————————————————————————————————————————
+
+#' Download a Diat.barcode reference database
+#'
+#' @description
+#' Downloads the Diat.barcode reference database for diatom rbcL barcoding.
+#' This is a curated database for diatom identification using the rbcL
+#' marker gene. The recommended access method is through the
+#' [diatbarcode](https://github.com/fkeck/diatbarcode) R package, which
+#' provides additional tools for working with the database.
+#'
+#' @param dest_dir (Character, default `"."`) Directory to save the
+#'   downloaded file.
+#' @param format (Character, default `"dada2"`) One of `"dada2"` or
+#'   `"dada2_species"`. Uses dada2-formatted files from the INRAE Dataverse.
+#' @param url (Character) Direct download URL. If `NULL` (default), the
+#'   function provides instructions for using the `diatbarcode` R package.
+#' @param verbose (Logical, default `TRUE`) Print progress messages.
+#'
+#' @returns The path to the downloaded file (invisibly), or a message
+#'   with download instructions if no URL is provided.
+#' @export
+#' @author Adrien Taudière
+#' @details
+#' The Diat.barcode database is maintained by INRAE and hosted on
+#' Recherche Data Gouv. For more advanced access (metadata, full taxonomy
+#' tables, custom queries), consider using the
+#' [diatbarcode](https://github.com/fkeck/diatbarcode) R package
+#' directly:
+#'
+#' ```
+#' diatbarcode::download_diatbarcode(
+#'   path = "databases",
+#'   flavor = "rbcl312_dada2_tax"
+#' )
+#' ```
+#'
+#' Please cite: Rimet F et al. (2019) Diat.barcode, an open-access
+#' curated barcode library for diatoms. Scientific Reports 9:15116.
+#' \doi{10.1038/s41598-019-51500-6}
+#' @examples
+#' \dontrun{
+#' download_diatbarcode_db(dest_dir = "databases")
+#' }
+download_diatbarcode_db <- function(
+  dest_dir = ".",
+  format = c("dada2", "dada2_species"),
+  url = NULL,
+  verbose = TRUE
+) {
+  format <- match.arg(format)
+
+  if (!dir.exists(dest_dir)) {
+    dir.create(dest_dir, recursive = TRUE)
+  }
+
+  if (is.null(url)) {
+    message(
+      "Diat.barcode files are hosted on INRAE Dataverse.\n",
+      "The recommended approach is to use the diatbarcode R package:\n",
+      "  diatbarcode::download_diatbarcode(\n",
+      "    path = '",
+      dest_dir,
+      "',\n",
+      "    flavor = '",
+      ifelse(format == "dada2", "rbcl312_dada2_tax", "rbcl312_dada2_spe"),
+      "'\n",
+      "  )\n\n",
+      "Alternatively, visit:\n",
+      "  https://entrepot.recherche.data.gouv.fr/dataset.xhtml",
+      "?persistentId=doi:10.15454/HNI1EK\n",
+      "and pass the direct file download URL via the `url` parameter."
+    )
+    return(invisible(NULL))
   }
 
   filename <- basename(url)

@@ -14,7 +14,11 @@ reference:
   - download_unite_db
   - download_silva_db
   - download_pr2_db
+  - download_greengenes2_db
+  - download_rdp_db
+  - download_midori2_db
   - download_bold_db
+  - download_diatbarcode_db
   - download_marjaam_db
   - download_eukaryome_db
 
@@ -43,3 +47,5 @@ reference:
   desc: Helper functions.
   contents:
   - get_file_extension
+  - tax_prefixes
+  - detect_tax_format

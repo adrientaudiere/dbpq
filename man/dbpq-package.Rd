@@ -6,7 +6,7 @@
 \alias{dbpq-package}
 \title{dbpq: Manage FASTA Reference Databases for Taxonomic Assignment}
 \description{
-Download, format, summarize, and modify FASTA reference databases used for taxonomic assignment in metabarcoding pipelines. Supports major databases (UNITE, SILVA, PR2, BOLD, MaarjAM, Eukaryome) and converts between taxonomy header formats (dada2, SINTAX). Part of the 'pqverse' ecosystem.
+Download, format, summarize, and modify FASTA reference databases used for taxonomic assignment in metabarcoding pipelines. Supports major databases (UNITE, SILVA, PR2, Greengenes2, RDP, MIDORI2, BOLD, Diat.barcode, MaarjAM, Eukaryome) and converts between taxonomy header formats (dada2, SINTAX, Greengenes2). Part of the 'pqverse' ecosystem.
 }
 \seealso{
 Useful links:

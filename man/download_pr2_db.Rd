@@ -7,7 +7,7 @@
 download_pr2_db(
   dest_dir = ".",
   version = NULL,
-  format = c("dada2", "mothur", "UTAX"),
+  format = c("dada2", "mothur", "UTAX", "sintax"),
   marker = c("SSU", "plastid"),
   verbose = TRUE
 )
@@ -20,7 +20,7 @@ downloaded file.}
 \code{NULL} (default), the latest release is fetched from GitHub.}
 
 \item{format}{(Character, default \code{"dada2"}) One of \code{"dada2"}, \code{"mothur"},
-or \code{"UTAX"}.}
+\code{"UTAX"}, or \code{"sintax"} (alias for \code{"UTAX"}).}
 
 \item{marker}{(Character, default \code{"SSU"}) One of \code{"SSU"} or \code{"plastid"}.}
 
@@ -33,6 +33,10 @@ The path to the downloaded file (invisibly).
 Downloads the PR2 protist ribosomal reference database from GitHub
 releases. PR2 provides 18S rRNA gene sequences for protists and other
 eukaryotes.
+
+For more advanced access to PR2 data (e.g., full taxonomy tables,
+metadata, or custom queries), see the
+\href{https://pr2database.github.io/pr2database/}{pr2database} R package.
 }
 \details{
 PR2 releases are hosted on GitHub at
@@ -52,7 +56,8 @@ download_pr2_db(dest_dir = "databases", version = "5.0.0", format = "UTAX")
 }
 }
 \seealso{
-\code{\link[=format2dada2]{format2dada2()}}, \code{\link[=format2sintax]{format2sintax()}}
+\code{\link[=format2dada2]{format2dada2()}}, \code{\link[=format2sintax]{format2sintax()}},
+\href{https://pr2database.github.io/pr2database/}{pr2database} R package
 }
 \author{
 Adrien Taudière

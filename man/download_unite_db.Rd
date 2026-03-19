@@ -9,6 +9,7 @@ download_unite_db(
   type = c("dynamic", "static"),
   taxon_group = c("fungi", "eukaryotes"),
   version = "10.0",
+  taxonomic_format = c("default", "sintax"),
   doi = NULL,
   verbose = TRUE
 )
@@ -18,13 +19,20 @@ download_unite_db(
 downloaded file.}
 
 \item{type}{(Character, default \code{"dynamic"}) One of \code{"dynamic"} or
-\code{"static"}. Dynamic files include singletons.}
+\code{"static"}. Dynamic files include singletons. Only used when
+\code{taxonomic_format = "default"}.}
 
 \item{taxon_group}{(Character, default \code{"fungi"}) One of \code{"fungi"} or
 \code{"eukaryotes"}.}
 
 \item{version}{(Character, default \code{"10.0"}) UNITE version. Use \code{"10.0"}
 for the 2024 release.}
+
+\item{taxonomic_format}{(Character, default \code{"default"}) One of
+\code{"default"} or \code{"sintax"}. When \code{"default"}, downloads the general
+FASTA release (\code{.tgz} archive with \code{k__}/\code{p__} taxonomy). When
+\code{"sintax"}, downloads a single FASTA file already formatted for
+VSEARCH SINTAX classification (with \code{tax=d:...} headers).}
 
 \item{doi}{(Character) If provided, overrides version-based URL
 construction with a direct DOI download. Useful for older or
@@ -45,9 +53,14 @@ are compatible with dada2, VSEARCH, and other classifiers after
 reformatting with \code{\link[=format2dada2]{format2dada2()}} or \code{\link[=format2sintax]{format2sintax()}}.
 }
 \details{
-Since UNITE v10.0, the \code{.tgz} archive contains all clustering
-variants (dynamic, 97\%, 99\%) bundled together. After downloading,
-extract the archive and select the appropriate FASTA file.
+When \code{taxonomic_format = "default"}: since UNITE v10.0, the \code{.tgz}
+archive contains all clustering variants (dynamic, 97\%, 99\%) bundled
+together. After downloading, extract the archive and select the
+appropriate FASTA file.
+
+When \code{taxonomic_format = "sintax"}: the downloaded \code{.gz} file is a
+single FASTA with SINTAX-ready taxonomy headers. This file can be used
+directly with \code{vsearch --sintax}.
 
 The S3 download URLs use opaque UUIDs that change between releases.
 If the automatic URL fails, visit
@@ -60,11 +73,18 @@ release for Fungi. UNITE Community.
 }
 \examples{
 \dontrun{
-# Download UNITE v10.0 dynamic for fungi
+# Download UNITE v10.0 default (general FASTA archive) for fungi
 download_unite_db(dest_dir = "databases")
 
-# Download for all eukaryotes
-download_unite_db(dest_dir = "databases", taxon_group = "eukaryotes")
+# Download UNITE v10.0 SINTAX-formatted for fungi
+download_unite_db(dest_dir = "databases", taxonomic_format = "sintax")
+
+# Download for all eukaryotes in SINTAX format
+download_unite_db(
+  dest_dir = "databases",
+  taxon_group = "eukaryotes",
+  taxonomic_format = "sintax"
+)
 }
 }
 \seealso{

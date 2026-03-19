@@ -5,6 +5,10 @@ test_that("download functions exist and have correct signatures", {
   expect_true(is.function(download_bold_db))
   expect_true(is.function(download_marjaam_db))
   expect_true(is.function(download_eukaryome_db))
+  expect_true(is.function(download_greengenes2_db))
+  expect_true(is.function(download_rdp_db))
+  expect_true(is.function(download_midori2_db))
+  expect_true(is.function(download_diatbarcode_db))
 })
 
 test_that("download_bold_db requires taxon argument", {
@@ -27,6 +31,41 @@ test_that("download_silva_db rejects unknown version for dada2", {
 
 test_that("download_eukaryome_db without URL gives instructions", {
   expect_message(download_eukaryome_db(), "does not provide stable")
+})
+
+test_that("download_eukaryome_db without URL mentions SINTAX format", {
+  expect_message(download_eukaryome_db(), "SINTAX")
+})
+
+test_that("download_pr2_db accepts sintax as alias for UTAX", {
+  # sintax should be accepted as a valid format
+  expect_no_error(match.arg("sintax", c("dada2", "mothur", "UTAX", "sintax")))
+})
+
+test_that("download_unite_db accepts taxonomic_format parameter", {
+  expect_true("taxonomic_format" %in% names(formals(download_unite_db)))
+})
+
+test_that("download_greengenes2_db rejects unknown version for dada2", {
+  expect_error(
+    download_greengenes2_db(version = "999.99", format = "dada2"),
+    "No known Zenodo record"
+  )
+})
+
+test_that("download_rdp_db rejects unknown trainset", {
+  expect_error(
+    download_rdp_db(trainset = "99"),
+    "No known Zenodo record"
+  )
+})
+
+test_that("download_midori2_db without URL gives instructions", {
+  expect_message(download_midori2_db(), "reference-midori.info")
+})
+
+test_that("download_diatbarcode_db without URL gives instructions", {
+  expect_message(download_diatbarcode_db(), "diatbarcode")
 })
 
 test_that("download_file cleans up on failure", {
