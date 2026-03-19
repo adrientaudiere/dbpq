@@ -14,7 +14,6 @@
 * `count_pattern_db()` counts sequences matching a pattern in FASTA files.
 * `count_seq_db()` counts total sequences in a FASTA file.
 * `filter_db()` filters a FASTA database by taxonomic pattern.
-* `format2dada2()` formats taxonomy headers for `dada2::assignTaxonomy()`.
-* `format2dada2_species()` formats taxonomy headers for `dada2::addSpecies()`.
-* `format2sintax()` formats taxonomy headers for VSEARCH SINTAX.
+* `format_fasta_db()` is a new unified function to convert FASTA taxonomy headers between any supported format (`"sintax"`, `"unite"`, `"greengenes2"`, `"dada2"`, `"dada2_species"`), with auto-detection of the input format.
+* `format2dada2()`, `format2dada2_species()`, and `format2sintax()` now accept an `input_format` argument (`"auto"`, `"sintax"`, `"unite"`, `"greengenes2"`) instead of `from_sintax`, and all support Greengenes2 as an additional input format. They are now wrappers around `format_fasta_db()`.
 * `cutadapt_rm_primers_db()` removes primer sequences from a FASTA database using cutadapt.

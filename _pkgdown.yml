@@ -23,8 +23,9 @@ reference:
   - download_eukaryome_db
 
 - title: Format taxonomy headers
-  desc: Convert between taxonomy header formats (dada2, SINTAX).
+  desc: Convert between taxonomy header formats (SINTAX, UNITE, Greengenes2, dada2).
   contents:
+  - format_fasta_db
   - format2dada2
   - format2dada2_species
   - format2sintax

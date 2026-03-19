@@ -246,15 +246,22 @@ list_ranks_db("database.fasta", rank_position = 2)
 ### Converting between formats
 
 ```{r}
-# Convert UNITE (k__) format to SINTAX
-format2sintax(
-  taxnames = "AB123;k__Fungi;p__Ascomycota;c__Sordariomycetes"
+# UNITE (k__) → SINTAX
+format_fasta_db(
+  taxnames = "AB123;k__Fungi;p__Ascomycota;c__Sordariomycetes",
+  output_format = "sintax"
 )
 
-# Convert SINTAX to dada2
-format2dada2(
+# SINTAX → UNITE (k__)
+format_fasta_db(
   taxnames = "AB123;tax=k:Fungi,p:Ascomycota,c:Sordariomycetes",
-  from_sintax = TRUE
+  output_format = "unite"
+)
+
+# Greengenes2 → dada2
+format_fasta_db(
+  taxnames = "abc123 d__Bacteria;p__Pseudomonadota;g__Escherichia",
+  output_format = "dada2"
 )
 ```
 
@@ -277,14 +284,14 @@ download_midori2_db(gene = "CO1", format = "dada2")
 download_midori2_db(gene = "CO1", format = "SINTAX")
 ```
 
-For databases that only provide one format, use `format2sintax()` or
-`format2dada2()` to convert:
+For databases that only provide one format, use `format_fasta_db()` to convert:
 
 ```{r, eval = FALSE}
 # Download in dada2 format, then convert to SINTAX
 download_silva_db(dest_dir = "databases", format = "dada2")
-format2sintax(
+format_fasta_db(
   fasta_db = "databases/silva_nr99_v138.2_toSpecies_trainset.fa.gz",
+  output_format = "sintax",
   output_path = "databases/silva_sintax.fasta"
 )
 ```

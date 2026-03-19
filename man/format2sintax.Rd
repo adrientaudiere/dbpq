@@ -7,8 +7,7 @@
 format2sintax(
   fasta_db = NULL,
   taxnames = NULL,
-  pattern_tax = "k__",
-  pattern_sintax = "tax=k:",
+  input_format = "auto",
   output_path = NULL
 )
 }
@@ -16,14 +15,11 @@ format2sintax(
 \item{fasta_db}{(Character) Path to a FASTA file. Mutually exclusive
 with \code{taxnames}.}
 
-\item{taxnames}{(Character vector) Taxonomy header strings. Mutually
-exclusive with \code{fasta_db}.}
+\item{taxnames}{(Character vector) Taxonomy header strings (without
+leading \code{>}). Mutually exclusive with \code{fasta_db}.}
 
-\item{pattern_tax}{(Character, default \code{"k__"}) Pattern identifying the
-start of taxonomy in the original format.}
-
-\item{pattern_sintax}{(Character, default \code{"tax=k:"}) Pattern for the
-start of taxonomy in SINTAX format.}
+\item{input_format}{(Character, default \code{"auto"}) Input taxonomy format.
+One of \code{"auto"}, \code{"unite"}, \code{"greengenes2"}, \code{"sintax"}.}
 
 \item{output_path}{(Character) If provided and \code{fasta_db} is used, write
 the reformatted FASTA to this path.}
@@ -33,14 +29,21 @@ If \code{taxnames} is used, a character vector of reformatted names.
 If \code{fasta_db} is used, a \code{DNAStringSet} with reformatted names.
 }
 \description{
-Converts taxonomy headers from the common \verb{k__Kingdom;p__Phylum;...}
-format to the VSEARCH SINTAX format (\verb{tax=k:Kingdom,p:Phylum,...}).
+Converts taxonomy headers to the VSEARCH SINTAX format
+(\verb{>ID;tax=k:Kingdom,p:Phylum,...}). Wrapper around \code{\link[=format_fasta_db]{format_fasta_db()}}.
 }
 \examples{
+# UNITE format → SINTAX
 format2sintax(taxnames = "AB123;k__Fungi;p__Ascomycota;c__Sordariomycetes")
+
+# Greengenes2 format → SINTAX
+format2sintax(
+  taxnames = "abc123 d__Bacteria;p__Pseudomonadota",
+  input_format = "greengenes2"
+)
 }
 \seealso{
-\code{\link[=format2dada2]{format2dada2()}}, \code{\link[=format2dada2_species]{format2dada2_species()}}
+\code{\link[=format_fasta_db]{format_fasta_db()}}, \code{\link[=format2dada2]{format2dada2()}}, \code{\link[=format2dada2_species]{format2dada2_species()}}
 }
 \author{
 Adrien Taudière
