@@ -1,0 +1,45 @@
+url: https://adrientaudiere.github.io/dbpq/
+template:
+  bootstrap: 5
+  bslib:
+    bg: "#d5ecec"
+    fg: "#124444"
+    primary: "#63450f"
+    secondary: "#3e135a"
+
+reference:
+- title: Download databases
+  desc: Download latest versions of reference databases.
+  contents:
+  - download_unite_db
+  - download_silva_db
+  - download_pr2_db
+  - download_bold_db
+  - download_marjaam_db
+  - download_eukaryome_db
+
+- title: Format taxonomy headers
+  desc: Convert between taxonomy header formats (dada2, SINTAX).
+  contents:
+  - format2dada2
+  - format2dada2_species
+  - format2sintax
+
+- title: Summarize databases
+  desc: Describe and explore database contents.
+  contents:
+  - count_seq_db
+  - count_pattern_db
+  - list_ranks_db
+  - summarize_db
+
+- title: Modify databases
+  desc: Filter, trim, and transform FASTA databases.
+  contents:
+  - filter_db
+  - cutadapt_rm_primers_db
+
+- title: Utilities
+  desc: Helper functions.
+  contents:
+  - get_file_extension

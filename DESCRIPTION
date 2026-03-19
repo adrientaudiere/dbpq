@@ -1,0 +1,34 @@
+Package: dbpq
+Title: Manage FASTA Reference Databases for Taxonomic Assignment
+Version: 0.0.0.9000
+Authors@R:
+    person("Adrien", "Taudière", , "adrien.taudiere@zaclys.net", role = c("aut", "cre", "cph"),
+           comment = c(ORCID = "0000-0003-1088-1182"))
+Description: Download, format, summarize, and modify FASTA reference
+    databases used for taxonomic assignment in metabarcoding pipelines.
+    Supports major databases (UNITE, SILVA, PR2, BOLD, MaarjAM, Eukaryome)
+    and converts between taxonomy header formats (dada2, SINTAX). Part of
+    the 'pqverse' ecosystem.
+License: MIT + file LICENSE
+URL: https://github.com/adrientaudiere/dbpq
+BugReports: https://github.com/adrientaudiere/dbpq/issues
+Depends:
+    R (>= 4.1.0)
+Imports:
+    Biostrings,
+    dplyr,
+    purrr,
+    stringr,
+    tibble,
+    tidyr,
+    tools
+Suggests:
+    dada2,
+    knitr,
+    rmarkdown,
+    R.utils,
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3
