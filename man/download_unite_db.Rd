@@ -20,7 +20,9 @@ downloaded file.}
 
 \item{type}{(Character, default \code{"dynamic"}) One of \code{"dynamic"} or
 \code{"static"}. Dynamic files include singletons. Only used when
-\code{taxonomic_format = "default"}.}
+\code{taxonomic_format = "default"}. Note: as of UNITE v10.0, separate
+static/dynamic archives are not available for \code{taxon_group = "fungi"};
+both options download the same archive.}
 
 \item{taxon_group}{(Character, default \code{"fungi"}) One of \code{"fungi"} or
 \code{"eukaryotes"}.}

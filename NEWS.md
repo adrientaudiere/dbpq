@@ -1,6 +1,12 @@
 # dbpq 0.1
 
 * Initial development version.
+* `cutadapt_rm_primers_db()` now checks the exit code of cutadapt and stops with an informative error when the binary is missing or fails, instead of silently continuing.
+* `download_unite_db()` now emits a message when `type = "static"` and `taxon_group = "fungi"` to clarify that UNITE v10.0 does not ship separate static/dynamic archives for fungi.
+* `filter_db()` documentation now has a runnable example using the bundled `example_unite.fasta` file.
+* `get_file_extension()` no longer emits a spurious warning for double-extension files (e.g. `.fasta.gz`), which are the standard format for compressed databases.
+* An example FASTA file (`inst/extdata/example_unite.fasta`, 5 sequences in UNITE format) is now bundled with the package, enabling runnable examples for `count_seq_db()`, `count_pattern_db()`, `detect_tax_format()`, `filter_db()`, `list_ranks_db()`, and `summarize_db()`.
+* `tax_prefixes("sintax")` documentation now clarifies that UNITE SINTAX files use `k:` (kingdom) as their first rank and do not include a `d:` (domain) level; a `d: 0 sequences` row in `summarize_db()` output is therefore expected.
 * `detect_tax_format()` auto-detects taxonomy format (`"default"`, `"sintax"`, `"greengenes2"`) from FASTA headers.
 * `download_diatbarcode_db()` downloads the Diat.barcode rbcL reference database for diatoms.
 * `download_eukaryome_db()` now lists the SINTAX format download page (<https://eukaryome.org/sintax/>) in its instructions.

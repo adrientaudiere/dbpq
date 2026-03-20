@@ -11,7 +11,8 @@
 #' @author Adrien Taudière
 #' @seealso [count_pattern_db()]
 #' @examples
-#' # count_seq_db("my_database.fasta")
+#' db <- system.file("extdata", "example_unite.fasta", package = "dbpq")
+#' count_seq_db(db)
 count_seq_db <- function(file) {
   count_pattern_db(file, pattern = ">")
 }
@@ -31,8 +32,9 @@ count_seq_db <- function(file) {
 #' @export
 #' @author Adrien Taudière
 #' @seealso [filter_db()], [count_seq_db()]
-#' @examples
-#' # count_pattern_db("my_database.fasta", "Fungi")
+#' @examplesIf tolower(Sys.info()[["sysname"]]) != "windows"
+#' db <- system.file("extdata", "example_unite.fasta", package = "dbpq")
+#' count_pattern_db(db, "Amanita")
 count_pattern_db <- function(file, pattern = ">") {
   if (is_gzipped(file)) {
     count <- as.numeric(system(
@@ -75,9 +77,9 @@ count_pattern_db <- function(file, pattern = ">") {
 #' @author Adrien Taudière
 #' @seealso [tax_prefixes()], [detect_tax_format()], [summarize_db()]
 #' @examples
-#' # list_ranks_db("my_database.fasta", rank_prefix = "p__")
-#' # list_ranks_db("my_database.fasta", tax_format = "sintax")
-#' # list_ranks_db("my_database.fasta", tax_format = "pr2", rank_position = 8)
+#' db <- system.file("extdata", "example_unite.fasta", package = "dbpq")
+#' list_ranks_db(db, rank_prefix = "p__")
+#' list_ranks_db(db, tax_format = "unite")
 list_ranks_db <- function(
   file,
   rank_prefix = "k__",
@@ -155,9 +157,9 @@ list_ranks_db <- function(
 #' @author Adrien Taudière
 #' @seealso [tax_prefixes()], [detect_tax_format()], [list_ranks_db()]
 #' @examples
-#' # summarize_db("my_database.fasta")
-#' # summarize_db("my_database.fasta", tax_format = "sintax")
-#' # summarize_db("my_database.fasta", tax_format = "auto")
+#' db <- system.file("extdata", "example_unite.fasta", package = "dbpq")
+#' summarize_db(db)
+#' summarize_db(db, tax_format = "unite")
 summarize_db <- function(
   file,
   rank_prefixes = c(

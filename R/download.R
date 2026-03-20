@@ -79,7 +79,9 @@ download_file <- function(url, dest_path, verbose = TRUE) {
 #'   downloaded file.
 #' @param type (Character, default `"dynamic"`) One of `"dynamic"` or
 #'   `"static"`. Dynamic files include singletons. Only used when
-#'   `taxonomic_format = "default"`.
+#'   `taxonomic_format = "default"`. Note: as of UNITE v10.0, separate
+#'   static/dynamic archives are not available for `taxon_group = "fungi"`;
+#'   both options download the same archive.
 #' @param taxon_group (Character, default `"fungi"`) One of `"fungi"` or
 #'   `"eukaryotes"`.
 #' @param version (Character, default `"10.0"`) UNITE version. Use `"10.0"`
@@ -247,6 +249,13 @@ download_unite_db <- function(
       )
     )
   )
+
+  if (taxon_group == "fungi" && type == "static") {
+    message(
+      "Note: UNITE v10.0 does not ship separate static/dynamic archives for ",
+      "fungi. Downloading the single available fungi archive."
+    )
+  }
 
   url <- unite_urls[[taxon_group]][[type]]
 

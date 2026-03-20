@@ -17,7 +17,8 @@ Counts the number of sequences in a FASTA file by counting header lines
 (lines starting with \code{>}). Accepts gzip files.
 }
 \examples{
-# count_seq_db("my_database.fasta")
+db <- system.file("extdata", "example_unite.fasta", package = "dbpq")
+count_seq_db(db)
 }
 \seealso{
 \code{\link[=count_pattern_db]{count_pattern_db()}}

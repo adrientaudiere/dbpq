@@ -38,9 +38,9 @@ Supports both prefix-based formats (unite, sintax, greengenes2) and
 positional formats (dada2, pr2).
 }
 \examples{
-# summarize_db("my_database.fasta")
-# summarize_db("my_database.fasta", tax_format = "sintax")
-# summarize_db("my_database.fasta", tax_format = "auto")
+db <- system.file("extdata", "example_unite.fasta", package = "dbpq")
+summarize_db(db)
+summarize_db(db, tax_format = "unite")
 }
 \seealso{
 \code{\link[=tax_prefixes]{tax_prefixes()}}, \code{\link[=detect_tax_format]{detect_tax_format()}}, \code{\link[=list_ranks_db]{list_ranks_db()}}

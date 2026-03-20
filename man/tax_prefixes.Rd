@@ -12,7 +12,10 @@ tax_prefixes(tax_format = c("unite", "sintax", "greengenes2", "pr2"))
 \item \code{"unite"}: \code{k__}/\code{p__}/... format used by UNITE general FASTA
 releases.
 \item \code{"sintax"}: \verb{d:}/\verb{k:}/\verb{p:}/... format used by VSEARCH SINTAX and
-USEARCH UTAX databases (UNITE SINTAX, PR2 UTAX).
+USEARCH UTAX databases (UNITE SINTAX, PR2 UTAX). Note that UNITE
+SINTAX files use \verb{k:} (kingdom) as their first rank and do not
+include \verb{d:} (domain). When calling \code{\link[=summarize_db]{summarize_db()}} on a UNITE
+SINTAX file, the \verb{d:} row will show 0 sequences — this is expected.
 \item \code{"greengenes2"}: \code{d__}/\code{p__}/... format used by Greengenes2 (starts
 with domain \code{d__} instead of kingdom \code{k__}).
 \item \code{"pr2"}: positional format with 9 levels specific to protist

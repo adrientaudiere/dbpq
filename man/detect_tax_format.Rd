@@ -20,7 +20,8 @@ Reads a few sequence headers from a FASTA file and guesses the
 taxonomy format based on characteristic patterns.
 }
 \examples{
-# detect_tax_format("my_database.fasta")
+db <- system.file("extdata", "example_unite.fasta", package = "dbpq")
+detect_tax_format(db)
 }
 \seealso{
 \code{\link[=tax_prefixes]{tax_prefixes()}}, \code{\link[=list_ranks_db]{list_ranks_db()}}, \code{\link[=summarize_db]{summarize_db()}}

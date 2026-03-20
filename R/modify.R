@@ -19,8 +19,11 @@
 #' @export
 #' @author Adrien Taudière
 #' @seealso [count_pattern_db()]
-#' @examples
-#' # filter_db("database.fasta.gz", "Rhizophydiales", "output.fasta")
+#' @examplesIf tolower(Sys.info()[["sysname"]]) != "windows"
+#' db <- system.file("extdata", "example_unite.fasta", package = "dbpq")
+#' out <- tempfile(fileext = ".fasta")
+#' filter_db(db, "Amanita", output = out)
+#' count_seq_db(out)
 filter_db <- function(
   ref_fasta,
   pattern,
@@ -185,12 +188,24 @@ cutadapt_rm_primers_db <- function(
   cmd <- paste0(cmd, " ", normalizePath(ref_fasta))
 
   if (cmd_is_run) {
-    writeLines(cmd, paste0(tempdir(), "/script_cutadapt.sh"))
-    system2("bash", paste0(tempdir(), "/script_cutadapt.sh"))
+    script_path <- file.path(tempdir(), "script_cutadapt.sh")
+    writeLines(cmd, script_path)
+    exit_code <- system2("bash", script_path)
+    unlink(script_path)
+    if (exit_code != 0L) {
+      stop(
+        "cutadapt failed (exit code ",
+        exit_code,
+        "). ",
+        "Ensure cutadapt is installed and accessible, ",
+        "or set `cmd_is_run = FALSE` to inspect the command without",
+        " running it.",
+        call. = FALSE
+      )
+    }
     if (verbose) {
       message("Output file is available: ", normalizePath(output))
     }
-    unlink(paste0(tempdir(), "/script_cutadapt.sh"))
   } else {
     return(cmd)
   }

@@ -38,9 +38,9 @@ sequence headers. Supports both prefix-based formats (unite, sintax,
 greengenes2) and positional formats (dada2, pr2).
 }
 \examples{
-# list_ranks_db("my_database.fasta", rank_prefix = "p__")
-# list_ranks_db("my_database.fasta", tax_format = "sintax")
-# list_ranks_db("my_database.fasta", tax_format = "pr2", rank_position = 8)
+db <- system.file("extdata", "example_unite.fasta", package = "dbpq")
+list_ranks_db(db, rank_prefix = "p__")
+list_ranks_db(db, tax_format = "unite")
 }
 \seealso{
 \code{\link[=tax_prefixes]{tax_prefixes()}}, \code{\link[=detect_tax_format]{detect_tax_format()}}, \code{\link[=summarize_db]{summarize_db()}}

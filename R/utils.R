@@ -22,7 +22,10 @@
 #'   - `"unite"`: `k__`/`p__`/... format used by UNITE general FASTA
 #'     releases.
 #'   - `"sintax"`: `d:`/`k:`/`p:`/... format used by VSEARCH SINTAX and
-#'     USEARCH UTAX databases (UNITE SINTAX, PR2 UTAX).
+#'     USEARCH UTAX databases (UNITE SINTAX, PR2 UTAX). Note that UNITE
+#'     SINTAX files use `k:` (kingdom) as their first rank and do not
+#'     include `d:` (domain). When calling [summarize_db()] on a UNITE
+#'     SINTAX file, the `d:` row will show 0 sequences — this is expected.
 #'   - `"greengenes2"`: `d__`/`p__`/... format used by Greengenes2 (starts
 #'     with domain `d__` instead of kingdom `k__`).
 #'   - `"pr2"`: positional format with 9 levels specific to protist
@@ -102,7 +105,8 @@ tax_prefixes <- function(
 #' @export
 #' @seealso [tax_prefixes()], [list_ranks_db()], [summarize_db()]
 #' @examples
-#' # detect_tax_format("my_database.fasta")
+#' db <- system.file("extdata", "example_unite.fasta", package = "dbpq")
+#' detect_tax_format(db)
 detect_tax_format <- function(file, n_headers = 20L) {
   lines <- read_lines_db(file)
   headers <- lines[grepl("^>", lines)]
@@ -221,22 +225,23 @@ is_gzipped <- function(file_path) {
 
 #' Get file extension(s)
 #'
+#' @description
+#' Returns all extensions from a file name. Double extensions such as
+#' `.fasta.gz` are treated as a first-class case and returned as a two-element
+#' vector (e.g. `c("fasta", "gz")`).
+#'
 #' @param file_path (Character, required) Path to a file.
 #'
-#' @returns A character vector of file extensions.
+#' @returns A character vector of file extensions (one element per extension).
 #' @export
 #' @examples
 #' get_file_extension("my_database.fasta")
 #' get_file_extension("my_database.fasta.gz")
 get_file_extension <- function(file_path) {
-  if (stringr::str_count(file_path, "\\.") == 0) {
-    stop("There is no '.' inside your file path: ", file_path)
+  if (stringr::str_count(basename(file_path), "\\.") == 0) {
+    stop("No file extension found in: ", file_path)
   }
-  if (stringr::str_count(file_path, "\\.") > 1) {
-    warning("There is more than one '.' inside your file path: ", file_path)
-  }
-  file_ext <- strsplit(basename(file_path), ".", fixed = TRUE)[[1]][-1]
-  return(file_ext)
+  strsplit(basename(file_path), ".", fixed = TRUE)[[1]][-1]
 }
 
 
