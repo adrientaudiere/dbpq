@@ -51,7 +51,7 @@ Convert between taxonomy formats used by different classifiers:
 format2sintax(taxnames = "AB123;k__Fungi;p__Ascomycota;c__Sordariomycetes")
 
 # SINTAX -> dada2 (for dada2::assignTaxonomy())
-format2dada2(taxnames = "AB123;tax=k:Fungi,p:Ascomycota", from_sintax = TRUE)
+format2dada2(taxnames = "AB123;tax=k:Fungi,p:Ascomycota", input_format = "sintax")
 
 # Extract genus + species (for dada2::addSpecies())
 format2dada2_species(taxnames = "AB123;k__Fungi;g__Aspergillus;s__fumigatus")

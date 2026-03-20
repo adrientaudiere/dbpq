@@ -6,10 +6,10 @@ Authors@R:
            comment = c(ORCID = "0000-0003-1088-1182"))
 Description: Download, format, summarize, and modify FASTA reference
     databases used for taxonomic assignment in metabarcoding pipelines.
-    Supports major databases (UNITE, SILVA, PR2, Greengenes2, RDP, MIDORI2,
-    BOLD, Diat.barcode, MaarjAM, Eukaryome) and converts between taxonomy
-    header formats (dada2, SINTAX, Greengenes2). Part of the 'pqverse'
-    ecosystem.
+    Supports major databases ('UNITE', 'SILVA', 'PR2', 'Greengenes2', 'RDP',
+    'MIDORI2', 'BOLD', 'Diat.barcode', 'MaarjAM', 'Eukaryome') and converts
+    between taxonomy header formats ('dada2', 'SINTAX', 'Greengenes2'). Part
+    of the 'pqverse' ecosystem.
 License: MIT + file LICENSE
 URL: https://github.com/adrientaudiere/dbpq
 BugReports: https://github.com/adrientaudiere/dbpq/issues
