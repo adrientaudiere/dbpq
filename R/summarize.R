@@ -67,8 +67,9 @@ count_pattern_db <- function(file, pattern = ">") {
 #'   - a character string giving the path to a FASTA file (plain or gzip), or
 #'   - a [phyloseq][phyloseq::phyloseq-class] object with a taxonomy table.
 #' @param patterns (Character vector) Regular expressions to search for.
-#'   Defaults to a set of common unwanted patterns (NA-like values,
-#'   placeholder labels, empty ranks). See **Details**.
+#'   When MiscMetabar is installed, defaults to
+#'   [MiscMetabar::unwanted_tax_patterns]; otherwise falls back to a
+#'   built-in copy of the same patterns. See **Details**.
 #' @param tax_format (Character) Taxonomy format of the FASTA file. One of
 #'   `"unite"`, `"sintax"`, `"greengenes2"`, `"pr2"`, or `"auto"`.
 #'   Only used when `x` is a file path. If `"auto"` (default), the format
@@ -128,48 +129,23 @@ count_pattern_db <- function(file, pattern = ">") {
 
 count_unwanted_tax <- function(
   x,
-  patterns = c(
-    "^[Nn][Aa][Nn]?$",
-    "^[Nn]/[Aa]$",
-    "^[Nn]one$",
-    "^$",
-    "^\\s+$",
-    "[Uu]nclassified",
-    "[Uu]nknown",
-    "[Uu]nidentified",
-    "[Uu]ncultured",
-    "[Ii]ncertae[_\\s]?[Ss]edis",
-    "^[Mm]etagenome$",
-    "^[Ee]nvironmental",
-    "^[kpcofgs]__$",
-    "^_sp",
-    "^_species",
-    "_uc$",
-    "__X"
-  ),
+  patterns = unwanted_tax_patterns_default(),
   tax_format = "auto"
 ) {
-  pattern_descriptions <- c(
-    "^[Nn][Aa][Nn]?$" = "NA-like (NA, NaN, nan)",
-    "^[Nn]/[Aa]$" = "NA-like (N/A, n/a)",
-    "^[Nn]one$" = "None / none",
-    "^$" = "empty string",
-    "^\\s+$" = "whitespace only",
-    "[Uu]nclassified" = "unclassified",
-    "[Uu]nknown" = "unknown",
-    "[Uu]nidentified" = "unidentified",
-    "[Uu]ncultured" = "uncultured",
-    "[Ii]ncertae[_\\s]?[Ss]edis" = "incertae sedis",
-    "^[Mm]etagenome$" = "metagenome",
-    "^[Ee]nvironmental" = "environmental",
-    "^[kpcofgs]__$" = "empty QIIME-style rank"
-  )
+  # Build description lookup from named patterns vector
+  pat_values <- unname(patterns)
+  pat_descriptions <- if (!is.null(names(patterns))) {
+    names(patterns)
+  } else {
+    pat_values
+  }
+  names(pat_descriptions) <- pat_values
 
   tax_mat <- extract_tax_matrix(x, tax_format = tax_format)
   rank_names <- colnames(tax_mat)
 
   results <- list()
-  for (pat in patterns) {
+  for (pat in pat_values) {
     for (rank in rank_names) {
       vals <- tax_mat[, rank]
       vals <- vals[!is.na(vals)]
@@ -182,11 +158,7 @@ count_unwanted_tax <- function(
         )
         results[[length(results) + 1]] <- tibble::tibble(
           pattern = pat,
-          description = ifelse(
-            pat %in% names(pattern_descriptions),
-            pattern_descriptions[[pat]],
-            pat
-          ),
+          description = pat_descriptions[[pat]],
           rank = rank,
           n_matches = length(matched),
           example_values = examples

@@ -260,3 +260,39 @@ read_lines_db <- function(file_path) {
   on.exit(close(con))
   readLines(con)
 }
+
+
+# ——————————————————————————————————————————————————————————————————————
+# Unwanted taxonomy patterns
+# ——————————————————————————————————————————————————————————————————————
+
+#' Get the default unwanted taxonomy patterns
+#'
+#' Returns `MiscMetabar::unwanted_tax_patterns` when MiscMetabar is
+#' installed, otherwise falls back to a built-in copy of the same
+#' named character vector.
+#'
+#' @returns A named character vector (names = descriptions,
+#'   values = regex patterns).
+#' @keywords internal
+unwanted_tax_patterns_default <- function() {
+  if (requireNamespace("MiscMetabar", quietly = TRUE)) {
+    return(MiscMetabar::unwanted_tax_patterns)
+  }
+  # Built-in fallback (kept in sync with MiscMetabar)
+  c(
+    "NA-like (NA, NaN, nan)" = "^[Nn][Aa][Nn]?$",
+    "NA-like (N/A, n/a)" = "^[Nn]/[Aa]$",
+    "None / none" = "^[Nn]one$",
+    "empty string" = "^$",
+    "whitespace only" = "^\\s+$",
+    "unclassified" = "[Uu]nclassified",
+    "unknown" = "[Uu]nknown",
+    "unidentified" = "[Uu]nidentified",
+    "uncultured" = "[Uu]ncultured",
+    "incertae sedis" = "[Ii]ncertae[_\\s]?[Ss]edis",
+    "metagenome" = "^[Mm]etagenome$",
+    "environmental" = "^[Ee]nvironmental",
+    "empty QIIME-style rank" = "^[kpcofgs]__$"
+  )
+}

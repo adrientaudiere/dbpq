@@ -28,6 +28,7 @@ Imports:
 Suggests:
     dada2,
     knitr,
+    MiscMetabar,
     rmarkdown,
     R.utils,
     testthat (>= 3.0.0)
