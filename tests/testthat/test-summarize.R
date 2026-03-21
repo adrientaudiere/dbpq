@@ -160,3 +160,127 @@ test_that("detect_tax_format identifies formats correctly", {
 test_that("summarize_db accepts tax_format parameter", {
   expect_true("tax_format" %in% names(formals(summarize_db)))
 })
+
+# ——————————————————————————————————————————————————————————————————————
+# count_unwanted_tax
+# ——————————————————————————————————————————————————————————————————————
+
+test_that("count_unwanted_tax returns empty tibble for clean data", {
+  tmp <- tempfile(fileext = ".fasta")
+  writeLines(
+    c(
+      ">seq1;k__Fungi;p__Ascomycota;c__Sordariomycetes",
+      "ATCGATCG",
+      ">seq2;k__Fungi;p__Basidiomycota;c__Agaricomycetes",
+      "GCTAGCTA"
+    ),
+    tmp
+  )
+  result <- count_unwanted_tax(tmp)
+  expect_s3_class(result, "tbl_df")
+  expect_equal(nrow(result), 0L)
+  unlink(tmp)
+})
+
+test_that("count_unwanted_tax detects unclassified values", {
+  tmp <- tempfile(fileext = ".fasta")
+  writeLines(
+    c(
+      ">seq1;k__Fungi;p__Ascomycota;c__unclassified",
+      "ATCGATCG",
+      ">seq2;k__Fungi;p__Basidiomycota;c__Agaricomycetes",
+      "GCTAGCTA",
+      ">seq3;k__Fungi;p__unknown;c__Sordariomycetes",
+      "TTAATTAA"
+    ),
+    tmp
+  )
+  result <- count_unwanted_tax(tmp)
+  expect_s3_class(result, "tbl_df")
+  expect_true(nrow(result) > 0)
+  expect_true("unclassified" %in% result$description)
+  expect_true("unknown" %in% result$description)
+  unlink(tmp)
+})
+
+test_that("count_unwanted_tax detects empty QIIME-style ranks", {
+  tmp <- tempfile(fileext = ".fasta")
+  writeLines(
+    c(
+      ">seq1;k__Fungi;p__Ascomycota;c__;o__Hypocreales",
+      "ATCGATCG",
+      ">seq2;k__Fungi;p__;c__;o__",
+      "GCTAGCTA"
+    ),
+    tmp
+  )
+  result <- count_unwanted_tax(tmp)
+  # Empty QIIME-style ranks (e.g. c__) become "" after prefix removal,
+  # matched by the "^$" (empty string) pattern
+  expect_true(any(result$description == "empty string"))
+  empty_total <- sum(result$n_matches[result$description == "empty string"])
+  expect_true(empty_total >= 3)
+  unlink(tmp)
+})
+
+test_that("count_unwanted_tax detects incertae sedis", {
+  tmp <- tempfile(fileext = ".fasta")
+  writeLines(
+    c(
+      ">seq1;k__Fungi;p__Ascomycota;c__Incertae_sedis",
+      "ATCGATCG"
+    ),
+    tmp
+  )
+  result <- count_unwanted_tax(tmp)
+  expect_true(any(result$description == "incertae sedis"))
+  unlink(tmp)
+})
+
+test_that("count_unwanted_tax works with custom patterns", {
+  tmp <- tempfile(fileext = ".fasta")
+  writeLines(
+    c(
+      ">seq1;k__Fungi;p__Ascomycota;c__PLACEHOLDER",
+      "ATCGATCG"
+    ),
+    tmp
+  )
+  result <- count_unwanted_tax(tmp, patterns = "PLACEHOLDER")
+  expect_equal(nrow(result), 1L)
+  expect_equal(result$n_matches, 1L)
+  unlink(tmp)
+})
+
+test_that("count_unwanted_tax returns correct columns", {
+  tmp <- tempfile(fileext = ".fasta")
+  writeLines(
+    c(
+      ">seq1;k__Fungi;p__unclassified;c__Sordariomycetes",
+      "ATCGATCG"
+    ),
+    tmp
+  )
+  result <- count_unwanted_tax(tmp)
+  expect_named(
+    result,
+    c("pattern", "description", "rank", "n_matches", "example_values")
+  )
+  unlink(tmp)
+})
+
+test_that("count_unwanted_tax suggests verify_tax_table for phyloseq input", {
+  skip_if_not_installed("phyloseq")
+  mat_otu <- matrix(1:4, nrow = 2, dimnames = list(c("t1", "t2"), c("s1", "s2")))
+  otu <- phyloseq::otu_table(mat_otu, taxa_are_rows = TRUE)
+  tax <- phyloseq::tax_table(matrix(
+    c("Fungi", "unclassified", "Plantae", "Magnoliophyta"),
+    nrow = 2,
+    dimnames = list(c("t1", "t2"), c("Kingdom", "Phylum"))
+  ))
+  ps <- phyloseq::phyloseq(otu, tax)
+  expect_message(
+    count_unwanted_tax(ps),
+    "MiscMetabar::verify_tax_table"
+  )
+})

@@ -17,6 +17,7 @@
 * `download_unite_db()` gains a `taxonomic_format` parameter (`"default"` or `"sintax"`) to download SINTAX-formatted FASTA files directly, ready for use with `vsearch --sintax`.
 * `list_ranks_db()` and `summarize_db()` gain a `tax_format` parameter to handle different taxonomy header formats (`"unite"`, `"sintax"`, `"greengenes2"`, `"pr2"`, or `"auto"`). `list_ranks_db()` also gains a `rank_position` parameter for positional (prefix-less) taxonomy headers.
 * `tax_prefixes()` returns the rank prefixes for a given taxonomy format, for use with `list_ranks_db()` and `summarize_db()`.
+* `count_unwanted_tax()` scans a taxonomy table (from a phyloseq object or a FASTA reference database) for common problematic values such as `"unclassified"`, `"unknown"`, `"Incertae_sedis"`, NA-like strings, and empty QIIME-style rank prefixes. Returns a tibble summarising matches per pattern and rank. Suggests `MiscMetabar::verify_tax_table()` for cleaning when the input is a phyloseq object.
 * `count_pattern_db()` counts sequences matching a pattern in FASTA files.
 * `count_seq_db()` counts total sequences in a FASTA file.
 * `filter_db()` filters a FASTA database by taxonomic pattern.

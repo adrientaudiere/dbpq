@@ -35,6 +35,7 @@ reference:
   contents:
   - count_seq_db
   - count_pattern_db
+  - count_unwanted_tax
   - list_ranks_db
   - summarize_db
 

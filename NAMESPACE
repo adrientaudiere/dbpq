@@ -2,6 +2,7 @@
 
 export(count_pattern_db)
 export(count_seq_db)
+export(count_unwanted_tax)
 export(cutadapt_rm_primers_db)
 export(detect_tax_format)
 export(download_bold_db)
