@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.26">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>readme</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="README_files/libs/clipboard/clipboard.min.js"></script>
+<script src="README_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="README_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="README_files/libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="README_files/libs/quarto-html/popper.min.js"></script>
+<script src="README_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="README_files/libs/quarto-html/anchor.min.js"></script>
+<link href="README_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="README_files/libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="README_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="README_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="README_files/libs/bootstrap/bootstrap-432b85ca5467e8659017d61370f128c4.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+
+
+
+<section id="dbpq" class="level1">
+<h1>dbpq <img src="man/figures/logo.png" align="right" height="138"></h1>
+<!-- badges: start -->
+<p><a href="https://lifecycle.r-lib.org/articles/stages.html#experimental"><img src="https://img.shields.io/badge/lifecycle-experimental-orange.svg" class="img-fluid" alt="Lifecycle: experimental"></a> <!-- badges: end --></p>
+<p><strong>dbpq</strong> manages FASTA reference databases used for taxonomic assignment in metabarcoding pipelines. It provides tools to <strong>download</strong>, <strong>format</strong>, <strong>summarize</strong>, and <strong>modify</strong> databases. Part of the <a href="https://github.com/adrientaudiere">pqverse</a> ecosystem.</p>
+<section id="anatomy-of-a-reference-database" class="level2">
+<h2 class="anchored" data-anchor-id="anatomy-of-a-reference-database">Anatomy of a reference database</h2>
+<p>A reference database for metabarcoding taxonomic assignment is characterized by seven key properties:</p>
+<ol type="1">
+<li><p><strong>Name &amp; source</strong> — The database name, version, and official website (e.g., <a href="https://www.arb-silva.de/">SILVA</a>, <a href="https://unite.ut.ee/">UNITE</a>). Tracking the exact version used is essential for reproducibility.</p></li>
+<li><p><strong>Marker</strong> — The targeted genetic marker or region (e.g., SSU/18S, LSU/28S, ITS1/ITS2, 16S, COI). A database is generally specific to one or a few markers and primer pairs.</p></li>
+<li><p><strong>Taxonomic focus</strong> — The clade(s) for which the database provides sufficient coverage to enable reliable taxonomic assignment (e.g., Fungi for UNITE, protists for PR2, arbuscular mycorrhizal fungi for MaarjAM). This determines which groups can be assigned with confidence.</p></li>
+<li><p><strong>Secondary coverage</strong> — Sequences from clades outside the primary focus, present in low numbers. These allow reads from non-target organisms to be classified and excluded rather than misassigned (e.g., plant or animal ITS sequences in UNITE). Only a few representative sequences per secondary group are needed; secondary coverage does not enable fine-grained assignment within those groups.</p></li>
+<li><p><strong>Taxonomic format</strong> — How taxonomy is encoded in the database:</p>
+<ul>
+<li>Number of files (single annotated FASTA vs.&nbsp;separate sequence + taxonomy files)</li>
+<li>Use of a guide tree for phylogeny-aware classifiers</li>
+<li>Handling of uninformative ranks (e.g., whether <code>unknown_family</code> or <code>unclassified_order</code> are allowed in headers)</li>
+<li>Header syntax (SINTAX: <code>tax=k:Fungi,p:Ascomycota</code>; dada2: <code>k__Fungi;p__Ascomycota</code>; or custom formats)</li>
+</ul></li>
+<li><p><strong>Clustering</strong> — Whether sequences are grouped to reduce redundancy, and how:</p>
+<ul>
+<li>Identity-based clustering (e.g., SILVA at 99% sequence identity)</li>
+<li>Biologically meaningful units (e.g., UNITE Species Hypotheses, SH), which collapses intraspecific variation while preserving species-level resolution</li>
+</ul></li>
+<li><p><strong>Filtering</strong> — Pre-processing steps applied before or after download:</p>
+<ul>
+<li>Taxonomic scope restriction (e.g., keeping only a target clade to reduce database size)</li>
+<li>Removal of non-informative sequences (e.g., entries assigned only to <code>unknown_order</code> that cannot contribute to assignment)</li>
+<li>Sequence trimming or selection (e.g., extracting the ITS region with ITSx, or applying quality scores such as Pintail values in SILVA)</li>
+</ul></li>
+</ol>
+<p>dbpq provides tools to download pre-built databases, convert between header formats, and apply custom filtering steps to address points 5–7.</p>
+</section>
+<section id="installation" class="level2">
+<h2 class="anchored" data-anchor-id="installation">Installation</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Install from GitHub</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># install.packages("pak")</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>pak<span class="sc">::</span><span class="fu">pak</span>(<span class="st">"adrientaudiere/dbpq"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="quick-start" class="level2">
+<h2 class="anchored" data-anchor-id="quick-start">Quick start</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dbpq)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Download UNITE v10.0 for fungi (default: k__/p__ archive)</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">download_unite_db</span>(<span class="at">dest_dir =</span> <span class="st">"databases"</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Download SILVA SSU dada2-formatted training set</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="fu">download_silva_db</span>(<span class="at">dest_dir =</span> <span class="st">"databases"</span>, <span class="at">format =</span> <span class="st">"dada2"</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Download latest PR2 in dada2 format</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="fu">download_pr2_db</span>(<span class="at">dest_dir =</span> <span class="st">"databases"</span>)</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Download Greengenes2 16S for Bacteria/Archaea</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="fu">download_greengenes2_db</span>(<span class="at">dest_dir =</span> <span class="st">"databases"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="supported-databases" class="level2">
+<h2 class="anchored" data-anchor-id="supported-databases">Supported databases</h2>
+<p>One row per marker, since each marker targets a different set of organisms. The “Output format” column shows what the download function produces with default parameters.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Database</th>
+<th>Function</th>
+<th>Marker</th>
+<th>Taxonomic focus</th>
+<th>Secondary coverage</th>
+<th>Clustering</th>
+<th>Output format</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="https://unite.ut.ee/">UNITE</a></td>
+<td><code>download_unite_db()</code></td>
+<td>ITS</td>
+<td>Fungi</td>
+<td>No</td>
+<td>Species Hypotheses (SH)</td>
+<td>UNITE <code>k__/p__</code> (<code>.tgz</code> archive) or SINTAX (<code>.gz</code>)</td>
+</tr>
+<tr class="even">
+<td><a href="https://unite.ut.ee/">UNITE</a></td>
+<td><code>download_unite_db(taxon_group = "eukaryotes")</code></td>
+<td>ITS</td>
+<td>Fungi</td>
+<td>Yes — Viridiplantae, Metazoa, other eukaryotes</td>
+<td>Species Hypotheses (SH)</td>
+<td>UNITE <code>k__/p__</code> (<code>.tgz</code> archive) or SINTAX (<code>.gz</code>)</td>
+</tr>
+<tr class="odd">
+<td><a href="https://www.arb-silva.de/">SILVA</a></td>
+<td><code>download_silva_db()</code></td>
+<td>SSU 16S/18S</td>
+<td>Bacteria, Archaea, Eukaryotes</td>
+<td>—</td>
+<td>NR99 (99% identity; other versions available directly from SILVA)</td>
+<td>dada2 <code>k__/p__</code> (<code>.fa.gz</code>)</td>
+</tr>
+<tr class="even">
+<td><a href="https://www.arb-silva.de/">SILVA</a></td>
+<td><code>download_silva_db(target = "LSU")</code></td>
+<td>LSU 23S/28S</td>
+<td>Bacteria, Archaea, Eukaryotes</td>
+<td>—</td>
+<td>NR99 (99% identity; other versions available directly from SILVA)</td>
+<td>Raw SILVA FASTA (<code>.fasta.gz</code>)</td>
+</tr>
+<tr class="odd">
+<td><a href="https://pr2-database.org/">PR2</a></td>
+<td><code>download_pr2_db()</code></td>
+<td>SSU 18S</td>
+<td>Protists</td>
+<td>Yes — Metazoa, Fungi, Viridiplantae, organelles</td>
+<td>—</td>
+<td>dada2 (<code>.fasta.gz</code>)</td>
+</tr>
+<tr class="even">
+<td><a href="https://pr2-database.org/">PR2</a></td>
+<td><code>download_pr2_db(marker = "plastid")</code></td>
+<td>Plastid 16S</td>
+<td>Plastid-bearing organisms</td>
+<td>—</td>
+<td>—</td>
+<td>dada2 (<code>.fasta.gz</code>)</td>
+</tr>
+<tr class="odd">
+<td><a href="https://www.boldsystems.org/">BOLD</a></td>
+<td><code>download_bold_db(taxon, marker)</code></td>
+<td>COI-5P, ITS, matK, rbcL, …</td>
+<td>All taxa (defined by <code>taxon</code> query)</td>
+<td>—</td>
+<td>—</td>
+<td>BOLD FASTA (BOLD-format headers; needs reformatting)</td>
+</tr>
+<tr class="even">
+<td><a href="https://maarjam.ut.ee/">MaarjAM</a></td>
+<td><code>download_marjaam_db()</code></td>
+<td>SSU 18S</td>
+<td>AMF (Glomeromycota)</td>
+<td>No</td>
+<td>Virtual Taxa (VT; phylogeny-based)</td>
+<td>Plain FASTA (VT IDs)</td>
+</tr>
+<tr class="odd">
+<td><a href="https://eukaryome.org/">Eukaryome</a></td>
+<td><code>download_eukaryome_db(url)</code></td>
+<td>SSU 18S</td>
+<td>Eukaryotes</td>
+<td>—</td>
+<td>—</td>
+<td>As-is from URL (dada2 / SINTAX / mothur / QIIME2)</td>
+</tr>
+<tr class="even">
+<td><a href="https://eukaryome.org/">Eukaryome</a></td>
+<td><code>download_eukaryome_db(url)</code></td>
+<td>ITS</td>
+<td>Eukaryotes</td>
+<td>—</td>
+<td>—</td>
+<td>As-is from URL (dada2 / SINTAX / mothur / QIIME2)</td>
+</tr>
+<tr class="odd">
+<td><a href="https://eukaryome.org/">Eukaryome</a></td>
+<td><code>download_eukaryome_db(url)</code></td>
+<td>LSU 28S</td>
+<td>Eukaryotes</td>
+<td>—</td>
+<td>—</td>
+<td>As-is from URL (dada2 / SINTAX / mothur / QIIME2)</td>
+</tr>
+<tr class="even">
+<td><a href="https://ftp.microbio.me/greengenes_release/">Greengenes2</a></td>
+<td><code>download_greengenes2_db()</code></td>
+<td>SSU 16S</td>
+<td>Bacteria, Archaea</td>
+<td>—</td>
+<td>Reference phylogenetic tree (DEPP placement, not identity-based)</td>
+<td>dada2 <code>d__/p__</code> (<code>.fa.gz</code>)</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="navigating-the-seven-properties" class="level2">
+<h2 class="anchored" data-anchor-id="navigating-the-seven-properties">Navigating the seven properties</h2>
+<p>The table above documents properties 1–6 per database. The following dbpq functions let you inspect, reformat, recluster, and filter any downloaded database.</p>
+<section id="inspect-taxonomic-focus-secondary-coverage-properties-34" class="level3">
+<h3 class="anchored" data-anchor-id="inspect-taxonomic-focus-secondary-coverage-properties-34">Inspect: taxonomic focus &amp; secondary coverage (properties 3–4)</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># List all kingdoms or phyla in the database</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">list_ranks_db</span>(<span class="st">"database.fasta"</span>, <span class="at">rank_prefix =</span> <span class="st">"k__"</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">list_ranks_db</span>(<span class="st">"database.fasta"</span>, <span class="at">rank_prefix =</span> <span class="st">"p__"</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Count sequences from a specific clade (e.g. check secondary coverage)</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="fu">count_pattern_db</span>(<span class="st">"database.fasta"</span>, <span class="st">"Viridiplantae"</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="fu">count_pattern_db</span>(<span class="st">"database.fasta"</span>, <span class="st">"Metazoa"</span>)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Full overview: sequence count + annotated taxa per rank</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="fu">summarize_db</span>(<span class="st">"database.fasta"</span>, <span class="at">tax_format =</span> <span class="st">"auto"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="detect-convert-format-property-5" class="level3">
+<h3 class="anchored" data-anchor-id="detect-convert-format-property-5">Detect &amp; convert format (property 5)</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Auto-detect the taxonomy format of a downloaded file</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">detect_tax_format</span>(<span class="st">"database.fasta"</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Inspect rank prefixes for a known format</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">tax_prefixes</span>(<span class="st">"unite"</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="fu">tax_prefixes</span>(<span class="st">"greengenes2"</span>)  <span class="co"># uses d__ instead of k__</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert to dada2::assignTaxonomy() input</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="fu">format2dada2</span>(<span class="at">fasta_db =</span> <span class="st">"database.fasta"</span>, <span class="at">output_path =</span> <span class="st">"database_dada2.fasta"</span>)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert to SINTAX (for VSEARCH --sintax)</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="fu">format2sintax</span>(<span class="at">fasta_db =</span> <span class="st">"database.fasta"</span>, <span class="at">output_path =</span> <span class="st">"database_sintax.fasta"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="assess-reduce-redundancy-property-6" class="level3">
+<h3 class="anchored" data-anchor-id="assess-reduce-redundancy-property-6">Assess &amp; reduce redundancy (property 6)</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check database size</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">count_seq_db</span>(<span class="st">"database.fasta"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Re-clustering below the downloaded threshold (e.g.&nbsp;from 99% to 97%) requires an external tool:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">vsearch</span> <span class="at">--cluster_size</span> database.fasta <span class="at">--id</span> 0.97 <span class="at">--centroids</span> database_97.fasta</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="filter-the-database-property-7" class="level3">
+<h3 class="anchored" data-anchor-id="filter-the-database-property-7">Filter the database (property 7)</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 7a — Restrict to a taxonomic scope</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">filter_db</span>(<span class="st">"database.fasta"</span>, <span class="at">pattern =</span> <span class="st">"Fungi"</span>, <span class="at">output =</span> <span class="st">"database_fungi.fasta"</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 7b — Identify non-informative taxa (e.g. "unknown_order", "unclassified")</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="fu">count_unwanted_tax</span>(<span class="st">"database.fasta"</span>)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Keep only sequences with family-level annotation (pattern excludes empty f__ fields)</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="fu">filter_db</span>(<span class="st">"database.fasta"</span>, <span class="at">pattern =</span> <span class="st">"f__[A-Za-z]"</span>, <span class="at">output =</span> <span class="st">"database_with_family.fasta"</span>)</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="co"># 7c — Trim primers and select amplicon-length sequences</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="fu">cutadapt_rm_primers_db</span>(</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">"database.fasta"</span>,</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">primer_fw =</span> <span class="st">"GCATCGATGAAGAACGCAGC"</span>,</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">primer_rev =</span> <span class="st">"TCCTCCGCTTATTGATATGC"</span>,</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">output =</span> <span class="st">"database_trimmed.fasta"</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+</section>
+<section id="related-packages" class="level2">
+<h2 class="anchored" data-anchor-id="related-packages">Related packages</h2>
+<p>dbpq is part of the <strong>pqverse</strong>, a suite of R packages for metabarcoding analysis built around <a href="https://joey711.github.io/phyloseq/">phyloseq</a> objects:</p>
+<ul>
+<li><a href="https://github.com/adrientaudiere/MiscMetabar">MiscMetabar</a> — Miscellaneous functions for metabarcoding analyses</li>
+<li><a href="https://github.com/adrientaudiere/tidypq">tidypq</a> — Tidyverse-style verbs for phyloseq objects</li>
+<li><a href="https://github.com/adrientaudiere/comparpq">comparpq</a> — Compare multiple phyloseq objects</li>
+<li><a href="https://github.com/adrientaudiere/taxinfo">taxinfo</a> — Taxonomy-based information from GBIF, Wikipedia, GloBI</li>
+</ul>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
