@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- pqverse hex logo template: dbpq -->
+<!-- Open in Inkscape · replace the dashed placeholder with your illustration -->
+<!-- Palette: #faefd1 cream · #003f5f dark blue · #c8a734 gold · #dc863b orange (accent) -->
+<svg
+   width="43.899933mm"
+   height="50.800056mm"
+   viewBox="0 0 43.899933 50.800056"
+   version="1.1"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+
+  <sodipodi:namedview
+     inkscape:document-units="mm"
+     inkscape:export-xdpi="300"
+     inkscape:export-ydpi="300" />
+
+  <defs id="defs2">
+    <!-- Clip path: limits illustration to inner hexagon -->
+    <clipPath id="innerHexClip">
+      <polygon points="22.092,1.31 42.954,13.355 42.954,37.445 22.092,49.490 1.23,37.445 1.23,13.355"/>
+    </clipPath>
+    <!-- Text arc: convex-upward quadratic bezier for package name -->
+    <!-- Midpoint at approx. (22.092, 7.5) · adjust control point y to change curvature -->
+    <path id="textArc" d="M 7,14 Q 22.092,6 37,14" fill="none"/>
+  </defs>
+
+  <!-- ── 1. OUTER HEX BORDER ──────────────────────────────────────────── -->
+  <polygon id="outerHex"
+     points="22.092,0.388 43.565,12.892 43.565,37.906 22.092,50.412 0.615,37.906 0.615,12.892"
+     style="fill:#353535"/>
+
+  <!-- ── 2. INNER HEX BACKGROUND (cream parchment) ────────────────────── -->
+  <polygon id="innerHex"
+     points="22.092,1.31 42.954,13.355 42.954,37.445 22.092,49.490 1.23,37.445 1.23,13.355"
+     style="fill:#faefd1"/>
+
+  <!-- ── 3. TOP ACCENT BAND (orange-brown · edit colour/opacity to taste) -->
+  <polygon id="topBand"
+     points="22.092,1.31 42.954,13.355 1.23,13.355"
+     style="fill:#dc863b;opacity:0.55"
+     clip-path="url(#innerHexClip)"/>
+
+  <!-- ── 4. BOTTOM ACCENT BAND (echo of top) ──────────────────────────── -->
+  <polygon id="bottomBand"
+     points="22.092,49.490 42.954,37.445 1.23,37.445"
+     style="fill:#dc863b;opacity:0.25"
+     clip-path="url(#innerHexClip)"/>
+
+  <!-- ── 5. GOLD INNER BORDER LINE ────────────────────────────────────── -->
+  <polygon id="innerBorder"
+     points="22.092,1.31 42.954,13.355 42.954,37.445 22.092,49.490 1.23,37.445 1.23,13.355"
+     style="fill:none;stroke:#c8a734;stroke-width:0.35;stroke-linejoin:miter"/>
+
+  <!-- ── 6. PACKAGE NAME ───────────────────────────────────────────────── -->
+  <!-- Font: Linux Libertine O (apt: linux-libertine / fonts-linuxlibertine) -->
+  <!-- Adjust font-size (mm) and the textArc control point to fit the name -->
+  <text id="packageName"
+     style="font-weight:bold;font-size:4.5mm;line-height:1.1;
+            font-family:'Linux Libertine O',Palatino,'Book Antiqua',serif;
+            fill:#003f5f;fill-opacity:1;stroke:none">
+    <textPath xlink:href="#textArc" startOffset="50%" style="text-anchor:middle">dbpq</textPath>
+  </text>
+
+  <!-- ── 7. ILLUSTRATION PLACEHOLDER ─────────────────────────────────── -->
+  <!-- Concept: reference databases (SILVA, BOLD, PR², UNITE) being        -->
+  <!-- downloaded, formatted, and summarised for taxonomic assignment       -->
+  <!-- e.g. stacked FASTA ribbons, database logos, download arrows         -->
+  <!-- Delete this group and draw your illustration here                   -->
+  <g id="illustrationPlaceholder" clip-path="url(#innerHexClip)">
+    <rect x="6.5" y="14.5" width="31" height="21"
+       style="fill:none;stroke:#c8a734;stroke-width:0.3;stroke-dasharray:1.2,0.6"/>
+    <text x="22.092" y="23.5" text-anchor="middle"
+       style="font-size:2.2mm;fill:#8a9da4;font-family:sans-serif;font-style:italic">[ illustration ]</text>
+    <text x="22.092" y="27.5" text-anchor="middle"
+       style="font-size:1.6mm;fill:#8a9da4;font-family:sans-serif">SILVA · BOLD · PR² · UNITE</text>
+    <text x="22.092" y="30.5" text-anchor="middle"
+       style="font-size:1.6mm;fill:#8a9da4;font-family:sans-serif">reference databases for taxonomy</text>
+  </g>
+
+</svg>

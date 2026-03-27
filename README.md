@@ -63,6 +63,27 @@ download_greengenes2_db(dest_dir = "databases")
 
 ## Supported databases
 
+### Taxonomic coverage overview
+
+```
+Life
+├── Bacteria ──────────────── SILVA (SSU 16S), Greengenes2 (SSU 16S)
+├── Archaea ───────────────── SILVA (SSU 16S), Greengenes2 (SSU 16S)
+└── Eukaryota
+    ├── "Protists"¹ ───────── PR2 (SSU 18S), SILVA (SSU/LSU), Eukaryome (SSU/ITS/LSU)
+    │   └── incl. plastids ── PR2 (plastid 16S)
+    ├── Fungi ─────────────── UNITE (ITS), SILVA (SSU/LSU), Eukaryome (SSU/ITS/LSU), BOLD
+    │   └── Glomeromycota ─── MaarjAM (SSU 18S)   ← AMF only, Eukaryome (SSU)
+    ├── Viridiplantae ─────── SILVA (SSU/LSU), Eukaryome (SSU/ITS/LSU), BOLD (matK, rbcL)
+    └── Metazoa ───────────── SILVA (SSU/LSU), Eukaryome (SSU/LSU), BOLD (COI)
+```
+
+¹ "Protists" is paraphyletic; PR2 covers SAR, Excavata, Amoebozoa, and related unicellular eukaryotic lineages.
+BOLD is query-based: it covers any taxon but only the marker requested.
+UNITE (eukaryotes version) adds secondary coverage of Viridiplantae and Metazoa (useful for filtering non-fungal reads).
+
+### Database details
+
 One row per marker, since each marker targets a different set of organisms. The "Output format" column shows what the download function produces with default parameters.
 
 | Database | Function | Marker | Taxonomic focus | Secondary coverage | Clustering | Output format |
