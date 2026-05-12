@@ -17,6 +17,7 @@ Depends:
     R (>= 4.1.0)
 Imports:
     Biostrings,
+    methods,
     dplyr,
     jsonlite,
     purrr,
@@ -29,6 +30,7 @@ Suggests:
     dada2,
     knitr,
     MiscMetabar,
+    phyloseq,
     rmarkdown,
     R.utils,
     testthat (>= 3.0.0)

@@ -6,10 +6,7 @@
 \usage{
 count_unwanted_tax(
   x,
-  patterns = c("^[Nn][Aa][Nn]?$", "^[Nn]/[Aa]$", "^[Nn]one$", "^$", "^\\\\s+$",
-    "[Uu]nclassified", "[Uu]nknown", "[Uu]nidentified", "[Uu]ncultured",
-    "[Ii]ncertae[_\\\\s]?[Ss]edis", "^[Mm]etagenome$", "^[Ee]nvironmental",
-    "^[kpcofgs]__$"),
+  patterns = unwanted_tax_patterns_default(),
   tax_format = "auto"
 )
 }
@@ -21,8 +18,9 @@ count_unwanted_tax(
 }}
 
 \item{patterns}{(Character vector) Regular expressions to search for.
-Defaults to a set of common unwanted patterns (NA-like values,
-placeholder labels, empty ranks). See \strong{Details}.}
+When MiscMetabar is installed, defaults to
+\link[MiscMetabar:unwanted_tax_patterns]{MiscMetabar::unwanted_tax_patterns}; otherwise falls back to a
+built-in copy of the same patterns. See \strong{Details}.}
 
 \item{tax_format}{(Character) Taxonomy format of the FASTA file. One of
 \code{"unite"}, \code{"sintax"}, \code{"greengenes2"}, \code{"pr2"}, or \code{"auto"}.
@@ -77,9 +75,18 @@ The default patterns are:
 db <- system.file("extdata", "example_unite.fasta", package = "dbpq")
 count_unwanted_tax(db)
 
-\dontrun{
-# From a phyloseq object
-count_unwanted_tax(my_physeq)
+if(requireNamespace("MiscMetabar", quietly = TRUE)) {
+ ref_fasta <- Biostrings::readDNAStringSet(system.file("extdata",
+   "mini_UNITE_fungi.fasta.gz",
+   package = "MiscMetabar", mustWork = TRUE
+ ))
+data("data_fungi_mini", package = "MiscMetabar")
+physeq_new <- MiscMetabar::assign_mmseqs2(
+   MiscMetabar::data_fungi_mini,
+   ref_fasta = ref_fasta,
+   behavior = "add_to_phyloseq"
+ )
+count_unwanted_tax(physeq_new)
 }
 }
 \seealso{

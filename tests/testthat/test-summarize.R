@@ -271,7 +271,11 @@ test_that("count_unwanted_tax returns correct columns", {
 
 test_that("count_unwanted_tax suggests verify_tax_table for phyloseq input", {
   skip_if_not_installed("phyloseq")
-  mat_otu <- matrix(1:4, nrow = 2, dimnames = list(c("t1", "t2"), c("s1", "s2")))
+  mat_otu <- matrix(
+    1:4,
+    nrow = 2,
+    dimnames = list(c("t1", "t2"), c("s1", "s2"))
+  )
   otu <- phyloseq::otu_table(mat_otu, taxa_are_rows = TRUE)
   tax <- phyloseq::tax_table(matrix(
     c("Fungi", "unclassified", "Plantae", "Magnoliophyta"),

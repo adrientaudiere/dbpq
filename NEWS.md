@@ -1,3 +1,9 @@
+# dbpq (development version)
+
+* New function `add_sh_to_taxonomy()` annotates query sequences with UNITE Species Hypothesis (SH) names by running `vsearch --usearch_global` against a UNITE reference database and extracting SH identifiers from matched sequence headers. Detects ambiguous assignments when multiple top hits disagree on the SH name. Ports the logic of the nf-core/ampliseq `add_sh_to_taxonomy.py` script into R.
+* New function `find_vsearch()` locates the vsearch executable on the system PATH or verifies a user-supplied path.
+* New function `is_vsearch_installed()` checks whether vsearch is available on the system.
+
 # dbpq 0.1
 
 * Initial development version.

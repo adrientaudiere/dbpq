@@ -119,8 +119,9 @@ count_pattern_db <- function(file, pattern = ">") {
 #'    "mini_UNITE_fungi.fasta.gz",
 #'    package = "MiscMetabar", mustWork = TRUE
 #'  ))
-#' physeq_new <- assign_mmseqs2(
-#'    data_fungi_mini,
+#' data("data_fungi_mini", package = "MiscMetabar")
+#' physeq_new <- MiscMetabar::assign_mmseqs2(
+#'    MiscMetabar::data_fungi_mini,
 #'    ref_fasta = ref_fasta,
 #'    behavior = "add_to_phyloseq"
 #'  )

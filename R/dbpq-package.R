@@ -9,5 +9,6 @@
 #' @importFrom tibble as_tibble
 #' @importFrom tidyr unite
 #' @importFrom tools file_ext
+#' @importFrom methods as
 ## usethis namespace: end
 NULL
