@@ -57,9 +57,10 @@ is_vsearch_installed <- function(path = find_vsearch()) {
 # ——————————————————————————————————————————————————————————————————————
 
 #' Annotate query sequences with UNITE Species Hypothesis (SH) names
-#' #TODO WORK IN PROGRESS, very experimental
 #'
 #' @description
+#' `r lifecycle::badge("experimental")`
+#'
 #' Runs `vsearch --usearch_global` to match query sequences against a
 #' UNITE reference database, then extracts the Species Hypothesis (SH)
 #' identifier from each best hit. The SH name is the first `|`-delimited
@@ -124,7 +125,7 @@ is_vsearch_installed <- function(path = find_vsearch()) {
 #' )
 #'
 #' # Annotate ASVs with SH names
-#' sh_res <- add_sh_to_taxonomy( #TODO replace with a good fasta file
+#' sh_res <- add_sh_to_taxonomy(
 #'   query_fasta = "asvs.fasta",
 #'   unite_db = unite_file,
 #'   id = 0.97
@@ -148,7 +149,9 @@ add_sh_to_taxonomy <- function(
 ) {
   if (!is_vsearch_installed(vsearchpath)) {
     stop(
-      "vsearch is not found at '", vsearchpath, "'. ",
+      "vsearch is not found at '",
+      vsearchpath,
+      "'. ",
       "Install vsearch or provide the path via the vsearchpath argument.",
       call. = FALSE
     )
@@ -174,13 +177,20 @@ add_sh_to_taxonomy <- function(
   # Build vsearch command
   # --blast6out format: query target pctId alnLen mismatches gapOpens qStart qEnd tStart tEnd eValue bitScore
   cmd_args <- paste0(
-    " --usearch_global ", shQuote(query_fasta),
-    " --db ", shQuote(unite_db),
-    " --id ", id,
-    " --maxaccepts ", maxaccepts,
-    " --maxrejects ", maxrejects,
-    " --blast6out ", shQuote(blast6_file),
-    " --threads ", nproc,
+    " --usearch_global ",
+    shQuote(query_fasta),
+    " --db ",
+    shQuote(unite_db),
+    " --id ",
+    id,
+    " --maxaccepts ",
+    maxaccepts,
+    " --maxrejects ",
+    maxrejects,
+    " --blast6out ",
+    shQuote(blast6_file),
+    " --threads ",
+    nproc,
     " --notrunclabels"
   )
 
@@ -199,7 +209,9 @@ add_sh_to_taxonomy <- function(
   vsearch_status <- attr(vsearch_output, "status")
   if (!is.null(vsearch_status) && vsearch_status != 0) {
     stop(
-      "vsearch --usearch_global failed with status ", vsearch_status, ".\n",
+      "vsearch --usearch_global failed with status ",
+      vsearch_status,
+      ".\n",
       paste(vsearch_output, collapse = "\n"),
       call. = FALSE
     )
@@ -232,9 +244,18 @@ add_sh_to_taxonomy <- function(
     stringsAsFactors = FALSE
   )
   colnames(blast6) <- c(
-    "query", "target", "pct_id", "aln_len",
-    "mismatches", "gap_opens", "q_start", "q_end",
-    "t_start", "t_end", "e_value", "bit_score"
+    "query",
+    "target",
+    "pct_id",
+    "aln_len",
+    "mismatches",
+    "gap_opens",
+    "q_start",
+    "q_end",
+    "t_start",
+    "t_end",
+    "e_value",
+    "bit_score"
   )
 
   # Extract SH name from target identifier.
@@ -283,8 +304,14 @@ add_sh_to_taxonomy <- function(
 
   # Select and order output columns
   result <- blast6[, c(
-    "query", "sh_name", "target", "pct_id", "aln_len",
-    "mismatches", "e_value", "is_ambiguous"
+    "query",
+    "sh_name",
+    "target",
+    "pct_id",
+    "aln_len",
+    "mismatches",
+    "e_value",
+    "is_ambiguous"
   )]
   rownames(result) <- NULL
 
@@ -294,8 +321,12 @@ add_sh_to_taxonomy <- function(
     n_total <- length(unique(result$query))
     message(
       "SH annotation complete: ",
-      n_matched, "/", n_total, " queries matched, ",
-      n_ambiguous, " ambiguous assignments."
+      n_matched,
+      "/",
+      n_total,
+      " queries matched, ",
+      n_ambiguous,
+      " ambiguous assignments."
     )
   }
 

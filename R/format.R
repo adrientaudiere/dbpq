@@ -61,12 +61,19 @@
     )
     ranks <- stats::setNames(vals, keys)
     list(id = id, ranks = ranks)
+  } else if (format == "dada2") {
+    # Positional, prefix-less, no sequence ID (dada2 assignTaxonomy trainset).
+    # Ranks are assigned by position; SILVA's first level is a domain (d:).
+    parts <- strsplit(sub(";$", "", h), ";", fixed = TRUE)[[1]]
+    keys <- c("d", "p", "c", "o", "f", "g", "s")[seq_along(parts)]
+    ranks <- stats::setNames(parts, keys)
+    list(id = NA_character_, ranks = ranks)
   } else {
     stop(
       "Unsupported input format: '",
       format,
       "'. ",
-      "Use one of: 'sintax', 'unite', 'greengenes2'."
+      "Use one of: 'sintax', 'unite', 'greengenes2', 'dada2'."
     )
   }
 }
@@ -77,30 +84,45 @@
 .render_tax_header <- function(parsed, format) {
   id <- parsed$id
   ranks <- parsed$ranks
+  # For label-carrying formats, missing (NA) ranks are simply omitted; the
+  # rank key preserves meaning. For positional dada2 they must be kept as
+  # empty fields so ranks below an internal gap stay correctly aligned.
+  ranks_present <- ranks[!is.na(ranks)]
 
   if (format == "sintax") {
-    if (length(ranks) == 0L) {
+    if (length(ranks_present) == 0L) {
       return(id)
     }
-    rank_str <- paste(paste0(names(ranks), ":", ranks), collapse = ",")
+    rank_str <- paste(
+      paste0(names(ranks_present), ":", ranks_present),
+      collapse = ","
+    )
     paste0(id, ";tax=", rank_str)
   } else if (format == "unite") {
-    if (length(ranks) == 0L) {
+    if (length(ranks_present) == 0L) {
       return(id)
     }
-    rank_str <- paste(paste0(names(ranks), "__", ranks), collapse = ";")
+    rank_str <- paste(
+      paste0(names(ranks_present), "__", ranks_present),
+      collapse = ";"
+    )
     paste0(id, ";", rank_str)
   } else if (format == "greengenes2") {
-    if (length(ranks) == 0L) {
+    if (length(ranks_present) == 0L) {
       return(id)
     }
-    rank_str <- paste(paste0(names(ranks), "__", ranks), collapse = ";")
+    rank_str <- paste(
+      paste0(names(ranks_present), "__", ranks_present),
+      collapse = ";"
+    )
     paste0(id, " ", rank_str)
   } else if (format == "dada2") {
-    # Unprefixed semicolon-separated taxonomy, trailing semicolon, no ID
+    # Unprefixed semicolon-separated taxonomy, trailing semicolon, no ID.
+    # Internal gaps (NA) become empty fields to keep ranks aligned.
     if (length(ranks) == 0L) {
       return(paste0(id, ";"))
     }
+    ranks[is.na(ranks)] <- ""
     paste0(paste(ranks, collapse = ";"), ";")
   } else if (format == "dada2_species") {
     # "ID Genus Species" for dada2::addSpecies()
@@ -139,6 +161,300 @@
 }
 
 
+# Assign synthetic sequential IDs to parsed records that lack one (e.g. dada2
+# input, which is taxonomy-only). Zero-padded width adapts to record count.
+.inject_ids <- function(parsed, id_prefix) {
+  missing_id <- vapply(
+    parsed,
+    function(p) {
+      is.na(p$id) || !nzchar(p$id)
+    },
+    logical(1)
+  )
+  if (any(missing_id)) {
+    n <- sum(missing_id)
+    w <- max(6L, nchar(n))
+    ids <- paste0(id_prefix, formatC(seq_len(n), width = w, flag = "0"))
+    parsed[missing_id] <- Map(
+      function(p, i) {
+        p$id <- i
+        p
+      },
+      parsed[missing_id],
+      ids
+    )
+  }
+  parsed
+}
+
+
+# ——————————————————————————————————————————————————————————————————————
+# Internal: build taxonomy headers from a sidecar lineage source
+#
+# Several databases ship sequences with accession-only FASTA headers and
+# their taxonomy in a separate file (LTPlus CSV, KSGP .tax) or encoded in a
+# non-standard header (BOLD, MaarjAM). These helpers turn a per-sequence
+# lineage into the parsed (id + ranks) representation used by
+# .render_tax_header(), so any download function can emit dada2 / sintax
+# headers via the same renderer.
+# ——————————————————————————————————————————————————————————————————————
+
+# Rank keys used positionally for dada2 / sintax output.
+.rank_keys <- c("d", "p", "c", "o", "f", "g", "s")
+
+# Tokens that mean "no name at this rank" and should be treated as missing.
+.is_missing_tax <- function(x) {
+  is.na(x) |
+    !nzchar(x) |
+    grepl(
+      "^(noname|unknown|unclassified|unidentified|incertae[ _]?sedis|na)$",
+      x,
+      ignore.case = TRUE
+    )
+}
+
+# Map a rank-prefix letter to its rank key (kingdom and domain both -> "d").
+.prefix_to_key <- c(
+  d = "d",
+  k = "d",
+  p = "p",
+  c = "c",
+  o = "o",
+  f = "f",
+  g = "g",
+  s = "s"
+)
+
+# Split a lineage string into a named ranks vector keyed d,p,c,o,f,g,s.
+#
+# Ranks are assigned sequentially by position, EXCEPT a token carrying an
+# explicit rank prefix (`f__Name`, `o:Name`) is placed at that rank and resets
+# the running position — this keeps later ranks aligned when an intermediate
+# rank is missing (e.g. "Bacteria/.../noname~305/f__Ferroviaceae"). Missing
+# tokens ("noname", "", "unclassified", …) become NA at their position so
+# downstream ranks stay positionally aligned; trailing NA ranks are dropped.
+# An internal-node suffix like "~427" is stripped from every token.
+.lineage_to_ranks <- function(lineage, sep = "/") {
+  if (length(lineage) != 1L || is.na(lineage) || !nzchar(trimws(lineage))) {
+    return(character(0))
+  }
+  tokens <- strsplit(lineage, sep, fixed = TRUE)[[1]]
+  ranks <- stats::setNames(rep(NA_character_, length(.rank_keys)), .rank_keys)
+  idx <- 1L
+  for (tok in tokens) {
+    tok <- trimws(tok)
+    pm <- regmatches(tok, regexec("^([a-zA-Z])(?:__|:)(.*)$", tok))[[1]]
+    if (length(pm) == 3L && tolower(pm[[2]]) %in% names(.prefix_to_key)) {
+      key <- .prefix_to_key[[tolower(pm[[2]])]]
+      name <- pm[[3]]
+      idx <- match(key, .rank_keys) + 1L
+    } else {
+      if (idx > length(.rank_keys)) {
+        break
+      }
+      key <- .rank_keys[[idx]]
+      name <- tok
+      idx <- idx + 1L
+    }
+    name <- sub("~\\d+$", "", name)
+    if (!.is_missing_tax(name)) {
+      ranks[[key]] <- name
+    }
+  }
+  last <- suppressWarnings(max(which(!is.na(ranks))))
+  if (!is.finite(last)) {
+    return(character(0))
+  }
+  ranks[seq_len(last)]
+}
+
+# Write a taxonomy-headed FASTA from a FASTA file plus an id -> ranks map.
+#
+# Streams the FASTA line by line (so multi-GB references such as KSGP do not
+# need to be loaded into memory) and looks up taxonomy through a hashed
+# environment (O(1) per header, not a linear scan of the id list). Only the
+# header lines are rewritten; sequence content is copied verbatim.
+#
+# @param fasta_path Path to the source FASTA (plain or gzipped).
+# @param id2ranks Named list: names are sequence IDs (first whitespace-
+#   delimited token of the FASTA header), values are ranks vectors as
+#   returned by .lineage_to_ranks().
+# @param tax_format "dada2" or "sintax".
+# @param output_path Where to write the reformatted FASTA (.gz honoured).
+#   May equal fasta_path (written via a temporary file, then renamed).
+# @param verbose Print a summary of how many sequences were annotated.
+# @return output_path (invisibly).
+.write_tax_fasta <- function(
+  fasta_path,
+  id2ranks,
+  tax_format = c("dada2", "sintax"),
+  output_path,
+  verbose = TRUE
+) {
+  tax_format <- match.arg(tax_format)
+
+  # Hashed lookup: list `[[` on character names is a linear scan, far too slow
+  # for hundreds of thousands of sequences.
+  lookup <- new.env(hash = TRUE, parent = emptyenv())
+  nm <- names(id2ranks)
+  for (i in seq_along(id2ranks)) {
+    if (is.na(nm[[i]]) || !nzchar(nm[[i]])) {
+      next
+    }
+    assign(nm[[i]], id2ranks[[i]], envir = lookup)
+  }
+
+  is_gz <- function(p) grepl("\\.gz$", p, ignore.case = TRUE)
+  incon <- if (is_gz(fasta_path)) {
+    gzfile(fasta_path, "rt")
+  } else {
+    file(fasta_path, "rt")
+  }
+  tmp_out <- tempfile(tmpdir = dirname(output_path), fileext = ".fa")
+  outcon <- if (is_gz(output_path)) {
+    gzfile(tmp_out, "wt")
+  } else {
+    file(tmp_out, "wt")
+  }
+  on.exit(
+    {
+      try(close(incon), silent = TRUE)
+      try(close(outcon), silent = TRUE)
+    },
+    add = TRUE
+  )
+
+  n_seq <- 0L
+  n_no_tax <- 0L
+  repeat {
+    lines <- readLines(incon, n = 20000L)
+    if (length(lines) == 0L) {
+      break
+    }
+    hdr <- startsWith(lines, ">")
+    if (any(hdr)) {
+      ids <- sub("\\s.*$", "", sub("^>", "", lines[hdr]))
+      lines[hdr] <- vapply(
+        ids,
+        function(id) {
+          ranks <- if (exists(id, envir = lookup, inherits = FALSE)) {
+            get(id, envir = lookup, inherits = FALSE)
+          } else {
+            n_no_tax <<- n_no_tax + 1L
+            character(0)
+          }
+          paste0(
+            ">",
+            .render_tax_header(list(id = id, ranks = ranks), tax_format)
+          )
+        },
+        character(1),
+        USE.NAMES = FALSE
+      )
+      n_seq <- n_seq + length(ids)
+    }
+    writeLines(lines, outcon)
+  }
+  close(incon)
+  close(outcon)
+  file.rename(tmp_out, output_path)
+
+  if (verbose) {
+    message(
+      "Wrote ",
+      tax_format,
+      " taxonomy FASTA: ",
+      output_path,
+      " (",
+      n_seq,
+      " sequences",
+      if (n_no_tax > 0) paste0(", ", n_no_tax, " without taxonomy") else "",
+      ")"
+    )
+  }
+
+  invisible(output_path)
+}
+
+
+# Rewrite a FASTA whose taxonomy is already IN the header (e.g. Greengenes2
+# `>d__Bacteria;p__...;g__...;`) to dada2 / sintax. Streams line by line.
+# `header_sep` is the rank separator inside the header (";" for GG2). For
+# sintax output, sequences that carry no ID get a synthetic `id_prefix` ID.
+.reformat_inheader_fasta <- function(
+  fasta_path,
+  header_sep,
+  tax_format = c("dada2", "sintax"),
+  output_path,
+  id_prefix = "seq",
+  verbose = TRUE
+) {
+  tax_format <- match.arg(tax_format)
+  is_gz <- function(p) grepl("\\.gz$", p, ignore.case = TRUE)
+  incon <- if (is_gz(fasta_path)) {
+    gzfile(fasta_path, "rt")
+  } else {
+    file(fasta_path, "rt")
+  }
+  tmp_out <- tempfile(tmpdir = dirname(output_path), fileext = ".fa")
+  outcon <- if (is_gz(output_path)) {
+    gzfile(tmp_out, "wt")
+  } else {
+    file(tmp_out, "wt")
+  }
+  on.exit(
+    {
+      try(close(incon), silent = TRUE)
+      try(close(outcon), silent = TRUE)
+    },
+    add = TRUE
+  )
+
+  counter <- 0L
+  n_seq <- 0L
+  repeat {
+    lines <- readLines(incon, n = 20000L)
+    if (length(lines) == 0L) {
+      break
+    }
+    hdr <- startsWith(lines, ">")
+    if (any(hdr)) {
+      lines[hdr] <- vapply(
+        sub("^>", "", lines[hdr]),
+        function(h) {
+          counter <<- counter + 1L
+          ranks <- .lineage_to_ranks(h, sep = header_sep)
+          id <- paste0(id_prefix, formatC(counter, width = 8L, flag = "0"))
+          paste0(
+            ">",
+            .render_tax_header(list(id = id, ranks = ranks), tax_format)
+          )
+        },
+        character(1),
+        USE.NAMES = FALSE
+      )
+      n_seq <- n_seq + sum(hdr)
+    }
+    writeLines(lines, outcon)
+  }
+  close(incon)
+  close(outcon)
+  file.rename(tmp_out, output_path)
+  if (verbose) {
+    message(
+      "Wrote ",
+      tax_format,
+      " taxonomy FASTA: ",
+      output_path,
+      " (",
+      n_seq,
+      " sequences)"
+    )
+  }
+  invisible(output_path)
+}
+
+
 # ——————————————————————————————————————————————————————————————————————
 # format_fasta_db(): unified conversion function
 # ——————————————————————————————————————————————————————————————————————
@@ -173,10 +489,16 @@
 #'   `"unite"`, `"greengenes2"`, `"dada2"`, `"dada2_species"`.
 #' @param input_format (Character, default `"auto"`) Input format. One of
 #'   `"auto"` (auto-detect via [detect_tax_format()]), `"sintax"`,
-#'   `"unite"`, `"greengenes2"`.
+#'   `"unite"`, `"greengenes2"`, `"dada2"`. The positional `"dada2"` input
+#'   (taxonomy-only headers, no sequence ID) is assigned ranks by position
+#'   (`d,p,c,o,f,g,s`); see `id_prefix` for the generated labels.
 #' @param output_path (Character) If provided and `fasta_db` is used, write
 #'   the reformatted FASTA to this path and return the `DNAStringSet`
 #'   invisibly.
+#' @param id_prefix (Character, default `"seq"`) Prefix used to build
+#'   synthetic sequential sequence IDs (e.g. `"seq000001"`) for input
+#'   formats that carry no per-sequence identifier (`"dada2"`). Ignored when
+#'   the input already provides IDs.
 #'
 #' @returns If `taxnames` is used, a character vector of reformatted headers.
 #'   If `fasta_db` is used, a `DNAStringSet` with reformatted names
@@ -208,7 +530,8 @@ format_fasta_db <- function(
   taxnames = NULL,
   output_format = c("sintax", "unite", "greengenes2", "dada2", "dada2_species"),
   input_format = "auto",
-  output_path = NULL
+  output_path = NULL,
+  id_prefix = "seq"
 ) {
   output_format <- match.arg(output_format)
 
@@ -230,7 +553,14 @@ format_fasta_db <- function(
       }
     }
     parsed <- lapply(taxnames, .parse_tax_header, format = input_format)
-    vapply(parsed, \(p) .render_tax_header(p, output_format), character(1))
+    parsed <- .inject_ids(parsed, id_prefix)
+    vapply(
+      parsed,
+      function(p) {
+        .render_tax_header(p, output_format)
+      },
+      character(1)
+    )
   } else {
     if (input_format == "auto") {
       input_format <- detect_tax_format(fasta_db)
@@ -243,14 +573,23 @@ format_fasta_db <- function(
     }
     dna <- Biostrings::readDNAStringSet(fasta_db)
     parsed <- lapply(names(dna), .parse_tax_header, format = input_format)
+    parsed <- .inject_ids(parsed, id_prefix)
     new_names <- vapply(
       parsed,
-      \(p) .render_tax_header(p, output_format),
+      function(p) {
+        .render_tax_header(p, output_format)
+      },
       character(1)
     )
     names(dna) <- new_names
     if (!is.null(output_path)) {
-      Biostrings::writeXStringSet(dna, filepath = output_path)
+      # writeXStringSet() writes plain text unless compress = TRUE, so honour a
+      # .gz output path and actually gzip the file.
+      Biostrings::writeXStringSet(
+        dna,
+        filepath = output_path,
+        compress = grepl("\\.gz$", output_path, ignore.case = TRUE)
+      )
       invisible(dna)
     } else {
       dna
@@ -274,9 +613,11 @@ format_fasta_db <- function(
 #' @param taxnames (Character vector) Taxonomy header strings (without
 #'   leading `>`). Mutually exclusive with `fasta_db`.
 #' @param input_format (Character, default `"auto"`) Input taxonomy format.
-#'   One of `"auto"`, `"unite"`, `"greengenes2"`, `"sintax"`.
+#'   One of `"auto"`, `"unite"`, `"greengenes2"`, `"dada2"`.
 #' @param output_path (Character) If provided and `fasta_db` is used, write
 #'   the reformatted FASTA to this path.
+#' @param id_prefix (Character, default `"seq"`) Prefix for synthetic
+#'   sequence IDs generated when the input has none (e.g. `"dada2"`).
 #'
 #' @returns If `taxnames` is used, a character vector of reformatted names.
 #'   If `fasta_db` is used, a `DNAStringSet` with reformatted names.
@@ -292,18 +633,27 @@ format_fasta_db <- function(
 #'   taxnames = "abc123 d__Bacteria;p__Pseudomonadota",
 #'   input_format = "greengenes2"
 #' )
+#'
+#' # dada2 trainset (taxonomy-only, positional) → SINTAX with synthetic IDs
+#' format2sintax(
+#'   taxnames = "Bacteria;Pseudomonadota;Gammaproteobacteria;Vibrio;",
+#'   input_format = "dada2",
+#'   id_prefix = "SILVA_"
+#' )
 format2sintax <- function(
   fasta_db = NULL,
   taxnames = NULL,
   input_format = "auto",
-  output_path = NULL
+  output_path = NULL,
+  id_prefix = "seq"
 ) {
   format_fasta_db(
     fasta_db = fasta_db,
     taxnames = taxnames,
     output_format = "sintax",
     input_format = input_format,
-    output_path = output_path
+    output_path = output_path,
+    id_prefix = id_prefix
   )
 }
 

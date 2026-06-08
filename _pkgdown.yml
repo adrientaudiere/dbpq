@@ -7,6 +7,13 @@ template:
     primary: "#63450f"
     secondary: "#3e135a"
 
+articles:
+- title: Articles
+  navbar: ~
+  contents:
+  - taxonomy-formats
+  - articles/database-relationships
+
 reference:
 - title: Download databases
   desc: Download latest versions of reference databases.
@@ -19,6 +26,8 @@ reference:
   - download_midori2_db
   - download_bold_db
   - download_diatbarcode_db
+  - download_ksgp_db
+  - download_ltplus_db
   - download_marjaam_db
   - download_eukaryome_db
 
@@ -39,6 +48,11 @@ reference:
   - list_ranks_db
   - summarize_db
 
+- title: Taxonomic assignment
+  desc: Assign taxonomy to sequences.
+  contents:
+  - add_sh_to_taxonomy
+
 - title: Modify databases
   desc: Filter, trim, and transform FASTA databases.
   contents:
@@ -51,3 +65,5 @@ reference:
   - get_file_extension
   - tax_prefixes
   - detect_tax_format
+  - is_vsearch_installed
+  - find_vsearch

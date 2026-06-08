@@ -271,30 +271,13 @@ Several databases offer SINTAX-formatted downloads alongside their
 default format:
 
 ```{r, eval = FALSE}
-# UNITE: default vs SINTAX
-download_unite_db(dest_dir = "databases")
 download_unite_db(dest_dir = "databases", taxonomic_format = "sintax")
-
-# PR2: dada2 vs UTAX/SINTAX
-download_pr2_db(dest_dir = "databases", format = "dada2")
 download_pr2_db(dest_dir = "databases", format = "sintax")
-
-# MIDORI2: multiple formats available
-download_midori2_db(gene = "CO1", format = "dada2")
 download_midori2_db(gene = "CO1", format = "SINTAX")
+download_sintax_db(gene = "CO1", format = "SINTAX")
 ```
 
-For databases that only provide one format, use `format_fasta_db()` to convert:
 
-```{r, eval = FALSE}
-# Download in dada2 format, then convert to SINTAX
-download_silva_db(dest_dir = "databases", format = "dada2")
-format_fasta_db(
-  fasta_db = "databases/silva_nr99_v138.2_toSpecies_trainset.fa.gz",
-  output_format = "sintax",
-  output_path = "databases/silva_sintax.fasta"
-)
-```
 
 
 ## Database formats and classification algorithms
@@ -316,18 +299,17 @@ including those available via `MiscMetabar::add_new_taxonomy_pq()`:
 
 **For ITS (fungi):**
 
-- UNITE + dada2: `download_unite_db()` + `method = "dada2"`
-- UNITE SINTAX + vsearch: `download_unite_db(taxonomic_format = "sintax")` + `method = "sintax"`
+- UNITE + dada2: `download_unite_db()` 
 
 **For 16S (bacteria/archaea):**
 
-- SILVA: `download_silva_db()` + `method = "dada2"`
-- RDP: `download_rdp_db()` + `method = "dada2"`
-- Greengenes2: `download_greengenes2_db()` + `method = "dada2"`
+- SILVA: `download_silva_db()`
+- RDP: `download_rdp_db()`
+- Greengenes2: `download_greengenes2_db()` 
 
 **For 18S (protists/eukaryotes):**
 
-- PR2: `download_pr2_db()` + `method = "dada2"` or `"sintax"`
+- PR2: `download_pr2_db()`
 - Eukaryome: `download_eukaryome_db()`
 
 **For COI (metazoa):**
@@ -337,8 +319,9 @@ including those available via `MiscMetabar::add_new_taxonomy_pq()`:
 
 **For rbcL (diatoms):**
 
-- Diat.barcode: `download_diatbarcode_db()` or `diatbarcode` R package
+- Diat.barcode: `download_diatbarcode_db()` or use `diatbarcode` R package
 
 **For 18S AMF (arbuscular mycorrhizal fungi):**
 
 - MaarjAM: `download_marjaam_db()`
+- Eukaryome: `download_eukaryome_db()`

@@ -20,5 +20,5 @@ Tests whether the \code{vsearch} executable is available on the system.
 is_vsearch_installed()
 }
 \seealso{
-\code{\link[MiscMetabar:find_vsearch]{MiscMetabar::find_vsearch()}}, \code{\link[=add_sh_to_taxonomy]{add_sh_to_taxonomy()}}
+\code{\link[=find_vsearch]{find_vsearch()}}, \code{\link[=add_sh_to_taxonomy]{add_sh_to_taxonomy()}}
 }

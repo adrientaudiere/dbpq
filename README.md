@@ -59,6 +59,9 @@ download_pr2_db(dest_dir = "databases")
 
 # Download Greengenes2 16S for Bacteria/Archaea
 download_greengenes2_db(dest_dir = "databases")
+
+# Download the LTPlus 16S FASTA for Bacteria/Archaea
+download_ltplus_db(dest_dir = "databases")
 ```
 
 ## Supported databases
@@ -66,21 +69,23 @@ download_greengenes2_db(dest_dir = "databases")
 ### Taxonomic coverage overview
 
 ```
-Life
-├── Bacteria ──────────────── SILVA (SSU 16S), Greengenes2 (SSU 16S)
-├── Archaea ───────────────── SILVA (SSU 16S), Greengenes2 (SSU 16S)
+Tree of Life
+├── Bacteria ──────────────── SILVA (SSU 16S), Greengenes2 (SSU 16S), RDP (SSU 16S), KSGP (SSU 16S), LTPlus (SSU 16S)
+├── Archaea ───────────────── SILVA (SSU 16S), Greengenes2 (SSU 16S), KSGP⁴ (SSU 16S), LTPlus (SSU 16S)
 └── Eukaryota
     ├── "Protists"¹ ───────── PR2 (SSU 18S), SILVA (SSU/LSU), Eukaryome (SSU/ITS/LSU)
     │   └── incl. plastids ── PR2 (plastid 16S)
-    ├── Fungi ─────────────── UNITE (ITS), SILVA (SSU/LSU), Eukaryome (SSU/ITS/LSU), BOLD
+    ├── Fungi ─────────────── UNITE³ (ITS), SILVA (SSU/LSU), Eukaryome (SSU/ITS/LSU), BOLD²
     │   └── Glomeromycota ─── MaarjAM (SSU 18S)   ← AMF only, Eukaryome (SSU)
-    ├── Viridiplantae ─────── SILVA (SSU/LSU), Eukaryome (SSU/ITS/LSU), BOLD (matK, rbcL)
-    └── Metazoa ───────────── SILVA (SSU/LSU), Eukaryome (SSU/LSU), BOLD (COI)
+    ├── Viridiplantae ─────── SILVA (SSU/LSU), Eukaryome (SSU/ITS/LSU), BOLD² (matK, rbcL)
+    ├── Metazoa ───────────── SILVA (SSU/LSU), Eukaryome (SSU/LSU), BOLD² (COI), MIDORI2 (COI/12S/16S/Cytb)
+    └── Organelles ────────── MIDORI2 (mitochondrial 12S/16S/COI/Cytb), Diat.barcode (plastid rbcL)
 ```
 
 ¹ "Protists" is paraphyletic; PR2 covers SAR, Excavata, Amoebozoa, and related unicellular eukaryotic lineages.
-BOLD is query-based: it covers any taxon but only the marker requested.
-UNITE (eukaryotes version) adds secondary coverage of Viridiplantae and Metazoa (useful for filtering non-fungal reads).
+² BOLD is query-based: it covers any taxon but only the marker requested.
+³ UNITE (eukaryotes version) adds secondary coverage of Viridiplantae and Metazoa (useful for filtering non-fungal reads).
+⁴ KSGP includes eukaryote sequences from PR2 and MIDORI2 for contamination control, not for fine-grained eukaryote assignment.
 
 ### Database details
 
@@ -94,12 +99,51 @@ One row per marker, since each marker targets a different set of organisms. The 
 | [SILVA](https://www.arb-silva.de/) | `download_silva_db(target = "LSU")` | LSU 23S/28S | Bacteria, Archaea, Eukaryotes | — | NR99 (99% identity; other versions available directly from SILVA) | Raw SILVA FASTA (`.fasta.gz`) |
 | [PR2](https://pr2-database.org/) | `download_pr2_db()` | SSU 18S | Protists | Yes — Metazoa, Fungi, Viridiplantae, organelles | — | dada2 (`.fasta.gz`) |
 | [PR2](https://pr2-database.org/) | `download_pr2_db(marker = "plastid")` | Plastid 16S | Plastid-bearing organisms | — | — | dada2 (`.fasta.gz`) |
-| [BOLD](https://www.boldsystems.org/) | `download_bold_db(taxon, marker)` | COI-5P, ITS, matK, rbcL, … | All taxa (defined by `taxon` query) | — | — | BOLD FASTA (BOLD-format headers; needs reformatting) |
-| [MaarjAM](https://maarjam.ut.ee/) | `download_marjaam_db()` | SSU 18S | AMF (Glomeromycota) | No | Virtual Taxa (VT; phylogeny-based) | Plain FASTA (VT IDs) |
+| [BOLD](https://www.boldsystems.org/) | `download_bold_db(taxon, marker)` | COI-5P, ITS, matK, rbcL, … | All taxa (defined by `taxon` query) | — | — | dada2/sintax FASTA (ranked taxonomy from BOLD `combined`; `tax_format`) |
+| [MaarjAM](https://maarjam.ut.ee/) | `download_marjaam_db()` | SSU 18S | AMF (Glomeromycota) | No | Virtual Taxa (VT; phylogeny-based) | dada2/sintax FASTA (QIIME release; `tax_format`) |
 | [Eukaryome](https://eukaryome.org/) | `download_eukaryome_db(url)` | SSU 18S | Eukaryotes | — | — | As-is from URL (dada2 / SINTAX / mothur / QIIME2) |
 | [Eukaryome](https://eukaryome.org/) | `download_eukaryome_db(url)` | ITS | Eukaryotes | — | — | As-is from URL (dada2 / SINTAX / mothur / QIIME2) |
 | [Eukaryome](https://eukaryome.org/) | `download_eukaryome_db(url)` | LSU 28S | Eukaryotes | — | — | As-is from URL (dada2 / SINTAX / mothur / QIIME2) |
-| [Greengenes2](https://ftp.microbio.me/greengenes_release/) | `download_greengenes2_db()` | SSU 16S | Bacteria, Archaea | — | Reference phylogenetic tree (DEPP placement, not identity-based) | dada2 `d__/p__` (`.fa.gz`) |
+| [Greengenes2](https://ftp.microbio.me/greengenes_release/) | `download_greengenes2_db()` | SSU 16S | Bacteria, Archaea | — | Reference phylogenetic tree (DEPP placement, not identity-based) | dada2 (`d__` prefixes stripped by default; `tax_format`) (`.fa.gz`) |
+| [RDP](https://rdp.cme.msu.edu/) | `download_rdp_db()` | SSU 16S | Bacteria, Archaea | — | Trainset (manually curated) | dada2 `k__/p__` (`.fa.gz`) |
+| [MIDORI2](https://www.reference-midori.info/) | `download_midori2_db(url)` | COI, 12S, 16S, Cytb | Metazoa | — | UNIQ (all haplotypes) or LONGEST (one per species) | dada2 / SINTAX / RDP / BLAST (from URL) |
+| [Diat.barcode](https://www.reference-midori.info/) | `download_diatbarcode_db(url)` | rbcL | Diatoms (Bacillariophyta) | No | Curated (species-level) | dada2 (`.fasta.gz`) |
+| [KSGP](https://ksgp.earlham.ac.uk/) | `download_ksgp_db()` | SSU 16S/18S | Archaea (optimized), Bacteria | Yes — Eukaryota (PR2 + MIDORI2, for contamination control) | None | dada2/sintax FASTA (`.tax` merged into headers by default via `tax_format`; partial coverage) |
+| [KSGP — GTDB+](https://ksgp.earlham.ac.uk/) | `download_ksgp_db(database = "GTDB_plus")` | SSU 16S | Bacteria, Archaea | Yes — Eukaryota (PR2 + MIDORI2) | Cleaned (chimera/domain checks) | Plain FASTA (`.fasta`) + `.tax` |
+| [KSGP — GTDB_cleaned](https://ksgp.earlham.ac.uk/) | `download_ksgp_db(database = "GTDB_cleaned")` | SSU 16S | Bacteria, Archaea | No | Cleaned (chimera/domain checks) | Plain FASTA (`.fasta`) + `.tax` |
+| [LTPlus](https://bioinfo.uib.es/ltp/) | `download_ltplus_db()` | SSU 16S | Bacteria, Archaea | No | Non-redundant (98.7% identity); type strains + curated non-type | 16S FASTA (`.fasta`, unaligned; DNA + dada2/sintax taxonomy headers by default) |
+
+### Database relationships
+
+Databases relate in two distinct ways: some **incorporate sequences** from
+others (derivation / nestedness), while others independently **cover the same
+clades** (parallel use). The matrix below reads as "sequences from the
+*column* database are incorporated **into** the *row* database" — every edge
+verified against each database's describing paper. Lighter cells mark
+annotation-only links (taxonomy transferred without sequences).
+
+![Derivation adjacency matrix of dbpq reference databases](man/figures/derivation-matrix.png)
+
+Two relationships are easy to get wrong: **Eukaryome is not independent** — it
+compiles sequences from SILVA, PR2 and UNITE — and **Greengenes2 derives from
+GTDB r207 directly** (with LTP and Karst 2018), sharing the Karst 2018 source
+with KSGP.
+
+> **The full picture** — an interactive derivation network, this derivation
+> matrix, and a marker × clade coverage heatmap — is in the article
+> [*How reference databases relate*](https://adrientaudiere.github.io/dbpq/articles/database-relationships.html).
+
+**Independent databases** — independently curated, with no cross-database
+sequence incorporation (though all ultimately draw from INSDc/GenBank); use
+them in parallel based on marker and taxonomic scope:
+
+| Database | Marker | Why independent |
+|---|---|---|
+| UNITE | ITS | Fungal ITS, distinct marker (but feeds Eukaryome) |
+| BOLD | COI, matK, rbcL, … | Barcode markers, independently curated |
+| MaarjAM | SSU 18S | AMF-specific, independent curation |
+| Diat.barcode | rbcL (plastid) | Diatom-specific, independent curation |
+| RDP | SSU 16S | Independent curation, trainset-based |
 
 ## Navigating the seven properties
 

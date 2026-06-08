@@ -8,7 +8,8 @@ format2sintax(
   fasta_db = NULL,
   taxnames = NULL,
   input_format = "auto",
-  output_path = NULL
+  output_path = NULL,
+  id_prefix = "seq"
 )
 }
 \arguments{
@@ -19,10 +20,13 @@ with \code{taxnames}.}
 leading \code{>}). Mutually exclusive with \code{fasta_db}.}
 
 \item{input_format}{(Character, default \code{"auto"}) Input taxonomy format.
-One of \code{"auto"}, \code{"unite"}, \code{"greengenes2"}, \code{"sintax"}.}
+One of \code{"auto"}, \code{"unite"}, \code{"greengenes2"}, \code{"dada2"}.}
 
 \item{output_path}{(Character) If provided and \code{fasta_db} is used, write
 the reformatted FASTA to this path.}
+
+\item{id_prefix}{(Character, default \code{"seq"}) Prefix for synthetic
+sequence IDs generated when the input has none (e.g. \code{"dada2"}).}
 }
 \value{
 If \code{taxnames} is used, a character vector of reformatted names.
@@ -40,6 +44,13 @@ format2sintax(taxnames = "AB123;k__Fungi;p__Ascomycota;c__Sordariomycetes")
 format2sintax(
   taxnames = "abc123 d__Bacteria;p__Pseudomonadota",
   input_format = "greengenes2"
+)
+
+# dada2 trainset (taxonomy-only, positional) → SINTAX with synthetic IDs
+format2sintax(
+  taxnames = "Bacteria;Pseudomonadota;Gammaproteobacteria;Vibrio;",
+  input_format = "dada2",
+  id_prefix = "SILVA_"
 )
 }
 \seealso{

@@ -2,13 +2,16 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.8.26">
+<meta name="generator" content="quarto-1.9.37">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
 <title>readme</title>
 <style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
 div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -61,15 +64,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="README_files/libs/clipboard/clipboard.min.js"></script>
 <script src="README_files/libs/quarto-html/quarto.js" type="module"></script>
 <script src="README_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="README_files/libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="README_files/libs/quarto-html/popper.min.js"></script>
 <script src="README_files/libs/quarto-html/tippy.umd.min.js"></script>
 <script src="README_files/libs/quarto-html/anchor.min.js"></script>
 <link href="README_files/libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="README_files/libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="README_files/libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="README_files/libs/bootstrap/bootstrap.min.js"></script>
 <link href="README_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="README_files/libs/bootstrap/bootstrap-432b85ca5467e8659017d61370f128c4.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="README_files/libs/bootstrap/bootstrap-b7cc974bba74a835f3099151de5797ed.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 
 
 </head>
@@ -143,17 +145,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="supported-databases">Supported databases</h2>
 <section id="taxonomic-coverage-overview" class="level3">
 <h3 class="anchored" data-anchor-id="taxonomic-coverage-overview">Taxonomic coverage overview</h3>
-<pre><code>Life
-├── Bacteria ──────────────── SILVA (SSU 16S), Greengenes2 (SSU 16S)
-├── Archaea ───────────────── SILVA (SSU 16S), Greengenes2 (SSU 16S)
+<pre><code>Tree of Life
+├── Bacteria ──────────────── SILVA (SSU 16S), Greengenes2 (SSU 16S), RDP (SSU 16S), KSGP (SSU 16S)
+├── Archaea ───────────────── SILVA (SSU 16S), Greengenes2 (SSU 16S), KSGP⁴ (SSU 16S)
 └── Eukaryota
     ├── "Protists"¹ ───────── PR2 (SSU 18S), SILVA (SSU/LSU), Eukaryome (SSU/ITS/LSU)
     │   └── incl. plastids ── PR2 (plastid 16S)
-    ├── Fungi ─────────────── UNITE (ITS), SILVA (SSU/LSU), Eukaryome (SSU/ITS/LSU), BOLD
-    │   └── Glomeromycota ─── MaarjAM (SSU 18S)   ← AMF only
-    ├── Viridiplantae ─────── SILVA (SSU/LSU), Eukaryome (SSU/ITS/LSU), BOLD (matK, rbcL)
-    └── Metazoa ───────────── SILVA (SSU/LSU), Eukaryome (SSU/LSU), BOLD (COI)</code></pre>
-<p>¹ “Protists” is paraphyletic; PR2 covers SAR, Excavata, Amoebozoa, and related unicellular eukaryotic lineages. BOLD is query-based: it covers any taxon but only the marker requested. UNITE (eukaryotes version) adds secondary coverage of Viridiplantae and Metazoa for filtering non-fungal reads.</p>
+    ├── Fungi ─────────────── UNITE³ (ITS), SILVA (SSU/LSU), Eukaryome (SSU/ITS/LSU), BOLD²
+    │   └── Glomeromycota ─── MaarjAM (SSU 18S)   ← AMF only, Eukaryome (SSU)
+    ├── Viridiplantae ─────── SILVA (SSU/LSU), Eukaryome (SSU/ITS/LSU), BOLD² (matK, rbcL)
+    ├── Metazoa ───────────── SILVA (SSU/LSU), Eukaryome (SSU/LSU), BOLD² (COI), MIDORI2 (COI/12S/16S/Cytb)
+    └── Organelles ────────── MIDORI2 (mitochondrial 12S/16S/COI/Cytb), Diat.barcode (plastid rbcL)</code></pre>
+<p>¹ “Protists” is paraphyletic; PR2 covers SAR, Excavata, Amoebozoa, and related unicellular eukaryotic lineages. ² BOLD is query-based: it covers any taxon but only the marker requested. ³ UNITE (eukaryotes version) adds secondary coverage of Viridiplantae and Metazoa (useful for filtering non-fungal reads). ⁴ KSGP includes eukaryote sequences from PR2 and MIDORI2 for contamination control, not for fine-grained eukaryote assignment.</p>
 </section>
 <section id="database-details" class="level3">
 <h3 class="anchored" data-anchor-id="database-details">Database details</h3>
@@ -279,6 +282,128 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Reference phylogenetic tree (DEPP placement, not identity-based)</td>
 <td>dada2 <code>d__/p__</code> (<code>.fa.gz</code>)</td>
 </tr>
+<tr class="odd">
+<td><a href="https://rdp.cme.msu.edu/">RDP</a></td>
+<td><code>download_rdp_db()</code></td>
+<td>SSU 16S</td>
+<td>Bacteria, Archaea</td>
+<td>—</td>
+<td>Trainset (manually curated)</td>
+<td>dada2 <code>k__/p__</code> (<code>.fa.gz</code>)</td>
+</tr>
+<tr class="even">
+<td><a href="https://www.reference-midori.info/">MIDORI2</a></td>
+<td><code>download_midori2_db(url)</code></td>
+<td>COI, 12S, 16S, Cytb</td>
+<td>Metazoa</td>
+<td>—</td>
+<td>UNIQ (all haplotypes) or LONGEST (one per species)</td>
+<td>dada2 / SINTAX / RDP / BLAST (from URL)</td>
+</tr>
+<tr class="odd">
+<td><a href="https://www.reference-midori.info/">Diat.barcode</a></td>
+<td><code>download_diatbarcode_db(url)</code></td>
+<td>rbcL</td>
+<td>Diatoms (Bacillariophyta)</td>
+<td>No</td>
+<td>Curated (species-level)</td>
+<td>dada2 (<code>.fasta.gz</code>)</td>
+</tr>
+<tr class="even">
+<td><a href="https://ksgp.earlham.ac.uk/">KSGP</a></td>
+<td><code>download_ksgp_db()</code></td>
+<td>SSU 16S/18S</td>
+<td>Archaea (optimized), Bacteria</td>
+<td>Yes — Eukaryota (PR2 + MIDORI2, for contamination control)</td>
+<td>None</td>
+<td>Plain FASTA (<code>.fasta</code>) + separate <code>.tax</code> file</td>
+</tr>
+<tr class="odd">
+<td><a href="https://ksgp.earlham.ac.uk/">KSGP — GTDB+</a></td>
+<td><code>download_ksgp_db(database = "GTDB_plus")</code></td>
+<td>SSU 16S</td>
+<td>Bacteria, Archaea</td>
+<td>Yes — Eukaryota (PR2 + MIDORI2)</td>
+<td>Cleaned (chimera/domain checks)</td>
+<td>Plain FASTA (<code>.fasta</code>) + <code>.tax</code></td>
+</tr>
+<tr class="even">
+<td><a href="https://ksgp.earlham.ac.uk/">KSGP — GTDB_cleaned</a></td>
+<td><code>download_ksgp_db(database = "GTDB_cleaned")</code></td>
+<td>SSU 16S</td>
+<td>Bacteria, Archaea</td>
+<td>No</td>
+<td>Cleaned (chimera/domain checks)</td>
+<td>Plain FASTA (<code>.fasta</code>) + <code>.tax</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="database-relationships" class="level3">
+<h3 class="anchored" data-anchor-id="database-relationships">Database relationships</h3>
+<p>Some databases in dbpq are derived from or incorporate sequences from others. The diagram below shows confirmed derivation relationships (arrows = “sequences from source are incorporated into target”).</p>
+<pre class="mermaid"><code>flowchart LR
+    PR2["**PR2**\ndownload_pr2_db()"]
+    MIDORI2["**MIDORI2**\ndownload_midori2_db()"]
+    SILVA["**SILVA**\ndownload_silva_db()"]
+    GTDB_cleaned["**GTDB_cleaned**\ndownload_ksgp_db(database='GTDB_cleaned')"]
+    GTDB_plus["**GTDB+**\ndownload_ksgp_db(database='GTDB_plus')"]
+    KSGP["**KSGP**\ndownload_ksgp_db()"]
+    GG2["**Greengenes2**\ndownload_greengenes2_db()"]
+    KARST["Karst 2018\nENA: GCA_900214305\n(not in dbpq)"]
+
+    PR2      --&gt;|"eukaryote 18S"| GTDB_plus
+    MIDORI2  --&gt;|"mitochondrial SSU"| GTDB_plus
+    GTDB_cleaned --&gt;|"cleaned GTDB 16S"| GTDB_plus
+    GTDB_plus --&gt;|"prokaryote backbone"| KSGP
+    SILVA    --&gt;|"prokaryote SSU (partial,\nre-annotated)"| KSGP
+    KARST    --&gt;|"near full-length SSU"| KSGP
+    GTDB_cleaned -.-&gt;|"phylogenetic\nbackbone"| GG2</code></pre>
+<p><strong>Independent databases</strong> — no sequence overlap with the databases above; use them in parallel based on marker and taxonomic scope:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Database</th>
+<th>Marker</th>
+<th>Why independent</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>UNITE</td>
+<td>ITS</td>
+<td>Fungal ITS, distinct marker</td>
+</tr>
+<tr class="even">
+<td>BOLD</td>
+<td>COI, matK, rbcL, …</td>
+<td>Barcode markers, independently curated</td>
+</tr>
+<tr class="odd">
+<td>MaarjAM</td>
+<td>SSU 18S</td>
+<td>AMF-specific, independent curation</td>
+</tr>
+<tr class="even">
+<td>Diat.barcode</td>
+<td>rbcL (plastid)</td>
+<td>Diatom-specific, independent curation</td>
+</tr>
+<tr class="odd">
+<td>Eukaryome</td>
+<td>SSU 18S / ITS / LSU</td>
+<td>Eukaryote-focused, independent curation</td>
+</tr>
+<tr class="even">
+<td>RDP</td>
+<td>SSU 16S</td>
+<td>Independent curation, trainset-based</td>
+</tr>
 </tbody>
 </table>
 </section>
@@ -288,57 +413,57 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>The table above documents properties 1–6 per database. The following dbpq functions let you inspect, reformat, recluster, and filter any downloaded database.</p>
 <section id="inspect-taxonomic-focus-secondary-coverage-properties-34" class="level3">
 <h3 class="anchored" data-anchor-id="inspect-taxonomic-focus-secondary-coverage-properties-34">Inspect: taxonomic focus &amp; secondary coverage (properties 3–4)</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># List all kingdoms or phyla in the database</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">list_ranks_db</span>(<span class="st">"database.fasta"</span>, <span class="at">rank_prefix =</span> <span class="st">"k__"</span>)</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">list_ranks_db</span>(<span class="st">"database.fasta"</span>, <span class="at">rank_prefix =</span> <span class="st">"p__"</span>)</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Count sequences from a specific clade (e.g. check secondary coverage)</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="fu">count_pattern_db</span>(<span class="st">"database.fasta"</span>, <span class="st">"Viridiplantae"</span>)</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="fu">count_pattern_db</span>(<span class="st">"database.fasta"</span>, <span class="st">"Metazoa"</span>)</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Full overview: sequence count + annotated taxa per rank</span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="fu">summarize_db</span>(<span class="st">"database.fasta"</span>, <span class="at">tax_format =</span> <span class="st">"auto"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># List all kingdoms or phyla in the database</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">list_ranks_db</span>(<span class="st">"database.fasta"</span>, <span class="at">rank_prefix =</span> <span class="st">"k__"</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">list_ranks_db</span>(<span class="st">"database.fasta"</span>, <span class="at">rank_prefix =</span> <span class="st">"p__"</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Count sequences from a specific clade (e.g. check secondary coverage)</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="fu">count_pattern_db</span>(<span class="st">"database.fasta"</span>, <span class="st">"Viridiplantae"</span>)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="fu">count_pattern_db</span>(<span class="st">"database.fasta"</span>, <span class="st">"Metazoa"</span>)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Full overview: sequence count + annotated taxa per rank</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="fu">summarize_db</span>(<span class="st">"database.fasta"</span>, <span class="at">tax_format =</span> <span class="st">"auto"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="detect-convert-format-property-5" class="level3">
 <h3 class="anchored" data-anchor-id="detect-convert-format-property-5">Detect &amp; convert format (property 5)</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Auto-detect the taxonomy format of a downloaded file</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">detect_tax_format</span>(<span class="st">"database.fasta"</span>)</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Inspect rank prefixes for a known format</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="fu">tax_prefixes</span>(<span class="st">"unite"</span>)</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="fu">tax_prefixes</span>(<span class="st">"greengenes2"</span>)  <span class="co"># uses d__ instead of k__</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert to dada2::assignTaxonomy() input</span></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="fu">format2dada2</span>(<span class="at">fasta_db =</span> <span class="st">"database.fasta"</span>, <span class="at">output_path =</span> <span class="st">"database_dada2.fasta"</span>)</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert to SINTAX (for VSEARCH --sintax)</span></span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="fu">format2sintax</span>(<span class="at">fasta_db =</span> <span class="st">"database.fasta"</span>, <span class="at">output_path =</span> <span class="st">"database_sintax.fasta"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Auto-detect the taxonomy format of a downloaded file</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">detect_tax_format</span>(<span class="st">"database.fasta"</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Inspect rank prefixes for a known format</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="fu">tax_prefixes</span>(<span class="st">"unite"</span>)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="fu">tax_prefixes</span>(<span class="st">"greengenes2"</span>)  <span class="co"># uses d__ instead of k__</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert to dada2::assignTaxonomy() input</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="fu">format2dada2</span>(<span class="at">fasta_db =</span> <span class="st">"database.fasta"</span>, <span class="at">output_path =</span> <span class="st">"database_dada2.fasta"</span>)</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert to SINTAX (for VSEARCH --sintax)</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="fu">format2sintax</span>(<span class="at">fasta_db =</span> <span class="st">"database.fasta"</span>, <span class="at">output_path =</span> <span class="st">"database_sintax.fasta"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="assess-reduce-redundancy-property-6" class="level3">
 <h3 class="anchored" data-anchor-id="assess-reduce-redundancy-property-6">Assess &amp; reduce redundancy (property 6)</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check database size</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">count_seq_db</span>(<span class="st">"database.fasta"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check database size</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">count_seq_db</span>(<span class="st">"database.fasta"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Re-clustering below the downloaded threshold (e.g.&nbsp;from 99% to 97%) requires an external tool:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">vsearch</span> <span class="at">--cluster_size</span> database.fasta <span class="at">--id</span> 0.97 <span class="at">--centroids</span> database_97.fasta</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">vsearch</span> <span class="at">--cluster_size</span> database.fasta <span class="at">--id</span> 0.97 <span class="at">--centroids</span> database_97.fasta</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="filter-the-database-property-7" class="level3">
 <h3 class="anchored" data-anchor-id="filter-the-database-property-7">Filter the database (property 7)</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 7a — Restrict to a taxonomic scope</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">filter_db</span>(<span class="st">"database.fasta"</span>, <span class="at">pattern =</span> <span class="st">"Fungi"</span>, <span class="at">output =</span> <span class="st">"database_fungi.fasta"</span>)</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 7b — Identify non-informative taxa (e.g. "unknown_order", "unclassified")</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="fu">count_unwanted_tax</span>(<span class="st">"database.fasta"</span>)</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Keep only sequences with family-level annotation (pattern excludes empty f__ fields)</span></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="fu">filter_db</span>(<span class="st">"database.fasta"</span>, <span class="at">pattern =</span> <span class="st">"f__[A-Za-z]"</span>, <span class="at">output =</span> <span class="st">"database_with_family.fasta"</span>)</span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="co"># 7c — Trim primers and select amplicon-length sequences</span></span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="fu">cutadapt_rm_primers_db</span>(</span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">"database.fasta"</span>,</span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">primer_fw =</span> <span class="st">"GCATCGATGAAGAACGCAGC"</span>,</span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">primer_rev =</span> <span class="st">"TCCTCCGCTTATTGATATGC"</span>,</span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">output =</span> <span class="st">"database_trimmed.fasta"</span></span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 7a — Restrict to a taxonomic scope</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">filter_db</span>(<span class="st">"database.fasta"</span>, <span class="at">pattern =</span> <span class="st">"Fungi"</span>, <span class="at">output =</span> <span class="st">"database_fungi.fasta"</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 7b — Identify non-informative taxa (e.g. "unknown_order", "unclassified")</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="fu">count_unwanted_tax</span>(<span class="st">"database.fasta"</span>)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Keep only sequences with family-level annotation (pattern excludes empty f__ fields)</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="fu">filter_db</span>(<span class="st">"database.fasta"</span>, <span class="at">pattern =</span> <span class="st">"f__[A-Za-z]"</span>, <span class="at">output =</span> <span class="st">"database_with_family.fasta"</span>)</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="co"># 7c — Trim primers and select amplicon-length sequences</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="fu">cutadapt_rm_primers_db</span>(</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">"database.fasta"</span>,</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">primer_fw =</span> <span class="st">"GCATCGATGAAGAACGCAGC"</span>,</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">primer_rev =</span> <span class="st">"TCCTCCGCTTATTGATATGC"</span>,</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">output =</span> <span class="st">"database_trimmed.fasta"</span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 </section>
 <section id="related-packages" class="level2">

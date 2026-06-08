@@ -28,7 +28,7 @@ as the sequence identifiers contain SH names as the first
 this requirement.}
 
 \item{vsearchpath}{(Character) Path to the vsearch executable.
-Defaults to \code{\link[MiscMetabar:find_vsearch]{MiscMetabar::find_vsearch()}}.}
+Defaults to \code{\link[=find_vsearch]{find_vsearch()}}.}
 
 \item{id}{(Numeric, default \code{0.97}) Minimum sequence identity
 threshold (0–1) for vsearch \code{--id} parameter.}
@@ -71,6 +71,8 @@ the same top identity disagree on the SH name.
 }
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+
 Runs \code{vsearch --usearch_global} to match query sequences against a
 UNITE reference database, then extracts the Species Hypothesis (SH)
 identifier from each best hit. The SH name is the first \code{|}-delimited
@@ -85,8 +87,8 @@ instead of requiring external lookup tables.
 # Download a UNITE database first
 unite_file <- download_unite_db(
   version = "10.0",
-  tax_format = "sintax",
-  kingdom = "fungi"
+  taxonomic_format = "sintax",
+  taxon_group = "fungi"
 )
 
 # Annotate ASVs with SH names
@@ -102,8 +104,8 @@ sh_res[sh_res$is_ambiguous, ]
 }
 }
 \seealso{
-\code{\link[=download_unite_db]{download_unite_db()}}, \code{\link[MiscMetabar:is_vsearch_installed]{MiscMetabar::is_vsearch_installed()}},
-\code{\link[MiscMetabar:find_vsearch]{MiscMetabar::find_vsearch()}}
+\code{\link[=download_unite_db]{download_unite_db()}}, \code{\link[=is_vsearch_installed]{is_vsearch_installed()}},
+\code{\link[=find_vsearch]{find_vsearch()}}
 }
 \author{
 Adrien Taudière

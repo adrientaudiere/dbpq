@@ -8,7 +8,7 @@ download_bold_db(
   dest_dir = ".",
   taxon = NULL,
   marker = "COI-5P",
-  output_format = "fasta",
+  tax_format = c("dada2", "sintax", "none"),
   verbose = TRUE
 )
 }
@@ -22,8 +22,16 @@ downloaded file.}
 \item{marker}{(Character, default \code{"COI-5P"}) The barcode marker. Common
 values: \code{"COI-5P"}, \code{"ITS"}, \code{"matK"}, \code{"rbcL"}.}
 
-\item{output_format}{(Character, default \code{"fasta"}) Output format.
-Currently only \code{"fasta"} is supported.}
+\item{tax_format}{(Character, default \code{"dada2"}) Taxonomy format written
+into the FASTA headers, so the file can feed
+\code{MiscMetabar::add_new_taxonomy_pq()}. One of:
+\itemize{
+\item \code{"dada2"}: unprefixed, positional ranks
+(\verb{>Phylum;Class;Order;Family;Genus;Species;}).
+\item \code{"sintax"}: \verb{>processid;tax=p:Phylum,c:Class,...}.
+\item \code{"none"}: the raw BOLD sequence FASTA with \code{processid|taxon|marker}
+headers (no ranked taxonomy).
+}}
 
 \item{verbose}{(Logical, default \code{TRUE}) Print progress messages.}
 }
@@ -37,10 +45,17 @@ provide a single pre-built reference FASTA — sequences are queried by
 taxon via the BOLD API.
 }
 \details{
-This function uses the BOLD v3 public API. For very large taxonomic
-groups, the download may take a long time or fail due to server limits.
-In such cases, consider using narrower taxonomic queries or the
-\href{https://docs.ropensci.org/bold/}{bold} R package.
+This function uses the BOLD public API hosted at \code{v3.boldsystems.org},
+which remains available after the main BOLD site's migration to v5. With
+\code{tax_format = "none"} it queries the \code{sequence} endpoint (FASTA). With
+\code{"dada2"}/\code{"sintax"} it queries the \code{combined} endpoint (TSV with the full
+ranked taxonomy), keeps the requested \code{marker}, and writes a
+taxonomy-headed FASTA (gaps removed). BOLD's taxonomy starts at phylum, so
+the dada2 output has no kingdom level.
+
+For very large taxa the download may be slow or hit server limits; use
+narrower queries, or the \href{https://www.boldsystems.org/data/boldconnectr/}{BOLDconnectR}
+package for the full v5 (BCDM) data model.
 
 Please cite: Ratnasingham S & Hebert PDN (2007) BOLD: The Barcode of
 Life Data System. Molecular Ecology Notes 7:355-364.
@@ -48,14 +63,15 @@ Life Data System. Molecular Ecology Notes 7:355-364.
 }
 \examples{
 \dontrun{
-# Download COI sequences for Fungi
-download_bold_db(dest_dir = "databases", taxon = "Fungi")
+# COI reference for a genus, dada2 taxonomy headers
+download_bold_db(dest_dir = "databases", taxon = "Danaus")
 
-# Download ITS sequences for a specific order
+# ITS sequences for an order, SINTAX headers
 download_bold_db(
   dest_dir = "databases",
   taxon = "Agaricales",
-  marker = "ITS"
+  marker = "ITS",
+  tax_format = "sintax"
 )
 }
 }

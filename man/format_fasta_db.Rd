@@ -9,7 +9,8 @@ format_fasta_db(
   taxnames = NULL,
   output_format = c("sintax", "unite", "greengenes2", "dada2", "dada2_species"),
   input_format = "auto",
-  output_path = NULL
+  output_path = NULL,
+  id_prefix = "seq"
 )
 }
 \arguments{
@@ -24,11 +25,18 @@ leading \code{>}). Mutually exclusive with \code{fasta_db}.}
 
 \item{input_format}{(Character, default \code{"auto"}) Input format. One of
 \code{"auto"} (auto-detect via \code{\link[=detect_tax_format]{detect_tax_format()}}), \code{"sintax"},
-\code{"unite"}, \code{"greengenes2"}.}
+\code{"unite"}, \code{"greengenes2"}, \code{"dada2"}. The positional \code{"dada2"} input
+(taxonomy-only headers, no sequence ID) is assigned ranks by position
+(\verb{d,p,c,o,f,g,s}); see \code{id_prefix} for the generated labels.}
 
 \item{output_path}{(Character) If provided and \code{fasta_db} is used, write
 the reformatted FASTA to this path and return the \code{DNAStringSet}
 invisibly.}
+
+\item{id_prefix}{(Character, default \code{"seq"}) Prefix used to build
+synthetic sequential sequence IDs (e.g. \code{"seq000001"}) for input
+formats that carry no per-sequence identifier (\code{"dada2"}). Ignored when
+the input already provides IDs.}
 }
 \value{
 If \code{taxnames} is used, a character vector of reformatted headers.

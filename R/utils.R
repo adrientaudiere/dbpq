@@ -155,6 +155,13 @@ detect_tax_format <- function(file, n_headers = 20L) {
     return("pr2")
   }
 
+  # Positional, prefix-less, semicolon-delimited taxonomy (e.g. dada2
+  # assignTaxonomy training sets). Falls here only after the labelled and
+  # pr2-keyword checks above have failed.
+  if (grepl(";", sample_text, fixed = TRUE)) {
+    return("dada2")
+  }
+
   "unknown"
 }
 

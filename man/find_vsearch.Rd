@@ -25,5 +25,5 @@ MiscMetabar for vsearch operations.
 find_vsearch()
 }
 \seealso{
-\code{\link[MiscMetabar:is_vsearch_installed]{MiscMetabar::is_vsearch_installed()}}, \code{\link[=add_sh_to_taxonomy]{add_sh_to_taxonomy()}}
+\code{\link[=is_vsearch_installed]{is_vsearch_installed()}}, \code{\link[=add_sh_to_taxonomy]{add_sh_to_taxonomy()}}
 }

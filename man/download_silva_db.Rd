@@ -2,13 +2,13 @@
 % Please edit documentation in R/download.R
 \name{download_silva_db}
 \alias{download_silva_db}
-\title{Download a SILVA reference database}
+\title{Download a SILVA reference database NR99 version}
 \usage{
 download_silva_db(
   dest_dir = ".",
   version = "138.2",
   target = c("SSU", "LSU"),
-  format = c("dada2", "dada2_species", "raw"),
+  format = c("dada2", "dada2_species", "sintax", "raw"),
   verbose = TRUE
 )
 }
@@ -16,33 +16,46 @@ download_silva_db(
 \item{dest_dir}{(Character, default \code{"."}) Directory to save the
 downloaded file.}
 
-\item{version}{(Character, default \code{"138.2"}) SILVA version number.}
+\item{version}{(Character, default \code{"138.2"}) SILVA version number. Only
+the current SILVA release is hosted at the arb-silva DADA2 path used by
+the dada2/dada2_species/sintax formats.}
 
 \item{target}{(Character, default \code{"SSU"}) One of \code{"SSU"} or \code{"LSU"}.}
 
 \item{format}{(Character, default \code{"dada2"}) One of:
 \itemize{
-\item \code{"dada2"}: dada2-formatted training set from Zenodo (NR99,
+\item \code{"dada2"}: dada2-formatted \code{toSpecies} training set (NR99,
 recommended for \code{dada2::assignTaxonomy()}).
 \item \code{"dada2_species"}: species assignment file for
 \code{dada2::addSpecies()}.
+\item \code{"sintax"}: VSEARCH/USEARCH SINTAX database, converted locally from
+the dada2 \code{toSpecies} trainset (7 ranks \verb{d,p,c,o,f,g,s}). Sequence
+labels are synthetic (\verb{SILVA<version>_<target>_NNNNNN}) because the
+dada2 trainset carries no accession. Written as a separate
+\verb{*_sintax.fasta.gz} file.
 \item \code{"raw"}: raw SILVA NR99 FASTA with taxonomy from arb-silva.de.
 }}
 
 \item{verbose}{(Logical, default \code{TRUE}) Print progress messages.}
 }
 \value{
-The path to the downloaded file (invisibly).
+The path to the resulting file (invisibly). For \code{"sintax"} this
+is the converted \verb{*_sintax.fasta.gz}; the intermediate trainset is also
+kept in \code{dest_dir}.
 }
 \description{
-Downloads the SILVA ribosomal RNA database (16S/18S). By default,
-downloads the dada2-formatted training sets from Zenodo (maintained by
-Benjamin Callahan). Alternatively, downloads raw SILVA exports from
-arb-silva.de.
+Downloads the SILVA ribosomal RNA database (16S/18S/23S/28S). By default,
+downloads the dada2-formatted training sets from the official arb-silva.de
+DADA2 release (available for both SSU and LSU). Can also produce a
+SINTAX-formatted database (converted locally from the dada2 trainset) or
+download the raw SILVA NR99 export.
+
+For the PARC version (all sequences, not clustered like NR99), see
+\code{dada2:::makeSpeciesFasta_Silva()} on the manually downloaded FASTA file.
 }
 \details{
-The dada2-formatted files are maintained by Benjamin Callahan on Zenodo
-and are the recommended format for \code{dada2::assignTaxonomy()} and
+The dada2-formatted files are provided by arb-silva.de and are the
+recommended format for \code{dada2::assignTaxonomy()} and
 \code{dada2::addSpecies()}. See
 \url{https://benjjneb.github.io/dada2/training.html} for details.
 
@@ -60,6 +73,12 @@ download_silva_db(dest_dir = "databases")
 
 # Download species assignment file
 download_silva_db(dest_dir = "databases", format = "dada2_species")
+
+# Download a SINTAX database for SSU (converted from the dada2 trainset)
+download_silva_db(dest_dir = "databases", format = "sintax")
+
+# SINTAX database for LSU
+download_silva_db(dest_dir = "databases", target = "LSU", format = "sintax")
 
 # Download raw SILVA NR99 FASTA
 download_silva_db(dest_dir = "databases", format = "raw")

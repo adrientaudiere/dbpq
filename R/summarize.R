@@ -36,17 +36,23 @@ count_seq_db <- function(file) {
 #' db <- system.file("extdata", "example_unite.fasta", package = "dbpq")
 #' count_pattern_db(db, "Amanita")
 count_pattern_db <- function(file, pattern = ">") {
-  if (is_gzipped(file)) {
-    count <- as.numeric(system(
-      paste0("zcat ", normalizePath(file), " | grep -c '", pattern, "' "),
-      intern = TRUE
-    ))
+  reader <- if (is_gzipped(file)) {
+    "zcat "
   } else {
-    count <- as.numeric(system(
-      paste0("cat ", normalizePath(file), " | grep -c '", pattern, "' "),
-      intern = TRUE
-    ))
+    "cat "
   }
+  # `grep -c` exits with status 1 (and prints "0") when there are no matches,
+  # which makes `system()` emit a spurious warning; suppress it. `shQuote()`
+  # protects the path and pattern from shell metacharacters.
+  count <- suppressWarnings(as.numeric(system(
+    paste0(
+      reader,
+      shQuote(normalizePath(file)),
+      " | grep -c ",
+      shQuote(pattern)
+    ),
+    intern = TRUE
+  )))
   return(count)
 }
 
@@ -383,6 +389,16 @@ list_ranks_db <- function(
   counts <- sort(table(matches), decreasing = TRUE)
   result <- as.integer(counts)
   names(result) <- names(counts)
+
+  if (length(result) == 0 && length(headers) > 0) {
+    message(
+      "No taxa matched prefix '",
+      rank_prefix,
+      "'. The file may use a different taxonomy format; check with ",
+      "detect_tax_format() and pass `tax_format` or a matching `rank_prefix`."
+    )
+  }
+
   result
 }
 
@@ -447,6 +463,27 @@ summarize_db <- function(
 
   dna <- Biostrings::readDNAStringSet(file)
   n_seq <- length(dna)
+
+  if (n_seq == 0) {
+    # Empty database: avoid min()/max() warnings on a zero-length width vector
+    rank_names <- if (!is.null(names(rank_prefixes))) {
+      names(rank_prefixes)
+    } else {
+      gsub("[_:]+$", "", rank_prefixes)
+    }
+    rank_counts <- stats::setNames(
+      integer(length(rank_prefixes)),
+      rank_names
+    )
+    message("Database: ", basename(file))
+    message("Sequences: 0 (empty database; no length statistics)")
+    return(invisible(list(
+      n_sequences = 0L,
+      length_summary = summary(numeric(0)),
+      ranks = rank_counts
+    )))
+  }
+
   len_summary <- summary(Biostrings::width(dna))
 
   if (is.integer(rank_prefixes)) {

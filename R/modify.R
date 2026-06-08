@@ -37,45 +37,34 @@ filter_db <- function(
 
   if (force_two_lines_per_seq) {
     tmp_file <- tempfile()
-    if (is_gzipped(ref_fasta)) {
-      system(paste0(
-        "zcat ",
-        normalizePath(ref_fasta),
-        " | sed ':a;N;/>/!s/\\n//;ta;P;D'  > ",
-        tmp_file
-      ))
+    reader <- if (is_gzipped(ref_fasta)) {
+      "zcat "
     } else {
-      system(paste0(
-        "cat ",
-        normalizePath(ref_fasta),
-        " | sed ':a;N;/>/!s/\\n//;ta;P;D'  > ",
-        tmp_file
-      ))
+      "cat "
     }
+    system(paste0(
+      reader,
+      shQuote(normalizePath(ref_fasta)),
+      " | sed ':a;N;/>/!s/\\n//;ta;P;D'  > ",
+      shQuote(tmp_file)
+    ))
     ref_fasta <- tmp_file
   }
 
-  if (is_gzipped(ref_fasta)) {
-    system(paste0(
-      "zcat ",
-      normalizePath(ref_fasta),
-      " | grep -i '",
-      pattern,
-      "' ",
-      "-A 1 | sed -E 's/--//g' | sed -E '/^$/d' > ",
-      output
-    ))
+  # `shQuote()` protects the path and pattern from shell metacharacters.
+  reader <- if (is_gzipped(ref_fasta)) {
+    "zcat "
   } else {
-    system(paste0(
-      "cat ",
-      normalizePath(ref_fasta),
-      " | grep -i '",
-      pattern,
-      "' ",
-      "-A 1 | sed -E 's/--//g' | sed -E '/^$/d' > ",
-      output
-    ))
+    "cat "
   }
+  system(paste0(
+    reader,
+    shQuote(normalizePath(ref_fasta)),
+    " | grep -i ",
+    shQuote(pattern),
+    " -A 1 | sed -E 's/--//g' | sed -E '/^$/d' > ",
+    shQuote(output)
+  ))
 
   if (force_two_lines_per_seq && !keep_temporary_files) {
     unlink(tmp_file)

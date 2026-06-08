@@ -308,32 +308,45 @@ download_unite_db <- function(
 # SILVA
 # ——————————————————————————————————————————————————————————————————————
 
-#' Download a SILVA reference database
+#' Download a SILVA reference database NR99 version
 #'
 #' @description
-#' Downloads the SILVA ribosomal RNA database (16S/18S). By default,
-#' downloads the dada2-formatted training sets from Zenodo (maintained by
-#' Benjamin Callahan). Alternatively, downloads raw SILVA exports from
-#' arb-silva.de.
+#' Downloads the SILVA ribosomal RNA database (16S/18S/23S/28S). By default,
+#' downloads the dada2-formatted training sets from the official arb-silva.de
+#' DADA2 release (available for both SSU and LSU). Can also produce a
+#' SINTAX-formatted database (converted locally from the dada2 trainset) or
+#' download the raw SILVA NR99 export.
+#'
+#' For the PARC version (all sequences, not clustered like NR99), see
+#' `dada2:::makeSpeciesFasta_Silva()` on the manually downloaded FASTA file.
 #'
 #' @param dest_dir (Character, default `"."`) Directory to save the
 #'   downloaded file.
-#' @param version (Character, default `"138.2"`) SILVA version number.
+#' @param version (Character, default `"138.2"`) SILVA version number. Only
+#'   the current SILVA release is hosted at the arb-silva DADA2 path used by
+#'   the dada2/dada2_species/sintax formats.
 #' @param target (Character, default `"SSU"`) One of `"SSU"` or `"LSU"`.
 #' @param format (Character, default `"dada2"`) One of:
-#'   - `"dada2"`: dada2-formatted training set from Zenodo (NR99,
+#'   - `"dada2"`: dada2-formatted `toSpecies` training set (NR99,
 #'     recommended for `dada2::assignTaxonomy()`).
 #'   - `"dada2_species"`: species assignment file for
 #'     `dada2::addSpecies()`.
+#'   - `"sintax"`: VSEARCH/USEARCH SINTAX database, converted locally from
+#'     the dada2 `toSpecies` trainset (7 ranks `d,p,c,o,f,g,s`). Sequence
+#'     labels are synthetic (`SILVA<version>_<target>_NNNNNN`) because the
+#'     dada2 trainset carries no accession. Written as a separate
+#'     `*_sintax.fasta.gz` file.
 #'   - `"raw"`: raw SILVA NR99 FASTA with taxonomy from arb-silva.de.
 #' @param verbose (Logical, default `TRUE`) Print progress messages.
 #'
-#' @returns The path to the downloaded file (invisibly).
+#' @returns The path to the resulting file (invisibly). For `"sintax"` this
+#'   is the converted `*_sintax.fasta.gz`; the intermediate trainset is also
+#'   kept in `dest_dir`.
 #' @export
 #' @author Adrien Taudière
 #' @details
-#' The dada2-formatted files are maintained by Benjamin Callahan on Zenodo
-#' and are the recommended format for `dada2::assignTaxonomy()` and
+#' The dada2-formatted files are provided by arb-silva.de and are the
+#' recommended format for `dada2::assignTaxonomy()` and
 #' `dada2::addSpecies()`. See
 #' <https://benjjneb.github.io/dada2/training.html> for details.
 #'
@@ -352,6 +365,12 @@ download_unite_db <- function(
 #' # Download species assignment file
 #' download_silva_db(dest_dir = "databases", format = "dada2_species")
 #'
+#' # Download a SINTAX database for SSU (converted from the dada2 trainset)
+#' download_silva_db(dest_dir = "databases", format = "sintax")
+#'
+#' # SINTAX database for LSU
+#' download_silva_db(dest_dir = "databases", target = "LSU", format = "sintax")
+#'
 #' # Download raw SILVA NR99 FASTA
 #' download_silva_db(dest_dir = "databases", format = "raw")
 #' }
@@ -359,7 +378,7 @@ download_silva_db <- function(
   dest_dir = ".",
   version = "138.2",
   target = c("SSU", "LSU"),
-  format = c("dada2", "dada2_species", "raw"),
+  format = c("dada2", "dada2_species", "sintax", "raw"),
   verbose = TRUE
 ) {
   target <- match.arg(target)
@@ -369,51 +388,9 @@ download_silva_db <- function(
     dir.create(dest_dir, recursive = TRUE)
   }
 
-  # Zenodo record IDs for dada2-formatted SILVA
-  zenodo_records <- list(
-    "138.2" = "14169026",
-    "138.1" = "4587955"
-  )
-
-  # Version string for URLs (138.2 -> 138_2 for arb-silva paths)
-  version_us <- gsub("\\.", "_", version)
-
-  if (format %in% c("dada2", "dada2_species")) {
-    if (target == "LSU") {
-      stop(
-        "dada2-formatted files are only available for SSU. ",
-        "Use format = 'raw' for LSU downloads.",
-        call. = FALSE
-      )
-    }
-
-    record_id <- zenodo_records[[version]]
-    if (is.null(record_id)) {
-      stop(
-        "No known Zenodo record for SILVA v",
-        version,
-        ". ",
-        "Known versions: ",
-        paste(names(zenodo_records), collapse = ", "),
-        ". Visit https://benjjneb.github.io/dada2/training.html",
-        call. = FALSE
-      )
-    }
-
-    if (format == "dada2") {
-      filename <- paste0("silva_nr99_v", version, "_toSpecies_trainset.fa.gz")
-    } else {
-      filename <- paste0("silva_v", version, "_assignSpecies.fa.gz")
-    }
-
-    url <- paste0(
-      "https://zenodo.org/records/",
-      record_id,
-      "/files/",
-      filename
-    )
-  } else {
-    # Raw SILVA export from arb-silva.de
+  if (format == "raw") {
+    # Raw SILVA export from arb-silva.de (version dir uses 138.2 -> 138_2)
+    version_us <- gsub("\\.", "_", version)
     target_full <- paste0(target, "Ref_NR99")
     filename <- paste0(
       "SILVA_",
@@ -429,10 +406,49 @@ download_silva_db <- function(
       "/Exports/",
       filename
     )
+    dest_file <- file.path(dest_dir, filename)
+    download_file(url, dest_file, verbose = verbose)
+    return(invisible(dest_file))
   }
 
+  # dada2-formatted training sets from the official arb-silva DADA2 release
+  # (available for both SSU and LSU). The path segment is the DADA2 tooling
+  # release; the filename carries the SILVA version.
+  dada2_tool_version <- "1.36.0"
+  dada2_base <- paste0(
+    "https://www.arb-silva.de/fileadmin/silva_databases/current/DADA2/",
+    dada2_tool_version,
+    "/",
+    target,
+    "/"
+  )
+
+  if (format == "dada2_species") {
+    filename <- paste0("silva_v", version, "_assignSpecies.fa.gz")
+  } else {
+    # "dada2" and "sintax" both start from the toSpecies trainset
+    filename <- paste0("silva_nr99_v", version, "_toSpecies_trainset.fa.gz")
+  }
+  url <- paste0(dada2_base, filename)
   dest_file <- file.path(dest_dir, filename)
   download_file(url, dest_file, verbose = verbose)
+
+  if (format == "sintax") {
+    sintax_file <- file.path(
+      dest_dir,
+      paste0("silva_nr99_v", version, "_", target, "_sintax.fasta.gz")
+    )
+    if (verbose) {
+      message("Converting dada2 trainset to SINTAX format ...")
+    }
+    format2sintax(
+      fasta_db = dest_file,
+      input_format = "dada2",
+      output_path = sintax_file,
+      id_prefix = paste0("SILVA", version, "_", target, "_")
+    )
+    return(invisible(sintax_file))
+  }
 
   invisible(dest_file)
 }
@@ -458,7 +474,10 @@ download_silva_db <- function(
 #' @param version (Character) PR2 version number (e.g., `"5.0.0"`). If
 #'   `NULL` (default), the latest release is fetched from GitHub.
 #' @param format (Character, default `"dada2"`) One of `"dada2"`, `"mothur"`,
-#'   `"UTAX"`, or `"sintax"` (alias for `"UTAX"`).
+#'   `"UTAX"`, or `"sintax"` (alias for `"UTAX"`). See **Taxonomic ranks**
+#'   below: the `"dada2"` file keeps PR2's 9 ranks, whereas the
+#'   `"UTAX"`/`"sintax"` file collapses them to 8 (Division and Subdivision
+#'   are merged).
 #' @param marker (Character, default `"SSU"`) One of `"SSU"` or `"plastid"`.
 #' @param verbose (Logical, default `TRUE`) Print progress messages.
 #'
@@ -468,6 +487,42 @@ download_silva_db <- function(
 #' @details
 #' PR2 releases are hosted on GitHub at
 #' <https://github.com/pr2database/pr2database/releases>.
+#'
+#' ## Taxonomic ranks
+#'
+#' PR2 uses **9** taxonomic ranks. The `"dada2"` file keeps all nine as a
+#' positional, semicolon-delimited lineage (no rank prefixes); pass them to
+#' [dada2::assignTaxonomy()] (via [MiscMetabar::add_new_taxonomy_pq()] with
+#' `method = "dada2"`) through `taxLevels`:
+#'
+#' `c("Domain", "Supergroup", "Division", "Subdivision", "Class", "Order",
+#' "Family", "Genus", "Species")`
+#'
+#' The `"UTAX"`/`"sintax"` file targets VSEARCH/USEARCH SINTAX and uses the
+#' **8** standard single-letter rank prefixes (`k, d, p, c, o, f, g, s`). To
+#' fit PR2's nine ranks onto them, PR2 **merges Division and Subdivision**
+#' into the `p:` rank (joined by `-`). The 9 → 8 mapping is:
+#'
+#' | PR2 rank (dada2)        | SINTAX prefix (UTAX)            |
+#' | ----------------------- | ------------------------------ |
+#' | Domain                  | `k:`                           |
+#' | Supergroup              | `d:`                           |
+#' | Division + Subdivision  | `p:` (e.g. `Alveolata-Dinoflagellata`) |
+#' | Class                   | `c:`                           |
+#' | Order                   | `o:`                           |
+#' | Family                  | `f:`                           |
+#' | Genus                   | `g:`                           |
+#' | Species                 | `s:`                           |
+#'
+#' Mind the per-method argument when calling
+#' [MiscMetabar::add_new_taxonomy_pq()]:
+#' - `method = "dada2"` (the `"dada2"` download) keeps all 9 ranks — pass the
+#'   9 names above as **`taxLevels`** (forwarded to [dada2::assignTaxonomy()]).
+#' - `method = "sintax"` (the `"sintax"`/`"UTAX"` download) has 8 ranks — pass
+#'   8 names as **`taxa_ranks`**, e.g. `c("Domain", "Supergroup",
+#'   "Division_Subdivision", "Class", "Order", "Family", "Genus", "Species")`.
+#'   The dada2 `taxLevels` argument is **ignored** by the SINTAX path, so the
+#'   default 7 ranks would be used and parsing the 8-rank output fails.
 #'
 #' Please cite: Guillou L et al. (2013) The Protist Ribosomal Reference
 #' database (PR2). Nucleic Acids Research 41:D1108-D1113.
@@ -573,86 +628,157 @@ download_pr2_db <- function(
 #'   `"Fungi"`, `"Arthropoda"`, `"Mammalia"`).
 #' @param marker (Character, default `"COI-5P"`) The barcode marker. Common
 #'   values: `"COI-5P"`, `"ITS"`, `"matK"`, `"rbcL"`.
-#' @param output_format (Character, default `"fasta"`) Output format.
-#'   Currently only `"fasta"` is supported.
+#' @param tax_format (Character, default `"dada2"`) Taxonomy format written
+#'   into the FASTA headers, so the file can feed
+#'   `MiscMetabar::add_new_taxonomy_pq()`. One of:
+#'   - `"dada2"`: unprefixed, positional ranks
+#'     (`>Phylum;Class;Order;Family;Genus;Species;`).
+#'   - `"sintax"`: `>processid;tax=p:Phylum,c:Class,...`.
+#'   - `"none"`: the raw BOLD sequence FASTA with `processid|taxon|marker`
+#'     headers (no ranked taxonomy).
 #' @param verbose (Logical, default `TRUE`) Print progress messages.
 #'
 #' @returns The path to the downloaded file (invisibly).
 #' @export
 #' @author Adrien Taudière
 #' @details
-#' This function uses the BOLD v3 public API. For very large taxonomic
-#' groups, the download may take a long time or fail due to server limits.
-#' In such cases, consider using narrower taxonomic queries or the
-#' [bold](https://docs.ropensci.org/bold/) R package.
+#' This function uses the BOLD public API hosted at `v3.boldsystems.org`,
+#' which remains available after the main BOLD site's migration to v5. With
+#' `tax_format = "none"` it queries the `sequence` endpoint (FASTA). With
+#' `"dada2"`/`"sintax"` it queries the `combined` endpoint (TSV with the full
+#' ranked taxonomy), keeps the requested `marker`, and writes a
+#' taxonomy-headed FASTA (gaps removed). BOLD's taxonomy starts at phylum, so
+#' the dada2 output has no kingdom level.
+#'
+#' For very large taxa the download may be slow or hit server limits; use
+#' narrower queries, or the [BOLDconnectR](https://www.boldsystems.org/data/boldconnectr/)
+#' package for the full v5 (BCDM) data model.
 #'
 #' Please cite: Ratnasingham S & Hebert PDN (2007) BOLD: The Barcode of
 #' Life Data System. Molecular Ecology Notes 7:355-364.
 #' \doi{10.1111/j.1471-8286.2007.01678.x}
 #' @examples
 #' \dontrun{
-#' # Download COI sequences for Fungi
-#' download_bold_db(dest_dir = "databases", taxon = "Fungi")
+#' # COI reference for a genus, dada2 taxonomy headers
+#' download_bold_db(dest_dir = "databases", taxon = "Danaus")
 #'
-#' # Download ITS sequences for a specific order
+#' # ITS sequences for an order, SINTAX headers
 #' download_bold_db(
 #'   dest_dir = "databases",
 #'   taxon = "Agaricales",
-#'   marker = "ITS"
+#'   marker = "ITS",
+#'   tax_format = "sintax"
 #' )
 #' }
 download_bold_db <- function(
   dest_dir = ".",
   taxon = NULL,
   marker = "COI-5P",
-  output_format = "fasta",
+  tax_format = c("dada2", "sintax", "none"),
   verbose = TRUE
 ) {
   if (is.null(taxon)) {
     stop("You must specify a taxon (e.g., taxon = 'Fungi').", call. = FALSE)
   }
+  tax_format <- match.arg(tax_format)
 
   if (!dir.exists(dest_dir)) {
     dir.create(dest_dir, recursive = TRUE)
   }
 
-  # BOLD v3 API for sequence downloads
-  url <- paste0(
-    "http://v3.boldsystems.org/index.php/API_Public/sequence",
-    "?taxon=",
-    utils::URLencode(taxon, reserved = TRUE)
+  dest_file <- file.path(
+    dest_dir,
+    paste0("BOLD_", gsub(" ", "_", taxon), "_", marker, ".fasta")
   )
-
-  filename <- paste0(
-    "BOLD_",
-    gsub(" ", "_", taxon),
-    "_",
-    marker,
-    ".fasta"
-  )
-  dest_file <- file.path(dest_dir, filename)
 
   if (verbose) {
     message(
-      "Querying BOLD API for '",
+      "Querying BOLD for '",
       taxon,
-      "' sequences...\n",
-      "Note: large taxonomic groups may take several minutes."
+      "'. Large taxonomic groups may take several minutes."
     )
   }
 
-  download_file(url, dest_file, verbose = verbose)
-
-  # The BOLD API returns all markers; filter by marker if needed
-  if (verbose) {
-    n_seq <- count_pattern_db(dest_file, pattern = ">")
-    message("Downloaded ", n_seq, " sequences for '", taxon, "'")
-    message(
-      "Note: BOLD API returns all markers. You may want to filter ",
-      "for '",
-      marker,
-      "' using filter_db()."
+  # tax_format = "none": raw sequence FASTA (all markers; headers carry only
+  # processid|taxon|marker).
+  if (tax_format == "none") {
+    url <- paste0(
+      "https://v3.boldsystems.org/index.php/API_Public/sequence?taxon=",
+      utils::URLencode(taxon, reserved = TRUE)
     )
+    download_file(url, dest_file, verbose = verbose)
+    return(invisible(dest_file))
+  }
+
+  # Otherwise pull the "combined" endpoint (specimen + sequence) which carries
+  # the full ranked taxonomy, then write taxonomy-headed FASTA for `marker`.
+  url <- paste0(
+    "https://v3.boldsystems.org/index.php/API_Public/combined?format=tsv",
+    "&taxon=",
+    utils::URLencode(taxon, reserved = TRUE)
+  )
+  tsv <- tempfile(fileext = ".tsv")
+  on.exit(unlink(tsv), add = TRUE)
+  download_file(url, tsv, verbose = FALSE)
+
+  d <- utils::read.table(
+    tsv,
+    sep = "\t",
+    header = TRUE,
+    quote = "",
+    comment.char = "",
+    fill = TRUE,
+    stringsAsFactors = FALSE,
+    na.strings = c("", "NA")
+  )
+  if (!is.null(marker) && "markercode" %in% names(d)) {
+    d <- d[!is.na(d$markercode) & d$markercode == marker, , drop = FALSE]
+  }
+  d <- d[!is.na(d$nucleotides) & nzchar(d$nucleotides), , drop = FALSE]
+  if (nrow(d) == 0) {
+    stop(
+      "BOLD returned no '",
+      marker,
+      "' sequences for '",
+      taxon,
+      "'. Check the taxon/marker, or try tax_format = 'none'.",
+      call. = FALSE
+    )
+  }
+
+  rank_cols <- c(
+    p = "phylum_name",
+    c = "class_name",
+    o = "order_name",
+    f = "family_name",
+    g = "genus_name",
+    s = "species_name"
+  )
+  con <- file(dest_file, "w")
+  on.exit(close(con), add = TRUE)
+  for (i in seq_len(nrow(d))) {
+    vals <- vapply(
+      rank_cols,
+      function(col) if (col %in% names(d)) as.character(d[[col]][i]) else NA,
+      character(1)
+    )
+    vals[.is_missing_tax(vals)] <- NA_character_
+    last <- suppressWarnings(max(which(!is.na(vals))))
+    ranks <- if (is.finite(last)) {
+      stats::setNames(vals[seq_len(last)], names(rank_cols)[seq_len(last)])
+    } else {
+      character(0)
+    }
+    header <- .render_tax_header(
+      list(id = d$processid[i], ranks = ranks),
+      tax_format
+    )
+    seq <- gsub("[-.]", "", d$nucleotides[i])
+    writeLines(c(paste0(">", header), seq), con)
+  }
+
+  if (verbose) {
+    message("Wrote ", nrow(d), " '", marker, "' sequences to ", dest_file)
   }
 
   invisible(dest_file)
@@ -667,23 +793,32 @@ download_bold_db <- function(
 #'
 #' @description
 #' Downloads the MaarjAM database of arbuscular mycorrhizal fungi (AMF)
-#' virtual taxa (VT) sequences (18S rDNA). The database is maintained at
-#' the University of Tartu.
+#' virtual taxa (VT) sequences, maintained at the University of Tartu. The
+#' QIIME-formatted release (a zip bundling a FASTA and a taxonomy table) is
+#' used so that the resulting FASTA carries taxonomy in its headers, ready
+#' for `MiscMetabar::add_new_taxonomy_pq()`.
 #'
 #' @param dest_dir (Character, default `"."`) Directory to save the
 #'   downloaded file.
-#' @param url (Character) Direct download URL for the MaarjAM FASTA file.
-#'   Defaults to the known download endpoint. Override if the URL has
+#' @param dataset (Character, default `"SSU"`) Which MaarjAM marker release
+#'   to download. One of `"SSU"`, `"SSU_TYPE"`, `"LSU"`, `"full_ITS"`,
+#'   `"onlyITS"`.
+#' @param tax_format (Character, default `"dada2"`) Taxonomy format written
+#'   into the FASTA headers. One of `"dada2"`, `"sintax"`, or `"none"` (keep
+#'   the QIIME `accession_VTX...` headers without taxonomy).
+#' @param url (Character) Direct download URL for the MaarjAM QIIME zip. If
+#'   `NULL` (default), it is built from `dataset`. Override if the URL has
 #'   changed.
 #' @param verbose (Logical, default `TRUE`) Print progress messages.
 #'
-#' @returns The path to the downloaded file (invisibly).
+#' @returns The path to the downloaded FASTA file (invisibly).
 #' @export
 #' @author Adrien Taudière
 #' @details
-#' MaarjAM does not have a versioned API. The download URL may change.
-#' If the default URL fails, visit <https://maarjam.ut.ee/?action=bDownload>
-#' to find the current download link and pass it via the `url` parameter.
+#' The download links are listed at <https://maarjam.ut.ee/?action=bDownload>.
+#' The QIIME zip contains `*.qiime.fasta` and `*.qiime.txt` (a tab-separated
+#' `id  k__Fungi;p__...;s__VTX...` table); taxonomy is merged into the FASTA
+#' headers by matching sequence IDs.
 #'
 #' Please cite: Opik M et al. (2010) The online database MaarjAM reveals
 #' global and ecosystemic distribution patterns in arbuscular mycorrhizal
@@ -691,34 +826,88 @@ download_bold_db <- function(
 #' \doi{10.1111/j.1469-8137.2010.03334.x}
 #' @examples
 #' \dontrun{
+#' # SSU (18S) AMF database with dada2 taxonomy headers
 #' download_marjaam_db(dest_dir = "databases")
+#'
+#' # SINTAX-formatted headers
+#' download_marjaam_db(dest_dir = "databases", tax_format = "sintax")
 #' }
 download_marjaam_db <- function(
   dest_dir = ".",
-  url = "https://maarjam.ut.ee/resources/maarjam_database.fasta",
+  dataset = c("SSU", "SSU_TYPE", "LSU", "full_ITS", "onlyITS"),
+  tax_format = c("dada2", "sintax", "none"),
+  url = NULL,
   verbose = TRUE
 ) {
+  dataset <- match.arg(dataset)
+  tax_format <- match.arg(tax_format)
+
   if (!dir.exists(dest_dir)) {
     dir.create(dest_dir, recursive = TRUE)
   }
 
-  filename <- "maarjam_database.fasta"
-  dest_file <- file.path(dest_dir, filename)
+  if (is.null(url)) {
+    url <- paste0(
+      "https://maarjam.ut.ee/resources/maarjam_database_",
+      dataset,
+      ".qiime.2021.zip"
+    )
+  }
 
-  tryCatch(
-    download_file(url, dest_file, verbose = verbose),
-    error = function(e) {
-      stop(
-        "MaarjAM download failed. The URL may have changed.\n",
-        "Visit https://maarjam.ut.ee/?action=bDownload to find the ",
-        "current download link, then use:\n",
-        "  download_marjaam_db(url = 'https://...')\n",
-        "Original error: ",
-        conditionMessage(e),
+  zip_file <- tempfile(fileext = ".zip")
+  exdir <- tempfile()
+  on.exit(unlink(c(zip_file, exdir), recursive = TRUE), add = TRUE)
+  download_file(url, zip_file, verbose = verbose)
+  dir.create(exdir)
+  utils::unzip(zip_file, exdir = exdir)
+
+  fa <- list.files(
+    exdir,
+    pattern = "\\.fasta$",
+    full.names = TRUE,
+    recursive = TRUE
+  )[1]
+  if (is.na(fa)) {
+    stop("No FASTA found in the MaarjAM archive: ", url, call. = FALSE)
+  }
+  dest_file <- file.path(dest_dir, paste0("maarjam_", dataset, ".fasta"))
+  file.copy(fa, dest_file, overwrite = TRUE)
+
+  if (tax_format != "none") {
+    txt <- list.files(
+      exdir,
+      pattern = "\\.txt$",
+      full.names = TRUE,
+      recursive = TRUE
+    )[1]
+    if (is.na(txt)) {
+      warning(
+        "No taxonomy table found in the MaarjAM archive; headers left ",
+        "unannotated.",
         call. = FALSE
       )
+    } else {
+      tax_tab <- utils::read.table(
+        txt,
+        sep = "\t",
+        quote = "",
+        comment.char = "",
+        stringsAsFactors = FALSE,
+        col.names = c("id", "tax")
+      )
+      id2ranks <- stats::setNames(
+        lapply(tax_tab$tax, .lineage_to_ranks, sep = ";"),
+        tax_tab$id
+      )
+      .write_tax_fasta(
+        fasta_path = dest_file,
+        id2ranks = id2ranks,
+        tax_format = tax_format,
+        output_path = dest_file,
+        verbose = verbose
+      )
     }
-  )
+  }
 
   invisible(dest_file)
 }
@@ -829,6 +1018,16 @@ download_eukaryome_db <- function(
 #'   - `"dada2_species"`: species-level training set for
 #'     `dada2::assignTaxonomy()` (includes species).
 #'   - `"fasta"`: plain FASTA sequences from the FTP server.
+#' @param tax_format (Character, default `"dada2"`) How to write taxonomy in
+#'   the headers of the `"dada2"`/`"dada2_species"` training set. The
+#'   Greengenes2 trainset ships with `d__`/`p__` rank prefixes, which
+#'   `dada2::assignTaxonomy()` and `MiscMetabar::add_new_taxonomy_pq()`
+#'   reject. One of:
+#'   - `"dada2"`: strip the prefixes to unprefixed, positional dada2
+#'     (`>Bacteria;Pseudomonadota;...;`).
+#'   - `"sintax"`: rewrite as `>ID;tax=d:Bacteria,p:...`.
+#'   - `"keep"`: leave the original `d__`-prefixed headers untouched.
+#'   Ignored for `format = "fasta"`.
 #' @param verbose (Logical, default `TRUE`) Print progress messages.
 #'
 #' @returns The path to the downloaded file (invisibly).
@@ -838,6 +1037,10 @@ download_eukaryome_db <- function(
 #' The dada2-formatted files are maintained by Benjamin Callahan on Zenodo
 #' and are the same source as the SILVA dada2 training sets. See
 #' <https://benjjneb.github.io/dada2/training.html> for details.
+#'
+#' The Greengenes2 trainset uses `d__`/`p__` rank prefixes. By default
+#' (`tax_format = "dada2"`) the prefixes are stripped so the file is directly
+#' usable by `dada2::assignTaxonomy()` and `add_new_taxonomy_pq()`.
 #'
 #' Please cite: McDonald D et al. (2024) Greengenes2 unifies microbial
 #' data in a single reference tree. Nature Biotechnology 42:715-718.
@@ -855,9 +1058,11 @@ download_greengenes2_db <- function(
   dest_dir = ".",
   version = "2024.09",
   format = c("dada2", "dada2_species", "fasta"),
+  tax_format = c("dada2", "sintax", "keep"),
   verbose = TRUE
 ) {
   format <- match.arg(format)
+  tax_format <- match.arg(tax_format)
 
   if (!dir.exists(dest_dir)) {
     dir.create(dest_dir, recursive = TRUE)
@@ -909,6 +1114,22 @@ download_greengenes2_db <- function(
 
   dest_file <- file.path(dest_dir, filename)
   download_file(url, dest_file, verbose = verbose)
+
+  # The dada2/dada2_species trainsets carry d__/p__ prefixes; rewrite to plain
+  # dada2 (or sintax) so the file feeds assignTaxonomy()/add_new_taxonomy_pq().
+  if (format %in% c("dada2", "dada2_species") && tax_format != "keep") {
+    if (verbose) {
+      message("Rewriting Greengenes2 headers as ", tax_format, " ...")
+    }
+    .reformat_inheader_fasta(
+      fasta_path = dest_file,
+      header_sep = ";",
+      tax_format = tax_format,
+      output_path = dest_file,
+      id_prefix = "GG2_",
+      verbose = verbose
+    )
+  }
 
   invisible(dest_file)
 }
@@ -1194,6 +1415,491 @@ download_diatbarcode_db <- function(
   dest_file <- file.path(dest_dir, filename)
 
   download_file(url, dest_file, verbose = verbose)
+
+  invisible(dest_file)
+}
+
+
+# ——————————————————————————————————————————————————————————————————————
+# KSGP
+# ——————————————————————————————————————————————————————————————————————
+
+#' Download the KSGP or GTDB+ reference database
+#'
+#' @description
+#' Downloads the KSGP (Karst, Silva, GTDB, and PR2) reference database for
+#' SSU rRNA taxonomic assignment, particularly optimized for Archaea
+#' communities. KSGP combines near full-length rRNA sequences from Karst
+#' et al. 2018, re-annotated SILVA prokaryote SSU sequences, cleaned GTDB 16S
+#' sequences, PR2 eukaryote 18S sequences, and MIDORI2 mitochondrial
+#' sequences. Taxonomy is based on GTDB, providing phylogenetically consistent
+#' classification.
+#'
+#' Also provides access to the GTDB+ and GTDB_cleaned databases built as
+#' intermediate steps during KSGP construction.
+#'
+#' Three annotation variants are available for `database = "KSGP"` and
+#' `file_type = "tax"`:
+#' - `"sintax"` (default): SINTAX-based taxonomic assignments (KSGP Sintax
+#'   in the paper). Available for all versions.
+#' - `"lca"`: Conservative lowest common ancestor assignments (KSGP LCA).
+#'   Only available for version `"3.1"`.
+#' - `"ksgp_plus"`: Similarity-clustered putative taxa (KSGP+). Only
+#'   available for version `"3.1"`.
+#'
+#' @param dest_dir (Character, default `"."`) Directory to save the
+#'   downloaded file.
+#' @param database (Character, default `"KSGP"`) One of:
+#'   - `"KSGP"`: Full KSGP SSU database (Archaea + Bacteria + Eukaryota).
+#'   - `"GTDB_plus"`: Cleaned GTDB 16S sequences with PR2 and MIDORI2.
+#'   - `"GTDB_cleaned"`: Cleaned GTDB 16S sequences only (no eukaryote
+#'     supplement).
+#' @param file_type (Character, default `"fasta"`) One of:
+#'   - `"fasta"`: FASTA file with SSU sequences.
+#'   - `"tax"`: Taxonomy file (`.tax`) with taxonomic annotations.
+#'   - `"archive"`: Complete `.tar.gz` archive (all KSGP files, all
+#'     annotation variants). Only available for `database = "KSGP"`.
+#' @param annotation (Character, default `"sintax"`) Taxonomic annotation
+#'   method. One of `"sintax"`, `"lca"`, or `"ksgp_plus"`. Only applies
+#'   when `database = "KSGP"` and `file_type = "tax"`. Only `"sintax"` is
+#'   available for version `"1.0"`.
+#' @param tax_format (Character, default `"dada2"`) When `file_type = "fasta"`,
+#'   also download the companion `.tax` file and merge its taxonomy into the
+#'   FASTA headers (matched by sequence ID), so the file feeds
+#'   `MiscMetabar::add_new_taxonomy_pq()`. One of `"dada2"`, `"sintax"`, or
+#'   `"none"` (keep accession-only headers). Sequences whose ID is absent from
+#'   the `.tax` (e.g. the SILVA-derived portion) keep accession-only headers.
+#'   Ignored for `file_type = "tax"` / `"archive"`.
+#' @param version (Character, default `"3.1"`) KSGP version. Known versions:
+#'   `"3.1"` (2025, recommended) and `"1.0"`.
+#' @param verbose (Logical, default `TRUE`) Print progress messages.
+#'
+#' @returns The path to the downloaded file (invisibly).
+#' @export
+#' @author Adrien Taudière
+#' @details
+#' The KSGP FASTA and taxonomy files are separate downloads. To use KSGP
+#' for taxonomic assignment:
+#' - With VSEARCH SINTAX: download both the FASTA (`file_type = "fasta"`)
+#'   and the SINTAX taxonomy (`file_type = "tax"`, `annotation = "sintax"`).
+#' - With LotuS2: the KSGP database is integrated directly.
+#' - For a complete set of all files: use `file_type = "archive"`.
+#'
+#' KSGP substantially improves Archaea annotation over SILVA and Greengenes2:
+#' Class and Order assignments increase by 2.7x and 4.2x respectively.
+#'
+#' Please cite: Grant A et al. (2025) KSGP 3.1: improved taxonomic annotation
+#' of Archaea communities using LotuS2, the genome taxonomy database and
+#' RNAseq data. ISME Communications 5(1): ycaf094.
+#' \doi{10.1093/ismeco/ycaf094}
+#' @seealso [download_silva_db()], [download_pr2_db()], [format2sintax()]
+#' @examples
+#' \dontrun{
+#' # Download KSGP v3.1 FASTA
+#' download_ksgp_db(dest_dir = "databases")
+#'
+#' # Download KSGP v3.1 LCA taxonomy file
+#' download_ksgp_db(
+#'   dest_dir = "databases",
+#'   file_type = "tax",
+#'   annotation = "lca"
+#' )
+#'
+#' # Download KSGP+ taxonomy file
+#' download_ksgp_db(
+#'   dest_dir = "databases",
+#'   file_type = "tax",
+#'   annotation = "ksgp_plus"
+#' )
+#'
+#' # Download the complete KSGP archive (all annotation variants)
+#' download_ksgp_db(dest_dir = "databases", file_type = "archive")
+#'
+#' # Download GTDB+ (cleaned GTDB + PR2 + MIDORI2)
+#' download_ksgp_db(dest_dir = "databases", database = "GTDB_plus")
+#' }
+download_ksgp_db <- function(
+  dest_dir = ".",
+  database = c("KSGP", "GTDB_plus", "GTDB_cleaned"),
+  file_type = c("fasta", "tax", "archive"),
+  annotation = c("sintax", "lca", "ksgp_plus"),
+  tax_format = c("dada2", "sintax", "none"),
+  version = "3.1",
+  verbose = TRUE
+) {
+  database <- match.arg(database)
+  file_type <- match.arg(file_type)
+  annotation <- match.arg(annotation)
+  tax_format <- match.arg(tax_format)
+
+  if (!dir.exists(dest_dir)) {
+    dir.create(dest_dir, recursive = TRUE)
+  }
+
+  # Explicit lookup of confirmed-valid filenames.
+  # Keys: "version:database:file_type:annotation"
+  # For non-KSGP databases or non-tax file types, annotation is ignored
+  # (canonicalised to "sintax" in key construction below).
+  # Note: GTDB_cleaned v1.0 .tax has a server-side typo (GTB not GTDB).
+  file_lookup <- list(
+    # v3.1 — KSGP
+    "3.1:KSGP:fasta:sintax" = "KSGP_v3.1.fasta",
+    "3.1:KSGP:fasta:lca" = "KSGP_v3.1.fasta",
+    "3.1:KSGP:fasta:ksgp_plus" = "KSGP_v3.1.fasta",
+    "3.1:KSGP:tax:sintax" = "KSGP_v3.1.tax",
+    "3.1:KSGP:tax:lca" = "KSGP_lca_v3.1.tax",
+    "3.1:KSGP:tax:ksgp_plus" = "KSGP_plus_v3.1.tax",
+    "3.1:KSGP:archive:sintax" = "KSGP_v3.1.tar.gz",
+    # v3.1 — GTDB_plus
+    "3.1:GTDB_plus:fasta:sintax" = "GTDB_plus_v3.1.fasta",
+    "3.1:GTDB_plus:tax:sintax" = "GTDB_plus_v3.1.tax",
+    # v3.1 — GTDB_cleaned
+    "3.1:GTDB_cleaned:fasta:sintax" = "GTDB_cleaned_v3.1.fasta",
+    "3.1:GTDB_cleaned:tax:sintax" = "GTDB_cleaned_v3.1.tax",
+    # v1.0 — KSGP (lca/ksgp_plus variants did not exist in v1.0)
+    "1.0:KSGP:fasta:sintax" = "KSGP_v1.0.fasta",
+    "1.0:KSGP:tax:sintax" = "KSGP_v1.0.tax",
+    "1.0:KSGP:archive:sintax" = "KSGP_v1.0.tar.gz",
+    # v1.0 — GTDB_plus
+    "1.0:GTDB_plus:fasta:sintax" = "GTDB_plus_v1.0.fasta",
+    "1.0:GTDB_plus:tax:sintax" = "GTDB_plus_v1.0.tax",
+    # v1.0 — GTDB_cleaned (server-side typo: GTB_cleaned, not GTDB_cleaned)
+    "1.0:GTDB_cleaned:fasta:sintax" = "GTDB_cleaned_v1.0.fasta",
+    "1.0:GTDB_cleaned:tax:sintax" = "GTB_cleaned_v1.0.tax"
+  )
+
+  # annotation only differentiates KSGP .tax files; all other combinations
+  # map to the same file regardless of annotation
+  lookup_annotation <- if (database == "KSGP" && file_type == "tax") {
+    annotation
+  } else {
+    "sintax"
+  }
+
+  key <- paste(version, database, file_type, lookup_annotation, sep = ":")
+  filename <- file_lookup[[key]]
+
+  if (is.null(filename)) {
+    avail <- names(file_lookup)[
+      startsWith(names(file_lookup), paste0(version, ":"))
+    ]
+    avail_desc <- unique(vapply(
+      avail,
+      function(k) {
+        p <- strsplit(k, ":")[[1]]
+        suffix <- if (p[2] == "KSGP" && p[3] == "tax") {
+          paste0(", annotation = '", p[4], "'")
+        } else {
+          ""
+        }
+        paste0("  database='", p[2], "', file_type='", p[3], "'", suffix)
+      },
+      character(1)
+    ))
+    stop(
+      "No known KSGP download for version='",
+      version,
+      "', database='",
+      database,
+      "', file_type='",
+      file_type,
+      "'",
+      if (database == "KSGP" && file_type == "tax") {
+        paste0(", annotation='", annotation, "'")
+      },
+      ".\n",
+      "Known combinations for version '",
+      version,
+      "':\n",
+      paste(avail_desc, collapse = "\n"),
+      "\n",
+      "Visit https://ksgp.earlham.ac.uk/index.php?site=download for details.",
+      call. = FALSE
+    )
+  }
+
+  url <- paste0(
+    "https://ksgp.earlham.ac.uk/downloads/v",
+    version,
+    "/",
+    filename
+  )
+  dest_file <- file.path(dest_dir, filename)
+
+  download_file(url, dest_file, verbose = verbose)
+
+  if (verbose && file_type == "archive") {
+    message(
+      "KSGP archive saved as: ",
+      dest_file,
+      "\n",
+      "Extract with: untar('",
+      dest_file,
+      "', exdir = '",
+      dest_dir,
+      "')"
+    )
+  }
+
+  # For the FASTA, optionally merge the companion .tax (matched by sequence
+  # ID, as in the KSGP/LotuS2 workflow) and rewrite headers as dada2/sintax.
+  # Sequences whose ID is absent from the .tax keep accession-only headers.
+  if (file_type == "fasta" && tax_format != "none") {
+    tax_filename <- file_lookup[[paste(
+      version,
+      database,
+      "tax",
+      lookup_annotation,
+      sep = ":"
+    )]]
+    if (is.null(tax_filename)) {
+      warning(
+        "No .tax file known for this version/database/annotation; ",
+        "FASTA headers left unannotated.",
+        call. = FALSE
+      )
+    } else {
+      tax_url <- paste0(
+        "https://ksgp.earlham.ac.uk/downloads/v",
+        version,
+        "/",
+        tax_filename
+      )
+      tax_file <- tempfile(fileext = ".tax")
+      on.exit(unlink(tax_file), add = TRUE)
+      if (verbose) {
+        message(
+          "Merging taxonomy from ",
+          tax_filename,
+          " into ",
+          tax_format,
+          " headers ..."
+        )
+      }
+      download_file(tax_url, tax_file, verbose = FALSE)
+      tax_tab <- utils::read.table(
+        tax_file,
+        sep = "\t",
+        quote = "",
+        comment.char = "",
+        stringsAsFactors = FALSE,
+        col.names = c("id", "tax")
+      )
+      id2ranks <- stats::setNames(
+        lapply(tax_tab$tax, .lineage_to_ranks, sep = ";"),
+        tax_tab$id
+      )
+      .write_tax_fasta(
+        fasta_path = dest_file,
+        id2ranks = id2ranks,
+        tax_format = tax_format,
+        output_path = dest_file,
+        verbose = verbose
+      )
+    }
+  }
+
+  invisible(dest_file)
+}
+
+
+# ——————————————————————————————————————————————————————————————————————
+# LTPlus
+# ——————————————————————————————————————————————————————————————————————
+
+#' Download the LTPlus reference database
+#'
+#' @description
+#' Downloads the LTPlus 16S rRNA gene reference FASTA for Bacteria and
+#' Archaea. LTPlus extends the All-Species Living Tree Project (LTP)
+#' type-strain collection with the best-quality non-type sequences selected
+#' from the SILVA non-redundant and GTDB databases, plus the highest-quality
+#' 16S sequences deposited at NCBI between 2019 and 2025. Sequences are
+#' clustered non-redundantly at a 98.7% identity threshold, yielding a
+#' compact database that covers most of the known prokaryotic genealogical
+#' diversity.
+#'
+#' @param dest_dir (Character, default `"."`) Directory to save the
+#'   downloaded FASTA file.
+#' @param url (Character) Direct download URL for the LTPlus FASTA. Defaults
+#'   to the February 2026 release served by the Marine Microbiology Group
+#'   (IMEDEA, UIB-CSIC). Pass a different release URL to download another
+#'   version (see Details).
+#' @param tax_format (Character, default `"dada2"`) Taxonomy format to write
+#'   into the FASTA headers, so the file can feed
+#'   `MiscMetabar::add_new_taxonomy_pq()`. One of:
+#'   - `"dada2"`: unprefixed, semicolon-delimited ranks
+#'     (`>Bacteria;Pseudomonadota;...;`).
+#'   - `"sintax"`: `>ID;tax=d:Bacteria,p:Pseudomonadota,...`.
+#'   - `"none"`: keep the original accession-only headers.
+#'   Taxonomy is read from the companion CSV (see `csv_url`).
+#' @param csv_url (Character) URL of the LTPlus metadata CSV that maps each
+#'   sequence accession to its full taxonomy. Defaults to the CSV of the
+#'   February 2026 release. Only used when `tax_format != "none"`.
+#' @param to_dna (Logical, default `TRUE`) Convert the downloaded RNA FASTA
+#'   to DNA (transcribe `U` to `T`) and rewrite it as a standard FASTA. Set
+#'   to `FALSE` to keep the original RNA file unchanged. Requires the
+#'   \pkg{Biostrings} package.
+#' @param verbose (Logical, default `TRUE`) Print progress messages.
+#'
+#' @returns The path to the downloaded file (invisibly).
+#' @export
+#' @author Adrien Taudière
+#' @details
+#' The file is the LTPlus 16S FASTA exported from the underlying curated
+#' alignment with gap columns removed ("compressed"), so the sequences are
+#' **unaligned** and vary in length (~140 MB total). It is served directly
+#' (no registration) from the LTP release backend; the file name is taken
+#' from the server's `Content-Disposition` header when available (e.g.
+#' `ltplus_10_02_2026_compressed.fasta`).
+#'
+#' The released sequences are in the **RNA alphabet** (`U` rather than `T`)
+#' and the sequence lines contain whitespace. With `to_dna = TRUE` (default)
+#' the function transcribes `U` to `T` and rewrites a clean, whitespace-free
+#' DNA FASTA in place, ready for DNA-based classifiers such as dada2 or
+#' VSEARCH. With `to_dna = FALSE` the original RNA file is kept as-is.
+#'
+#' The released FASTA headers carry only an accession (e.g. `>LAJZ3046`); the
+#' taxonomy lives in a companion CSV. With `tax_format = "dada2"` (default)
+#' or `"sintax"` the function downloads that CSV, maps each accession to its
+#' full LTPlus lineage, and rewrites the headers with taxonomy so the file is
+#' ready for `MiscMetabar::add_new_taxonomy_pq()`. Use `tax_format = "none"`
+#' to keep the accession-only headers.
+#'
+#' The default `url` points to the current release file. To list available
+#' releases and files, see the Downloads section of
+#' <https://bioinfo.uib.es/ltp/> or query
+#' <https://biocom.uib.es/opucheck-backend/api/releases>; each file has an
+#' id appended to `.../api/releases/` to form its download URL. The ARB
+#' database, CSV and Newick tree files are also available there.
+#'
+#' Please cite: Rosselló-Móra R et al. (2026) A pipeline for improved 16S
+#' rRNA gene-based phylogeny and diversity analyses of Bacteria and Archaea.
+#' Research Square. \doi{10.21203/rs.3.rs-9370187/v1}
+#' @seealso [download_silva_db()], [download_greengenes2_db()],
+#'   [download_ksgp_db()]
+#' @examples
+#' \dontrun{
+#' # Download the current LTPlus 16S FASTA (DNA, dada2 taxonomy headers)
+#' download_ltplus_db(dest_dir = "databases")
+#'
+#' # SINTAX-formatted headers instead
+#' download_ltplus_db(dest_dir = "databases", tax_format = "sintax")
+#'
+#' # Keep the original RNA, accession-only FASTA without conversion
+#' download_ltplus_db(dest_dir = "databases", to_dna = FALSE, tax_format = "none")
+#' }
+download_ltplus_db <- function(
+  dest_dir = ".",
+  url = "https://biocom.uib.es/opucheck-backend/api/releases/02_26_06",
+  tax_format = c("dada2", "sintax", "none"),
+  csv_url = "https://biocom.uib.es/opucheck-backend/api/releases/02_26_02",
+  to_dna = TRUE,
+  verbose = TRUE
+) {
+  tax_format <- match.arg(tax_format)
+
+  if (!dir.exists(dest_dir)) {
+    dir.create(dest_dir, recursive = TRUE)
+  }
+
+  # The release endpoint carries no file name in its path; prefer the
+  # name advertised in the Content-Disposition header, falling back to the
+  # URL basename or a generic LTPlus FASTA name.
+  filename <- tryCatch(
+    {
+      headers <- curlGetHeaders(url, redirect = TRUE)
+      cd <- grep(
+        "content-disposition",
+        headers,
+        ignore.case = TRUE,
+        value = TRUE
+      )
+      fn <- if (length(cd) > 0) {
+        sub('.*filename="?([^";\r\n]+).*', "\\1", cd[[1]])
+      } else {
+        ""
+      }
+      if (is.na(fn) || fn == "" || fn == cd[[1]]) NA_character_ else fn
+    },
+    error = function(e) NA_character_
+  )
+
+  if (is.na(filename)) {
+    filename <- sub("\\?.*$", "", basename(url))
+    if (filename == "" || !grepl(".", filename, fixed = TRUE)) {
+      filename <- "ltplus.fasta"
+    }
+  }
+
+  dest_file <- file.path(dest_dir, filename)
+  download_file(url, dest_file, verbose = verbose)
+
+  if (to_dna) {
+    if (!requireNamespace("Biostrings", quietly = TRUE)) {
+      warning(
+        "Package 'Biostrings' is required for `to_dna = TRUE`; ",
+        "the RNA FASTA was downloaded but not converted.",
+        call. = FALSE
+      )
+    } else {
+      if (verbose) {
+        message("Converting RNA (U) to DNA (T) and rewriting FASTA ...")
+      }
+      seqs <- suppressWarnings(Biostrings::readRNAStringSet(dest_file))
+      dna <- Biostrings::DNAStringSet(seqs)
+      # Write to a temporary file first, then replace, so a failure mid-write
+      # does not leave a corrupted database file behind.
+      tmp <- tempfile(tmpdir = dest_dir, fileext = ".fasta")
+      Biostrings::writeXStringSet(dna, tmp)
+      file.rename(tmp, dest_file)
+      if (verbose) {
+        message("Wrote DNA FASTA: ", dest_file)
+      }
+    }
+  }
+
+  if (tax_format != "none") {
+    if (verbose) {
+      message(
+        "Fetching LTPlus taxonomy CSV and writing ",
+        tax_format,
+        " headers ..."
+      )
+    }
+    csv_file <- tempfile(fileext = ".csv")
+    on.exit(unlink(csv_file), add = TRUE)
+    download_file(csv_url, csv_file, verbose = FALSE)
+    meta <- utils::read.csv(
+      csv_file,
+      sep = ";",
+      quote = "",
+      check.names = FALSE,
+      stringsAsFactors = FALSE
+    )
+    tax_col <- grep("taxonomy", names(meta), ignore.case = TRUE, value = TRUE)[
+      1
+    ]
+    if (is.na(tax_col) || !"NAME" %in% names(meta)) {
+      warning(
+        "Could not find the expected 'NAME' and taxonomy columns in the ",
+        "LTPlus CSV; headers left unannotated.",
+        call. = FALSE
+      )
+    } else {
+      id2ranks <- stats::setNames(
+        lapply(meta[[tax_col]], .lineage_to_ranks, sep = "/"),
+        meta[["NAME"]]
+      )
+      .write_tax_fasta(
+        fasta_path = dest_file,
+        id2ranks = id2ranks,
+        tax_format = tax_format,
+        output_path = dest_file,
+        verbose = verbose
+      )
+    }
+  }
 
   invisible(dest_file)
 }

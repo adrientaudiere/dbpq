@@ -117,3 +117,102 @@ test_that("format_fasta_db errors on unknown auto-detected format", {
     "auto-detect"
   )
 })
+
+test_that("format2sintax converts dada2 trainset (7 ranks) with synthetic ID", {
+  result <- format2sintax(
+    taxnames = paste0(
+      "Bacteria;Pseudomonadota;Gammaproteobacteria;Enterobacterales;",
+      "Enterobacteriaceae;Escherichia-Shigella;Escherichia coli;"
+    ),
+    input_format = "dada2",
+    id_prefix = "X_"
+  )
+  expect_equal(
+    result,
+    paste0(
+      "X_000001;tax=d:Bacteria,p:Pseudomonadota,c:Gammaproteobacteria,",
+      "o:Enterobacterales,f:Enterobacteriaceae,g:Escherichia-Shigella,",
+      "s:Escherichia coli"
+    )
+  )
+})
+
+test_that("format2sintax dada2 input increments synthetic IDs per record", {
+  result <- format2sintax(
+    taxnames = c(
+      "Bacteria;Pseudomonadota;",
+      "Archaea;Euryarchaeota;"
+    ),
+    input_format = "dada2",
+    id_prefix = "S_"
+  )
+  expect_equal(
+    result,
+    c(
+      "S_000001;tax=d:Bacteria,p:Pseudomonadota",
+      "S_000002;tax=d:Archaea,p:Euryarchaeota"
+    )
+  )
+})
+
+test_that("format2sintax dada2 input keeps only the ranks present (toGenus)", {
+  result <- format2sintax(
+    taxnames = paste0(
+      "Bacteria;Pseudomonadota;Gammaproteobacteria;Vibrionales;",
+      "Vibrionaceae;Vibrio;"
+    ),
+    input_format = "dada2"
+  )
+  expect_equal(
+    result,
+    paste0(
+      "seq000001;tax=d:Bacteria,p:Pseudomonadota,c:Gammaproteobacteria,",
+      "o:Vibrionales,f:Vibrionaceae,g:Vibrio"
+    )
+  )
+})
+
+test_that("format_fasta_db gzips the output when output_path ends in .gz", {
+  in_fa <- tempfile(fileext = ".fasta")
+  out_gz <- tempfile(fileext = ".fasta.gz")
+  on.exit(unlink(c(in_fa, out_gz)), add = TRUE)
+  writeLines(
+    c(
+      ">Bacteria;Pseudomonadota;Gammaproteobacteria;",
+      "ACGTACGTACGTACGT",
+      ">Archaea;Euryarchaeota;Methanobacteria;",
+      "TGCATGCATGCATGCA"
+    ),
+    in_fa
+  )
+  format2sintax(
+    fasta_db = in_fa,
+    input_format = "dada2",
+    output_path = out_gz,
+    id_prefix = "S_"
+  )
+  # gzip magic bytes are 0x1f 0x8b
+  magic <- readBin(out_gz, what = "raw", n = 2L)
+  expect_equal(magic, as.raw(c(0x1f, 0x8b)))
+  # and it round-trips back to the expected reformatted headers
+  reread <- Biostrings::readDNAStringSet(out_gz)
+  expect_equal(
+    names(reread)[1],
+    "S_000001;tax=d:Bacteria,p:Pseudomonadota,c:Gammaproteobacteria"
+  )
+})
+
+test_that("detect_tax_format recognises positional dada2 headers", {
+  tmp <- tempfile(fileext = ".fasta")
+  on.exit(unlink(tmp), add = TRUE)
+  writeLines(
+    c(
+      ">Bacteria;Pseudomonadota;Gammaproteobacteria;",
+      "ACGTACGTACGT",
+      ">Archaea;Euryarchaeota;Methanobacteria;",
+      "TGCATGCATGCA"
+    ),
+    tmp
+  )
+  expect_equal(detect_tax_format(tmp), "dada2")
+})

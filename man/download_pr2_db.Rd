@@ -20,7 +20,10 @@ downloaded file.}
 \code{NULL} (default), the latest release is fetched from GitHub.}
 
 \item{format}{(Character, default \code{"dada2"}) One of \code{"dada2"}, \code{"mothur"},
-\code{"UTAX"}, or \code{"sintax"} (alias for \code{"UTAX"}).}
+\code{"UTAX"}, or \code{"sintax"} (alias for \code{"UTAX"}). See \strong{Taxonomic ranks}
+below: the \code{"dada2"} file keeps PR2's 9 ranks, whereas the
+\code{"UTAX"}/\code{"sintax"} file collapses them to 8 (Division and Subdivision
+are merged).}
 
 \item{marker}{(Character, default \code{"SSU"}) One of \code{"SSU"} or \code{"plastid"}.}
 
@@ -41,10 +44,46 @@ metadata, or custom queries), see the
 \details{
 PR2 releases are hosted on GitHub at
 \url{https://github.com/pr2database/pr2database/releases}.
+\subsection{Taxonomic ranks}{
+
+PR2 uses \strong{9} taxonomic ranks. The \code{"dada2"} file keeps all nine as a
+positional, semicolon-delimited lineage (no rank prefixes); pass them to
+\code{\link[dada2:assignTaxonomy]{dada2::assignTaxonomy()}} (via \code{\link[MiscMetabar:add_new_taxonomy_pq]{MiscMetabar::add_new_taxonomy_pq()}} with
+\code{method = "dada2"}) through \code{taxLevels}:
+
+\code{c("Domain", "Supergroup", "Division", "Subdivision", "Class", "Order", "Family", "Genus", "Species")}
+
+The \code{"UTAX"}/\code{"sintax"} file targets VSEARCH/USEARCH SINTAX and uses the
+\strong{8} standard single-letter rank prefixes (\verb{k, d, p, c, o, f, g, s}). To
+fit PR2's nine ranks onto them, PR2 \strong{merges Division and Subdivision}
+into the \verb{p:} rank (joined by \code{-}). The 9 → 8 mapping is:\tabular{ll}{
+   PR2 rank (dada2) \tab SINTAX prefix (UTAX) \cr
+   Domain \tab \verb{k:} \cr
+   Supergroup \tab \verb{d:} \cr
+   Division + Subdivision \tab \verb{p:} (e.g. \code{Alveolata-Dinoflagellata}) \cr
+   Class \tab \verb{c:} \cr
+   Order \tab \verb{o:} \cr
+   Family \tab \verb{f:} \cr
+   Genus \tab \verb{g:} \cr
+   Species \tab \verb{s:} \cr
+}
+
+
+Mind the per-method argument when calling
+\code{\link[MiscMetabar:add_new_taxonomy_pq]{MiscMetabar::add_new_taxonomy_pq()}}:
+\itemize{
+\item \code{method = "dada2"} (the \code{"dada2"} download) keeps all 9 ranks — pass the
+9 names above as \strong{\code{taxLevels}} (forwarded to \code{\link[dada2:assignTaxonomy]{dada2::assignTaxonomy()}}).
+\item \code{method = "sintax"} (the \code{"sintax"}/\code{"UTAX"} download) has 8 ranks — pass
+8 names as \strong{\code{taxa_ranks}}, e.g. \code{c("Domain", "Supergroup", "Division_Subdivision", "Class", "Order", "Family", "Genus", "Species")}.
+The dada2 \code{taxLevels} argument is \strong{ignored} by the SINTAX path, so the
+default 7 ranks would be used and parsing the 8-rank output fails.
+}
 
 Please cite: Guillou L et al. (2013) The Protist Ribosomal Reference
 database (PR2). Nucleic Acids Research 41:D1108-D1113.
 \doi{10.1093/nar/gks1160}
+}
 }
 \examples{
 \dontrun{

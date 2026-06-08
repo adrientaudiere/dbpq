@@ -8,6 +8,7 @@ download_greengenes2_db(
   dest_dir = ".",
   version = "2024.09",
   format = c("dada2", "dada2_species", "fasta"),
+  tax_format = c("dada2", "sintax", "keep"),
   verbose = TRUE
 )
 }
@@ -25,6 +26,19 @@ for \code{dada2::assignTaxonomy()}).
 \item \code{"dada2_species"}: species-level training set for
 \code{dada2::assignTaxonomy()} (includes species).
 \item \code{"fasta"}: plain FASTA sequences from the FTP server.
+}}
+
+\item{tax_format}{(Character, default \code{"dada2"}) How to write taxonomy in
+the headers of the \code{"dada2"}/\code{"dada2_species"} training set. The
+Greengenes2 trainset ships with \code{d__}/\code{p__} rank prefixes, which
+\code{dada2::assignTaxonomy()} and \code{MiscMetabar::add_new_taxonomy_pq()}
+reject. One of:
+\itemize{
+\item \code{"dada2"}: strip the prefixes to unprefixed, positional dada2
+(\verb{>Bacteria;Pseudomonadota;...;}).
+\item \code{"sintax"}: rewrite as \verb{>ID;tax=d:Bacteria,p:...}.
+\item \code{"keep"}: leave the original \code{d__}-prefixed headers untouched.
+Ignored for \code{format = "fasta"}.
 }}
 
 \item{verbose}{(Logical, default \code{TRUE}) Print progress messages.}
@@ -46,6 +60,10 @@ as the first rank prefix. Use \code{tax_format = "greengenes2"} with
 The dada2-formatted files are maintained by Benjamin Callahan on Zenodo
 and are the same source as the SILVA dada2 training sets. See
 \url{https://benjjneb.github.io/dada2/training.html} for details.
+
+The Greengenes2 trainset uses \code{d__}/\code{p__} rank prefixes. By default
+(\code{tax_format = "dada2"}) the prefixes are stripped so the file is directly
+usable by \code{dada2::assignTaxonomy()} and \code{add_new_taxonomy_pq()}.
 
 Please cite: McDonald D et al. (2024) Greengenes2 unifies microbial
 data in a single reference tree. Nature Biotechnology 42:715-718.

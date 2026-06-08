@@ -6,7 +6,9 @@
 \usage{
 download_marjaam_db(
   dest_dir = ".",
-  url = "https://maarjam.ut.ee/resources/maarjam_database.fasta",
+  dataset = c("SSU", "SSU_TYPE", "LSU", "full_ITS", "onlyITS"),
+  tax_format = c("dada2", "sintax", "none"),
+  url = NULL,
   verbose = TRUE
 )
 }
@@ -14,24 +16,35 @@ download_marjaam_db(
 \item{dest_dir}{(Character, default \code{"."}) Directory to save the
 downloaded file.}
 
-\item{url}{(Character) Direct download URL for the MaarjAM FASTA file.
-Defaults to the known download endpoint. Override if the URL has
+\item{dataset}{(Character, default \code{"SSU"}) Which MaarjAM marker release
+to download. One of \code{"SSU"}, \code{"SSU_TYPE"}, \code{"LSU"}, \code{"full_ITS"},
+\code{"onlyITS"}.}
+
+\item{tax_format}{(Character, default \code{"dada2"}) Taxonomy format written
+into the FASTA headers. One of \code{"dada2"}, \code{"sintax"}, or \code{"none"} (keep
+the QIIME \code{accession_VTX...} headers without taxonomy).}
+
+\item{url}{(Character) Direct download URL for the MaarjAM QIIME zip. If
+\code{NULL} (default), it is built from \code{dataset}. Override if the URL has
 changed.}
 
 \item{verbose}{(Logical, default \code{TRUE}) Print progress messages.}
 }
 \value{
-The path to the downloaded file (invisibly).
+The path to the downloaded FASTA file (invisibly).
 }
 \description{
 Downloads the MaarjAM database of arbuscular mycorrhizal fungi (AMF)
-virtual taxa (VT) sequences (18S rDNA). The database is maintained at
-the University of Tartu.
+virtual taxa (VT) sequences, maintained at the University of Tartu. The
+QIIME-formatted release (a zip bundling a FASTA and a taxonomy table) is
+used so that the resulting FASTA carries taxonomy in its headers, ready
+for \code{MiscMetabar::add_new_taxonomy_pq()}.
 }
 \details{
-MaarjAM does not have a versioned API. The download URL may change.
-If the default URL fails, visit \url{https://maarjam.ut.ee/?action=bDownload}
-to find the current download link and pass it via the \code{url} parameter.
+The download links are listed at \url{https://maarjam.ut.ee/?action=bDownload}.
+The QIIME zip contains \verb{*.qiime.fasta} and \verb{*.qiime.txt} (a tab-separated
+\verb{id  k__Fungi;p__...;s__VTX...} table); taxonomy is merged into the FASTA
+headers by matching sequence IDs.
 
 Please cite: Opik M et al. (2010) The online database MaarjAM reveals
 global and ecosystemic distribution patterns in arbuscular mycorrhizal
@@ -40,7 +53,11 @@ fungi (Glomeromycota). New Phytologist 188:223-241.
 }
 \examples{
 \dontrun{
+# SSU (18S) AMF database with dada2 taxonomy headers
 download_marjaam_db(dest_dir = "databases")
+
+# SINTAX-formatted headers
+download_marjaam_db(dest_dir = "databases", tax_format = "sintax")
 }
 }
 \author{
