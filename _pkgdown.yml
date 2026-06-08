@@ -48,6 +48,11 @@ reference:
   - list_ranks_db
   - summarize_db
 
+- title: Diagnose databases
+  desc: Check format, integrity, and quality of one or several databases.
+  contents:
+  - diagnose_db
+
 - title: Taxonomic assignment
   desc: Assign taxonomy to sequences.
   contents:

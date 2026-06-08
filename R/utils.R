@@ -110,6 +110,25 @@ tax_prefixes <- function(
 detect_tax_format <- function(file, n_headers = 20L) {
   lines <- read_lines_db(file)
   headers <- lines[grepl("^>", lines)]
+  detect_tax_format_from_headers(headers, n_headers = n_headers)
+}
+
+
+#' Detect taxonomy format from a vector of FASTA headers
+#'
+#' @description
+#' Header-based core of [detect_tax_format()]. Operates on an in-memory
+#' character vector of header lines so callers that already hold the headers
+#' (e.g. [diagnose_db()]) need not re-read the file.
+#'
+#' @param headers (Character vector) FASTA header lines (with or without the
+#'   leading `>`).
+#' @param n_headers (Integer, default `20`) Number of headers to inspect.
+#'
+#' @returns A character string: one of `"unite"`, `"sintax"`,
+#'   `"greengenes2"`, `"pr2"`, `"dada2"`, or `"unknown"`.
+#' @keywords internal
+detect_tax_format_from_headers <- function(headers, n_headers = 20L) {
   headers <- utils::head(headers, n_headers)
 
   if (length(headers) == 0) {
