@@ -29,7 +29,11 @@
 #'   cross-database UpSet plot weights each intersection by the number of
 #'   sequences (summed over the databases containing each taxon) rather than
 #'   by the number of taxa. Forces an UpSet plot (Venn diagrams cannot be
-#'   weighted).
+#'   weighted) and therefore needs \pkg{ComplexUpset}; with ggplot2 >= 4.0.0
+#'   this requires the dev version (>= 1.3.6, install with
+#'   `remotes::install_github("krassowski/complex-upset")`). When it is
+#'   unavailable, an unweighted Venn is drawn instead and the weighted counts
+#'   are still returned in `comparison$signatures`.
 #' @param plot (Logical, default `TRUE`) Whether to build plots. Requires
 #'   \pkg{ggplot2}; the comparison plots additionally require
 #'   \pkg{ggVennDiagram} and/or \pkg{ComplexUpset}.
@@ -242,15 +246,21 @@ escape_regex <- function(x) {
 
 #' Is ComplexUpset usable with the installed ggplot2?
 #'
-#' ComplexUpset (<= 1.3.x) is incompatible with ggplot2 >= 4.0.0: merely loading
-#' its namespace registers an `update_ggplot` method that breaks ggplot2 4.0's
-#' `+` operator (including for other packages). The ggplot2 version is therefore
-#' checked **first** so `&&` short-circuits and ComplexUpset is never loaded on
-#' incompatible setups.
+#' ComplexUpset on CRAN (<= 1.3.3) is incompatible with ggplot2 >= 4.0.0, and
+#' merely *loading* such a build registers an `update_ggplot` method that breaks
+#' ggplot2 4.0's `+` operator for every package. The fix lives in the GitHub dev
+#' version (>= 1.3.6, see krassowski/complex-upset#217). We therefore decide
+#' usability from the installed metadata **without loading the namespace**
+#' (`system.file()` and `packageVersion()` do not load it): ComplexUpset is
+#' considered usable when ggplot2 is older than 4.0.0, or when ComplexUpset is
+#' at least 1.3.6.
 #' @keywords internal
 complexupset_usable <- function() {
-  utils::packageVersion("ggplot2") < "4.0.0" &&
-    requireNamespace("ComplexUpset", quietly = TRUE)
+  if (!nzchar(system.file(package = "ComplexUpset"))) {
+    return(FALSE)
+  }
+  utils::packageVersion("ggplot2") < "4.0.0" ||
+    utils::packageVersion("ComplexUpset") >= "1.3.6"
 }
 
 
@@ -328,9 +338,11 @@ compare_taxa_across_db <- function(
   if (build_plots && weight_by_seqs && !complexupset_usable()) {
     cli::cli_alert_warning(
       paste0(
-        "Sequence-weighted UpSet plots need {.pkg ComplexUpset} with ",
-        "ggplot2 < 4.0.0; drawing unweighted Venn plots instead. ",
-        "Weighted counts remain in {.code $comparison$signatures}."
+        "Sequence-weighted UpSet plots need {.pkg ComplexUpset} >= 1.3.6 ",
+        "for ggplot2 >= 4.0.0 (install the dev version with ",
+        "{.code remotes::install_github('krassowski/complex-upset')}); ",
+        "drawing unweighted Venn plots instead. Weighted counts remain in ",
+        "{.code $comparison$signatures}."
       )
     )
     weight_by_seqs <- FALSE

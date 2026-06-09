@@ -48,10 +48,13 @@ reference:
   - list_ranks_db
   - summarize_db
 
-- title: Diagnose databases
-  desc: Check format, integrity, and quality of one or several databases.
+- title: Diagnose & profile databases
+  desc: >
+    Check format, integrity, and quality, and profile taxonomic richness and
+    cross-database overlap.
   contents:
   - diagnose_db
+  - profile_db
 
 - title: Taxonomic assignment
   desc: Assign taxonomy to sequences.

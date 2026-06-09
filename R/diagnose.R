@@ -605,7 +605,11 @@ diagnosis_plots <- function(stats, coverage) {
         fill = .data$file
       )
     ) +
-      ggplot2::geom_violin +
+      ggplot2::geom_col() +
+      ggplot2::geom_errorbar(
+        ggplot2::aes(ymin = .data$length_min, ymax = .data$length_max),
+        width = 0.3
+      ) +
       ggplot2::labs(
         title = "Sequence length per database",
         subtitle = "Bar = mean; whiskers = min/max",

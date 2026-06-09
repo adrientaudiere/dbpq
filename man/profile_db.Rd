@@ -26,7 +26,11 @@ profile_db(
 cross-database UpSet plot weights each intersection by the number of
 sequences (summed over the databases containing each taxon) rather than
 by the number of taxa. Forces an UpSet plot (Venn diagrams cannot be
-weighted).}
+weighted) and therefore needs \pkg{ComplexUpset}; with ggplot2 >= 4.0.0
+this requires the dev version (>= 1.3.6, install with
+\code{remotes::install_github("krassowski/complex-upset")}). When it is
+unavailable, an unweighted Venn is drawn instead and the weighted counts
+are still returned in \code{comparison$signatures}.}
 
 \item{plot}{(Logical, default \code{TRUE}) Whether to build plots. Requires
 \pkg{ggplot2}; the comparison plots additionally require

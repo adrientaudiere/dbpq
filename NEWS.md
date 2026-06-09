@@ -23,6 +23,7 @@
 * New function `find_vsearch()` locates the vsearch executable on the system PATH or verifies a user-supplied path.
 * New function `is_vsearch_installed()` checks whether vsearch is available on the system.
 * `list_ranks_db()` now emits an informative message when no taxa match the requested rank prefix, suggesting `detect_tax_format()` to identify the file's taxonomy format.
+* New function `profile_db()` profiles the taxonomic content of one or several databases: it runs `diagnose_db()` and adds a per-rank richness table and bar plot (number of distinct taxa, or "levels", at each rank) and, for multiple databases, a per-rank cross-database comparison of the taxa present, drawn as a Venn diagram (`ggVennDiagram`, up to `venn_max` databases) or an UpSet plot (`ComplexUpset`). With `weight_by_seqs = TRUE` the UpSet intersections are weighted by the number of sequences instead of the number of taxa; on ggplot2 >= 4.0.0 this needs the dev `ComplexUpset` (>= 1.3.6), otherwise an unweighted Venn is drawn and the weighted counts remain available in `comparison$signatures`.
 * `summarize_db()` now handles empty FASTA databases gracefully, reporting zero sequences instead of emitting warnings and `Inf` length statistics.
 
 # dbpq 0.1
