@@ -1,5 +1,7 @@
 # dbpq (development version)
 
+* Added a comprehensive test suite (`tests/testthat/test-format-databases.R`) for the format- and summarize-related functions, covering all supported taxonomy header formats (UNITE, SINTAX, Greengenes2, dada2, dada2_species, PR2) plus deliberately erroneous fixtures (empty file, short sequences, duplicated IDs, duplicated sequences, ambiguous bases, unrecognized format, inconsistent ranks, unwanted taxonomic values, gzipped input).
+
 * Download functions now produce FASTA files with taxonomy in the headers, ready for `MiscMetabar::add_new_taxonomy_pq()`, via a `tax_format` argument (`"dada2"`/`"sintax"`). `download_greengenes2_db()` strips its `d__`/`p__` prefixes to plain dada2 (the prefixed form was rejected by `assignTaxonomy()`); `download_ksgp_db()` merges its companion `.tax` into the headers by sequence ID; `download_ltplus_db()` merges its taxonomy CSV; `download_marjaam_db()` uses the QIIME release (FASTA + taxonomy table); and `download_bold_db()` pulls full ranked taxonomy from BOLD's `combined` endpoint.
 
 * `download_marjaam_db()` now downloads the current MaarjAM QIIME release (a `dataset` argument selects `"SSU"` (default), `"SSU_TYPE"`, `"LSU"`, `"full_ITS"` or `"onlyITS"`); the previous default URL had stopped working.
