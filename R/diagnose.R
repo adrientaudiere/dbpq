@@ -33,13 +33,14 @@
 #' @param plot (Logical, default `TRUE`) Whether to build diagnostic plots.
 #'   Requires the \pkg{ggplot2} package; when it is not installed, `$plots`
 #'   is `NULL` and a message is emitted.
-#' @param min_length (Integer, default `50`) Sequences shorter than this are
+#' @param min_length (Integer, default `200`) Sequences shorter than this are
 #'   counted as "short" and raise a quality warning.
 #' @param check_duplicates (Logical, default `TRUE`) Whether to look for
 #'   duplicated sequences. This compares full sequences and can be slow on
 #'   very large databases; set to `FALSE` to skip.
-#' @param verbose (Logical, default `TRUE`) Whether to print a summary and the
-#'   collected warnings via [message()].
+#' @param verbose (Logical, default `TRUE`) Whether to show a \pkg{cli}
+#'   progress bar (with an ETA) while files are processed, then print a
+#'   summary and the collected warnings.
 #'
 #' @returns An object of class `"dbpq_diagnosis"`: a list with components
 #'   \describe{
@@ -71,7 +72,7 @@ diagnose_db <- function(
   files,
   tax_format = "auto",
   plot = TRUE,
-  min_length = 50L,
+  min_length = 200L,
   check_duplicates = TRUE,
   verbose = TRUE
 ) {
@@ -95,8 +96,23 @@ diagnose_db <- function(
   warn_rows <- list()
   detected_formats <- character(length(files))
 
+  if (verbose) {
+    cli::cli_progress_bar(
+      format = paste0(
+        "{cli::pb_spin} Diagnosing databases {cli::pb_current}/",
+        "{cli::pb_total} | {cli::pb_bar} {cli::pb_percent} | ",
+        "ETA: {cli::pb_eta} | {cli::pb_status}"
+      ),
+      total = length(files),
+      clear = FALSE
+    )
+  }
+
   for (i in seq_along(files)) {
     file <- files[[i]]
+    if (verbose) {
+      cli::cli_progress_update(set = i - 1L, status = basename(file))
+    }
     res <- diagnose_one_db(
       file,
       tax_format = tax_format,
@@ -107,6 +123,10 @@ diagnose_db <- function(
     coverage_rows[[i]] <- res$coverage
     warn_rows[[i]] <- res$warnings
     detected_formats[[i]] <- res$stats$format
+  }
+  if (verbose) {
+    cli::cli_progress_update(set = length(files), status = "done")
+    cli::cli_progress_done()
   }
 
   stats <- dplyr::bind_rows(stats_rows)
@@ -146,9 +166,8 @@ diagnose_db <- function(
     if (requireNamespace("ggplot2", quietly = TRUE)) {
       plots <- diagnosis_plots(stats, coverage)
     } else {
-      message(
-        "Package 'ggplot2' is not installed; skipping plots. ",
-        "Install it to enable `$plots`."
+      cli::cli_alert_info(
+        "Package {.pkg ggplot2} is not installed; skipping plots."
       )
     }
   }
@@ -189,7 +208,7 @@ diagnose_db <- function(
 diagnose_one_db <- function(
   file,
   tax_format = "auto",
-  min_length = 50L,
+  min_length = 200L,
   check_duplicates = TRUE
 ) {
   fname <- basename(file)
@@ -581,19 +600,12 @@ diagnosis_plots <- function(stats, coverage) {
     length_plot <- ggplot2::ggplot(
       valid,
       ggplot2::aes(
-        x = ggplot2::.data$file,
-        y = ggplot2::.data$length_mean,
-        fill = ggplot2::.data$file
+        x = .data$file,
+        y = .data$length_mean,
+        fill = .data$file
       )
     ) +
-      ggplot2::geom_col() +
-      ggplot2::geom_errorbar(
-        ggplot2::aes(
-          ymin = ggplot2::.data$length_min,
-          ymax = ggplot2::.data$length_max
-        ),
-        width = 0.3
-      ) +
+      ggplot2::geom_violin +
       ggplot2::labs(
         title = "Sequence length per database",
         subtitle = "Bar = mean; whiskers = min/max",
@@ -608,9 +620,9 @@ diagnosis_plots <- function(stats, coverage) {
     coverage_plot <- ggplot2::ggplot(
       coverage,
       ggplot2::aes(
-        x = ggplot2::.data$rank,
-        y = ggplot2::.data$pct_annotated,
-        fill = ggplot2::.data$file
+        x = .data$rank,
+        y = .data$pct_annotated,
+        fill = .data$file
       )
     ) +
       ggplot2::geom_col(position = ggplot2::position_dodge()) +
@@ -627,64 +639,55 @@ diagnosis_plots <- function(stats, coverage) {
 }
 
 
-#' Print a concise diagnosis report via message()
+#' Print a concise diagnosis report with cli
 #' @keywords internal
 diagnosis_report <- function(x) {
   stats <- x$stats
-  message(
-    "Diagnosed ",
-    nrow(stats),
-    " database file(s):"
-  )
+  cli::cli_h2("Diagnosed {nrow(stats)} database file{?s}")
   for (i in seq_len(nrow(stats))) {
     s <- stats[i, ]
     if (!isTRUE(s$valid)) {
-      message("  ", s$file, ": UNREADABLE")
+      cli::cli_alert_danger("{.file {s$file}}: unreadable")
       next
     }
-    message(
-      "  ",
-      s$file,
-      " [",
-      s$format,
-      "]: ",
-      s$n_sequences,
-      " seqs, length ",
-      s$length_min,
-      "-",
-      s$length_max,
-      " bp"
+    cli::cli_alert_info(
+      paste0(
+        "{.file {s$file}} [{s$format}]: {s$n_sequences} seq{?s}, ",
+        "length {s$length_min}-{s$length_max} bp"
+      )
     )
   }
 
   if (!x$cross_file$format_agreement) {
-    message("  ! Mixed taxonomy formats across files.")
+    cli::cli_alert_warning("Mixed taxonomy formats across files.")
   }
 
   w <- x$warnings
-  if (nrow(w) > 0) {
-    n_err <- sum(w$severity == "error")
-    n_warn <- sum(w$severity == "warning")
-    n_info <- sum(w$severity == "info")
-    message(
-      "Issues: ",
-      n_err,
-      " error(s), ",
-      n_warn,
-      " warning(s), ",
-      n_info,
-      " info."
-    )
-    for (i in seq_len(nrow(w))) {
-      wi <- w[i, ]
-      loc <- if (is.na(wi$file)) {
-        "<cross-file>"
-      } else {
-        wi$file
-      }
-      message("  [", wi$severity, "] ", loc, " (", wi$check, "): ", wi$message)
-    }
-  } else {
-    message("No issues detected.")
+  if (nrow(w) == 0) {
+    cli::cli_alert_success("No issues detected.")
+    return(invisible(NULL))
   }
+
+  n_err <- sum(w$severity == "error")
+  n_warn <- sum(w$severity == "warning")
+  n_info <- sum(w$severity == "info")
+  cli::cli_h3(
+    "Issues: {n_err} error{?s}, {n_warn} warning{?s}, {n_info} info"
+  )
+  for (i in seq_len(nrow(w))) {
+    wi <- w[i, ]
+    loc <- if (is.na(wi$file)) {
+      "<cross-file>"
+    } else {
+      wi$file
+    }
+    msg <- "{.file {loc}} ({wi$check}): {wi$message}"
+    switch(
+      wi$severity,
+      error = cli::cli_alert_danger(msg),
+      warning = cli::cli_alert_warning(msg),
+      cli::cli_alert_info(msg)
+    )
+  }
+  invisible(NULL)
 }

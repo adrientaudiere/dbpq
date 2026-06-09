@@ -5,6 +5,7 @@
 #' @importFrom Biostrings readDNAStringSet writeXStringSet width
 #' @importFrom dplyr pull
 #' @importFrom purrr map_chr
+#' @importFrom rlang .data
 #' @importFrom stringr str_count str_extract str_remove str_split_fixed
 #' @importFrom tibble as_tibble
 #' @importFrom tidyr unite

@@ -7,7 +7,7 @@
 diagnose_one_db(
   file,
   tax_format = "auto",
-  min_length = 50L,
+  min_length = 200L,
   check_duplicates = TRUE
 )
 }

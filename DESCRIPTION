@@ -17,18 +17,22 @@ Depends:
     R (>= 4.1.0)
 Imports:
     Biostrings,
+    cli,
     methods,
     dplyr,
     jsonlite,
     purrr,
+    rlang,
     stringr,
     tibble,
     tidyr,
     tools,
     utils
 Suggests:
+    ComplexUpset,
     dada2,
     ggplot2,
+    ggVennDiagram,
     knitr,
     lifecycle,
     MiscMetabar,

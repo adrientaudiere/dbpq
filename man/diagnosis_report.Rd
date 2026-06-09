@@ -2,11 +2,11 @@
 % Please edit documentation in R/diagnose.R
 \name{diagnosis_report}
 \alias{diagnosis_report}
-\title{Print a concise diagnosis report via message()}
+\title{Print a concise diagnosis report with cli}
 \usage{
 diagnosis_report(x)
 }
 \description{
-Print a concise diagnosis report via message()
+Print a concise diagnosis report with cli
 }
 \keyword{internal}

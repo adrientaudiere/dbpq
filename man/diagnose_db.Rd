@@ -8,7 +8,7 @@ diagnose_db(
   files,
   tax_format = "auto",
   plot = TRUE,
-  min_length = 50L,
+  min_length = 200L,
   check_duplicates = TRUE,
   verbose = TRUE
 )
@@ -26,15 +26,16 @@ format is detected per file from its headers.}
 Requires the \pkg{ggplot2} package; when it is not installed, \verb{$plots}
 is \code{NULL} and a message is emitted.}
 
-\item{min_length}{(Integer, default \code{50}) Sequences shorter than this are
+\item{min_length}{(Integer, default \code{200}) Sequences shorter than this are
 counted as "short" and raise a quality warning.}
 
 \item{check_duplicates}{(Logical, default \code{TRUE}) Whether to look for
 duplicated sequences. This compares full sequences and can be slow on
 very large databases; set to \code{FALSE} to skip.}
 
-\item{verbose}{(Logical, default \code{TRUE}) Whether to print a summary and the
-collected warnings via \code{\link[=message]{message()}}.}
+\item{verbose}{(Logical, default \code{TRUE}) Whether to show a \pkg{cli}
+progress bar (with an ETA) while files are processed, then print a
+summary and the collected warnings.}
 }
 \value{
 An object of class \code{"dbpq_diagnosis"}: a list with components
