@@ -4,7 +4,7 @@
 \alias{download_file}
 \title{Download a file with progress and validation}
 \usage{
-download_file(url, dest_path, verbose = TRUE)
+download_file(url, dest_path, verbose = TRUE, timeout = Inf)
 }
 \arguments{
 \item{url}{The URL to download from.}
@@ -12,6 +12,12 @@ download_file(url, dest_path, verbose = TRUE)
 \item{dest_path}{The local file path to save to.}
 
 \item{verbose}{Print progress messages.}
+
+\item{timeout}{(Numeric, default \code{Inf}) Timeout in seconds passed to
+\code{\link[utils:download.file]{utils::download.file()}} via \code{options(timeout = ...)} for the duration
+of the call. \code{Inf} disables the timeout, which is needed for multi-GB
+reference databases such as KSGP (>2 GB) and SILVA trainsets that
+take longer than R's 60-second default to download.}
 }
 \value{
 The path to the downloaded file (invisibly).

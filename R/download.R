@@ -7,13 +7,27 @@
 #' @param url The URL to download from.
 #' @param dest_path The local file path to save to.
 #' @param verbose Print progress messages.
+#' @param timeout (Numeric, default `Inf`) Timeout in seconds passed to
+#'   [utils::download.file()] via `options(timeout = ...)` for the duration
+#'   of the call. `Inf` disables the timeout, which is needed for multi-GB
+#'   reference databases such as KSGP (>2 GB) and SILVA trainsets that
+#'   take longer than R's 60-second default to download.
 #'
 #' @returns The path to the downloaded file (invisibly).
 #' @keywords internal
-download_file <- function(url, dest_path, verbose = TRUE) {
+download_file <- function(url, dest_path, verbose = TRUE, timeout = Inf) {
   if (verbose) {
     message("Downloading from:\n  ", url)
     message("Saving to:\n  ", dest_path)
+  }
+
+  # download.file() reads `options("timeout")`; set it for this call and
+  # restore the prior value afterwards so we don't leak into the caller's
+  # session.
+  old_timeout <- getOption("timeout")
+  if (!is.finite(timeout) || timeout != old_timeout) {
+    options(timeout = timeout)
+    on.exit(options(timeout = old_timeout), add = TRUE)
   }
 
   tryCatch(
@@ -1473,15 +1487,24 @@ download_diatbarcode_db <- function(
 #' @param version (Character, default `"3.1"`) KSGP version. Known versions:
 #'   `"3.1"` (2025, recommended) and `"1.0"`.
 #' @param verbose (Logical, default `TRUE`) Print progress messages.
+#' @param timeout (Numeric, default `Inf`) Timeout in seconds for each
+#'   HTTP request. The default disables R's 60-second timeout so the
+#'   multi-hundred-MB to multi-GB downloads (KSGP FASTA, the v3.1 archive)
+#'   can complete. Set to a positive number of seconds to restore a
+#'   strict timeout.
 #'
 #' @returns The path to the downloaded file (invisibly).
 #' @export
 #' @author Adrien Taudière
 #' @details
-#' The KSGP FASTA and taxonomy files are separate downloads. To use KSGP
-#' for taxonomic assignment:
-#' - With VSEARCH SINTAX: download both the FASTA (`file_type = "fasta"`)
-#'   and the SINTAX taxonomy (`file_type = "tax"`, `annotation = "sintax"`).
+#' When `file_type = "fasta"`, the function downloads the matching
+#' `KSGP_v<version>.tar.gz` archive (one HTTP request) and extracts the
+#' FASTA — and, when `tax_format != "none"`, the chosen `.tax` file — to
+#' `dest_dir`, then removes the archive. The KSGP FASTA and taxonomy files are otherwise separate
+#' downloads. To use KSGP for taxonomic assignment:
+#' - With VSEARCH SINTAX: download the FASTA (`file_type = "fasta"`,
+#'   default `tax_format = "dada2"`); the `.tax` file is fetched and
+#'   merged in automatically.
 #' - With LotuS2: the KSGP database is integrated directly.
 #' - For a complete set of all files: use `file_type = "archive"`.
 #'
@@ -1525,7 +1548,8 @@ download_ksgp_db <- function(
   annotation = c("sintax", "lca", "ksgp_plus"),
   tax_format = c("dada2", "sintax", "none"),
   version = "3.1",
-  verbose = TRUE
+  verbose = TRUE,
+  timeout = Inf
 ) {
   database <- match.arg(database)
   file_type <- match.arg(file_type)
@@ -1626,7 +1650,95 @@ download_ksgp_db <- function(
   )
   dest_file <- file.path(dest_dir, filename)
 
-  download_file(url, dest_file, verbose = verbose)
+  # FASTA downloads are routed through the tar.gz archive (~686 MB
+  # compressed vs. ~2.4 GB raw) so only one HTTP request is needed and
+  # the transfer is ~3.5x smaller. The archive also contains every
+  # annotation variant of the .tax file, so a second download is not
+  # required for `tax_format != "none"`.
+  tax_filename_inline <- NULL
+  if (file_type == "fasta") {
+    archive_name <- file_lookup[[paste(
+      version,
+      database,
+      "archive",
+      "sintax",
+      sep = ":"
+    )]]
+    if (is.null(archive_name)) {
+      # Fallback for hypothetical lookup gaps: use the raw FASTA directly.
+      download_file(url, dest_file, verbose = verbose, timeout = timeout)
+    } else {
+      archive_url <- paste0(
+        "https://ksgp.earlham.ac.uk/downloads/v",
+        version,
+        "/",
+        archive_name
+      )
+      archive_path <- file.path(dest_dir, archive_name)
+      download_file(
+        archive_url,
+        archive_path,
+        verbose = verbose,
+        timeout = timeout
+      )
+
+      # Pre-pick the .tax filename we'll also need, if any, so a single
+      # `untar()` call can extract both files in one pass.
+      if (tax_format != "none") {
+        tax_filename_inline <- file_lookup[[paste(
+          version,
+          database,
+          "tax",
+          lookup_annotation,
+          sep = ":"
+        )]]
+      }
+      to_extract <- c(basename(filename), tax_filename_inline)
+      to_extract <- to_extract[nzchar(to_extract)]
+
+      if (verbose) {
+        message(
+          "Extracting ",
+          paste(to_extract, collapse = " + "),
+          " from ",
+          archive_name,
+          " ..."
+        )
+      }
+      utils::untar(
+        archive_path,
+        files = to_extract,
+        exdir = dest_dir,
+        list = FALSE
+      )
+      if (!file.exists(dest_file) || file.size(dest_file) == 0L) {
+        # The lookup assumed a flat archive layout (files at the top
+        # level); if extraction did not produce the FASTA where we
+        # expect it, surface the full archive listing to help debug.
+        listing <- tryCatch(
+          utils::untar(archive_path, list = TRUE),
+          error = function(e) character(0)
+        )
+        unlink(archive_path)
+        stop(
+          "Expected to find ",
+          basename(filename),
+          " at ",
+          dest_file,
+          " after extracting ",
+          archive_name,
+          ", but it is missing. ",
+          "Archive contents:\n  ",
+          paste(listing, collapse = "\n  "),
+          call. = FALSE
+        )
+      }
+      # Free the ~686 MB archive as soon as we have what we need.
+      unlink(archive_path)
+    }
+  } else {
+    download_file(url, dest_file, verbose = verbose, timeout = timeout)
+  }
 
   if (verbose && file_type == "archive") {
     message(
@@ -1645,13 +1757,17 @@ download_ksgp_db <- function(
   # ID, as in the KSGP/LotuS2 workflow) and rewrite headers as dada2/sintax.
   # Sequences whose ID is absent from the .tax keep accession-only headers.
   if (file_type == "fasta" && tax_format != "none") {
-    tax_filename <- file_lookup[[paste(
-      version,
-      database,
-      "tax",
-      lookup_annotation,
-      sep = ":"
-    )]]
+    tax_filename <- if (!is.null(tax_filename_inline)) {
+      tax_filename_inline
+    } else {
+      file_lookup[[paste(
+        version,
+        database,
+        "tax",
+        lookup_annotation,
+        sep = ":"
+      )]]
+    }
     if (is.null(tax_filename)) {
       warning(
         "No .tax file known for this version/database/annotation; ",
@@ -1659,14 +1775,6 @@ download_ksgp_db <- function(
         call. = FALSE
       )
     } else {
-      tax_url <- paste0(
-        "https://ksgp.earlham.ac.uk/downloads/v",
-        version,
-        "/",
-        tax_filename
-      )
-      tax_file <- tempfile(fileext = ".tax")
-      on.exit(unlink(tax_file), add = TRUE)
       if (verbose) {
         message(
           "Merging taxonomy from ",
@@ -1676,9 +1784,29 @@ download_ksgp_db <- function(
           " headers ..."
         )
       }
-      download_file(tax_url, tax_file, verbose = FALSE)
+      # When the FASTA came from the archive, the .tax is already
+      # extracted to dest_dir. Otherwise, download it directly.
+      tax_path <- file.path(dest_dir, tax_filename)
+      if (!file.exists(tax_path) || file.size(tax_path) == 0L) {
+        tax_url <- paste0(
+          "https://ksgp.earlham.ac.uk/downloads/v",
+          version,
+          "/",
+          tax_filename
+        )
+        download_file(tax_url, tax_path, verbose = FALSE, timeout = timeout)
+      }
+      if (!file.exists(tax_path) || file.size(tax_path) == 0L) {
+        warning(
+          "Could not retrieve ",
+          tax_filename,
+          "; FASTA headers left unannotated.",
+          call. = FALSE
+        )
+        tax_path <- NULL
+      }
       tax_tab <- utils::read.table(
-        tax_file,
+        tax_path,
         sep = "\t",
         quote = "",
         comment.char = "",

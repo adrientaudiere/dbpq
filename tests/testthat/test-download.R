@@ -163,3 +163,100 @@ test_that("download_unite_db creates dest_dir if needed", {
   expect_true(dir.exists(tmp_dir))
   unlink(tmp_dir, recursive = TRUE)
 })
+
+test_that("download_file sets options(timeout) for the call and restores it", {
+  old_timeout <- getOption("timeout")
+  observed <- NULL
+  testthat::local_mocked_bindings(
+    download.file = function(url, destfile, mode, quiet, ...) {
+      observed <<- getOption("timeout")
+      writeLines("placeholder", destfile)
+      0L
+    },
+    .package = "utils"
+  )
+  tmp <- tempfile(fileext = ".txt")
+  on.exit(unlink(tmp), add = TRUE)
+  download_file(
+    "https://example.com/file",
+    tmp,
+    verbose = FALSE,
+    timeout = 123
+  )
+  # The helper set the option to the user-supplied timeout during the
+  # download call.
+  expect_equal(observed, 123)
+  # And restored the caller's prior value once the call returned.
+  expect_equal(getOption("timeout"), old_timeout)
+})
+
+test_that("download_ksgp_db routes FASTA downloads through the tar.gz archive", {
+  skip_if_not_installed("testthat", "3.1.0")
+  # Build a tiny fake archive that mirrors the real v3.1 layout (files
+  # at the top level): a 2-record FASTA and a matching 2-line .tax file.
+  fake_fasta <- c(
+    ">seq1",
+    "ACGT",
+    ">seq2",
+    "TTGG"
+  )
+  fake_tax <- c(
+    "seq1\td__Bacteria;p__Pseudomonadota",
+    "seq2\td__Archaea;p__Euryarchaeota"
+  )
+  build_dir <- tempfile("ksgp_build_")
+  dir.create(build_dir)
+  writeLines(fake_fasta, file.path(build_dir, "KSGP_v3.1.fasta"))
+  writeLines(fake_tax, file.path(build_dir, "KSGP_v3.1.tax"))
+  tar_gz <- tempfile(fileext = ".tar.gz")
+  old_wd <- setwd(build_dir)
+  utils::tar(tar_gz, files = c("KSGP_v3.1.fasta", "KSGP_v3.1.tax"))
+
+  # Pre-stage the archive in dest_dir so the fasta branch can extract
+  # from it without hitting the network.
+  dest_dir <- file.path(tempdir(), "test_ksgp_archive")
+  dir.create(dest_dir, showWarnings = FALSE)
+  file.copy(
+    tar_gz,
+    file.path(dest_dir, "KSGP_v3.1.tar.gz"),
+    overwrite = TRUE
+  )
+
+  # Mock download_file so any URL the function tries to fetch is a
+  # no-op (the archive is already in place; no network calls needed).
+  testthat::local_mocked_bindings(
+    download_file = function(url, dest_path, verbose = TRUE, timeout = Inf) {
+      invisible(dest_path)
+    }
+  )
+
+  on.exit(
+    {
+      setwd(old_wd)
+      unlink(tar_gz)
+      unlink(build_dir, recursive = TRUE)
+      unlink(dest_dir, recursive = TRUE)
+    },
+    add = TRUE
+  )
+
+  result_path <- download_ksgp_db(
+    dest_dir = dest_dir,
+    file_type = "fasta",
+    tax_format = "sintax",
+    verbose = FALSE
+  )
+
+  # The FASTA was extracted from the archive (not the raw download).
+  expect_equal(basename(result_path), "KSGP_v3.1.fasta")
+  expect_true(file.exists(result_path))
+  expect_gt(file.size(result_path), 0L)
+  # The archive was removed once extraction succeeded.
+  expect_false(file.exists(file.path(dest_dir, "KSGP_v3.1.tar.gz")))
+  # The .tax was extracted in the same pass.
+  expect_true(file.exists(file.path(dest_dir, "KSGP_v3.1.tax")))
+  # The tax-merge rewrote the FASTA with SINTAX headers.
+  out_lines <- readLines(result_path)
+  expect_true(any(grepl("^>seq1;tax=d:Bacteria,p:Pseudomonadota", out_lines)))
+  expect_true(any(grepl("^>seq2;tax=d:Archaea,p:Euryarchaeota", out_lines)))
+})

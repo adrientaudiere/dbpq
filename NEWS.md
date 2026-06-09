@@ -1,5 +1,9 @@
 # dbpq (development version)
 
+* `download_ksgp_db()` now downloads the FASTA (and companion `.tax` when `tax_format != "none"`) from the `KSGP_v<version>.tar.gz` archive in a single HTTP request, then extracts the requested files locally. The v3.1 archive is ~686 MB compressed vs. ~2.4 GB for the raw FASTA, so the transfer is ~3.5x smaller and avoids the 60-second R default that previously timed out mid-download. The archive is removed from `dest_dir` after extraction.
+
+* `download_ksgp_db()` (and the internal `download_file()` helper used by every `download_*_db()`) gain a `timeout` argument, default `Inf`, so multi-GB downloads no longer hit R's 60-second `options("timeout")` ceiling. Set `timeout = 600` (or any other value in seconds) to restore a strict deadline.
+
 * Added a comprehensive test suite (`tests/testthat/test-format-databases.R`) for the format- and summarize-related functions, covering all supported taxonomy header formats (UNITE, SINTAX, Greengenes2, dada2, dada2_species, PR2) plus deliberately erroneous fixtures (empty file, short sequences, duplicated IDs, duplicated sequences, ambiguous bases, unrecognized format, inconsistent ranks, unwanted taxonomic values, gzipped input).
 
 * Download functions now produce FASTA files with taxonomy in the headers, ready for `MiscMetabar::add_new_taxonomy_pq()`, via a `tax_format` argument (`"dada2"`/`"sintax"`). `download_greengenes2_db()` strips its `d__`/`p__` prefixes to plain dada2 (the prefixed form was rejected by `assignTaxonomy()`); `download_ksgp_db()` merges its companion `.tax` into the headers by sequence ID; `download_ltplus_db()` merges its taxonomy CSV; `download_marjaam_db()` uses the QIIME release (FASTA + taxonomy table); and `download_bold_db()` pulls full ranked taxonomy from BOLD's `combined` endpoint.

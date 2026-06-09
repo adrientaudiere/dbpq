@@ -11,7 +11,8 @@ download_ksgp_db(
   annotation = c("sintax", "lca", "ksgp_plus"),
   tax_format = c("dada2", "sintax", "none"),
   version = "3.1",
-  verbose = TRUE
+  verbose = TRUE,
+  timeout = Inf
 )
 }
 \arguments{
@@ -51,6 +52,12 @@ Ignored for \code{file_type = "tax"} / \code{"archive"}.}
 \code{"3.1"} (2025, recommended) and \code{"1.0"}.}
 
 \item{verbose}{(Logical, default \code{TRUE}) Print progress messages.}
+
+\item{timeout}{(Numeric, default \code{Inf}) Timeout in seconds for each
+HTTP request. The default disables R's 60-second timeout so the
+multi-hundred-MB to multi-GB downloads (KSGP FASTA, the v3.1 archive)
+can complete. Set to a positive number of seconds to restore a
+strict timeout.}
 }
 \value{
 The path to the downloaded file (invisibly).
@@ -79,11 +86,18 @@ available for version \code{"3.1"}.
 }
 }
 \details{
-The KSGP FASTA and taxonomy files are separate downloads. To use KSGP
-for taxonomic assignment:
+When \code{file_type = "fasta"}, the function downloads the matching
+\verb{KSGP_v<version>.tar.gz} archive (one HTTP request) and extracts the
+FASTA — and, when \code{tax_format != "none"}, the chosen \code{.tax} file — to
+\code{dest_dir}, then removes the archive. The archive is roughly 3.5x
+smaller than the raw FASTA (e.g. ~686 MB vs ~2.4 GB for v3.1), so
+this is both faster and lighter on the server than two separate
+requests. The KSGP FASTA and taxonomy files are otherwise separate
+downloads. To use KSGP for taxonomic assignment:
 \itemize{
-\item With VSEARCH SINTAX: download both the FASTA (\code{file_type = "fasta"})
-and the SINTAX taxonomy (\code{file_type = "tax"}, \code{annotation = "sintax"}).
+\item With VSEARCH SINTAX: download the FASTA (\code{file_type = "fasta"},
+default \code{tax_format = "dada2"}); the \code{.tax} file is fetched and
+merged in automatically.
 \item With LotuS2: the KSGP database is integrated directly.
 \item For a complete set of all files: use \code{file_type = "archive"}.
 }
