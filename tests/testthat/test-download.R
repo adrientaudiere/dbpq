@@ -132,7 +132,9 @@ test_that("download_ksgp_db has expected formals", {
   fmts <- eval(formals(download_ksgp_db)$database)
   expect_true(all(c("KSGP", "GTDB_plus", "GTDB_cleaned") %in% fmts))
   ann <- eval(formals(download_ksgp_db)$annotation)
-  expect_true(all(c("sintax", "lca", "ksgp_plus") %in% ann))
+  expect_true(all(c("lca", "sintax", "ksgp_plus") %in% ann))
+  # lca is the default (first element of the match.arg() vector).
+  expect_equal(ann[[1]], "lca")
 })
 
 test_that("download_file cleans up on failure", {
@@ -193,7 +195,8 @@ test_that("download_file sets options(timeout) for the call and restores it", {
 test_that("download_ksgp_db routes FASTA downloads through the tar.gz archive", {
   skip_if_not_installed("testthat", "3.1.0")
   # Build a tiny fake archive that mirrors the real v3.1 layout (files
-  # at the top level): a 2-record FASTA and a matching 2-line .tax file.
+  # at the top level): a 2-record FASTA and a matching 2-line .tax file
+  # in the KSGP k__/p__/c__/o__/f__/g__/s__ format.
   fake_fasta <- c(
     ">seq1",
     "ACGT",
@@ -201,8 +204,8 @@ test_that("download_ksgp_db routes FASTA downloads through the tar.gz archive", 
     "TTGG"
   )
   fake_tax <- c(
-    "seq1\td__Bacteria;p__Pseudomonadota",
-    "seq2\td__Archaea;p__Euryarchaeota"
+    "seq1\tk__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Enterobacterales; f__Enterobacteriaceae; g__Escherichia; s__Escherichia_coli",
+    "seq2\tk__Eukaryota__mito; p__Ascomycota__mito; c__Sordariomycetes__mito; o__Hypocreales__mito; f__Nectriaceae__mito; g__Fusarium__mito; s__Fusarium_oxysporum__mito"
   )
   build_dir <- tempfile("ksgp_build_")
   dir.create(build_dir)
@@ -244,6 +247,7 @@ test_that("download_ksgp_db routes FASTA downloads through the tar.gz archive", 
     dest_dir = dest_dir,
     file_type = "fasta",
     tax_format = "sintax",
+    annotation = "sintax",
     verbose = FALSE
   )
 
@@ -253,10 +257,146 @@ test_that("download_ksgp_db routes FASTA downloads through the tar.gz archive", 
   expect_gt(file.size(result_path), 0L)
   # The archive was removed once extraction succeeded.
   expect_false(file.exists(file.path(dest_dir, "KSGP_v3.1.tar.gz")))
-  # The .tax was extracted in the same pass.
-  expect_true(file.exists(file.path(dest_dir, "KSGP_v3.1.tax")))
-  # The tax-merge rewrote the FASTA with SINTAX headers.
+  # The .tax is removed after its taxonomy is merged into the FASTA,
+  # so the user is left with a single FASTA ready for VSEARCH/dada2.
+  expect_false(file.exists(file.path(dest_dir, "KSGP_v3.1.tax")))
+  # The tax-merge rewrote the FASTA with SINTAX headers, preserving
+  # the original prefix letter (k:, not d:) and the verbatim value
+  # (including the `__mito` compartment tag in the eukaryote lineage).
   out_lines <- readLines(result_path)
-  expect_true(any(grepl("^>seq1;tax=d:Bacteria,p:Pseudomonadota", out_lines)))
-  expect_true(any(grepl("^>seq2;tax=d:Archaea,p:Euryarchaeota", out_lines)))
+  expect_true(any(grepl(
+    "^>seq1;tax=k:Bacteria,p:Pseudomonadota,c:Gammaproteobacteria",
+    out_lines
+  )))
+  expect_true(any(grepl(
+    "^>seq2;tax=k:Eukaryota__mito,p:Ascomycota__mito",
+    out_lines
+  )))
+})
+
+test_that("download_ksgp_db dada2 output keeps the values in lineage order", {
+  skip_if_not_installed("testthat", "3.1.0")
+  fake_fasta <- c(">seq1", "ACGT")
+  fake_tax <- c(
+    "seq1\tk__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Enterobacterales; f__Enterobacteriaceae; g__Escherichia; s__Escherichia_coli"
+  )
+  build_dir <- tempfile("ksgp_build_dada2_")
+  dir.create(build_dir)
+  writeLines(fake_fasta, file.path(build_dir, "KSGP_v3.1.fasta"))
+  writeLines(fake_tax, file.path(build_dir, "KSGP_v3.1.tax"))
+  tar_gz <- tempfile(fileext = ".tar.gz")
+  old_wd <- setwd(build_dir)
+  utils::tar(tar_gz, files = c("KSGP_v3.1.fasta", "KSGP_v3.1.tax"))
+
+  dest_dir <- file.path(tempdir(), "test_ksgp_archive_dada2")
+  dir.create(dest_dir, showWarnings = FALSE)
+  file.copy(
+    tar_gz,
+    file.path(dest_dir, "KSGP_v3.1.tar.gz"),
+    overwrite = TRUE
+  )
+
+  testthat::local_mocked_bindings(
+    download_file = function(url, dest_path, verbose = TRUE, timeout = Inf) {
+      invisible(dest_path)
+    }
+  )
+
+  on.exit(
+    {
+      setwd(old_wd)
+      unlink(tar_gz)
+      unlink(build_dir, recursive = TRUE)
+      unlink(dest_dir, recursive = TRUE)
+    },
+    add = TRUE
+  )
+
+  result_path <- download_ksgp_db(
+    dest_dir = dest_dir,
+    file_type = "fasta",
+    tax_format = "dada2",
+    annotation = "sintax",
+    verbose = FALSE
+  )
+  out_lines <- readLines(result_path)
+  # dada2 format: "Bacteria;Pseudomonadota;...;Escherichia_coli;" (labels
+  # are dropped, values are in the original lineage order).
+  expect_true(any(grepl(
+    "^>Bacteria;Pseudomonadota;Gammaproteobacteria;Enterobacterales;Enterobacteriaceae;Escherichia;Escherichia_coli;$",
+    out_lines
+  )))
+})
+
+test_that("download_ksgp_db annotation = 'lca' routes the merge through the LCA .tax", {
+  skip_if_not_installed("testthat", "3.1.0")
+  # Two .tax files in the archive with different coverage: the sintax
+  # one only annotates seq1, while the LCA one also annotates seq2 (the
+  # "broader coverage" the user picks `annotation = "lca"` for).
+  fake_fasta <- c(">seq1", "ACGT", ">seq2", "TTGG")
+  fake_tax_sintax <- c(
+    "seq1\tk__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Prevotella; s__Prevotella_copri"
+  )
+  fake_tax_lca <- c(
+    "seq1\tk__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Prevotella; s__Prevotella_copri",
+    "seq2\tk__Archaea; p__Euryarchaeota; c__Methanobacteria; o__Methanobacteriales; f__Methanobacteriaceae; g__Methanosarcina; s__Methanosarcina_mazei"
+  )
+  build_dir <- tempfile("ksgp_build_lca_")
+  dir.create(build_dir)
+  writeLines(fake_fasta, file.path(build_dir, "KSGP_v3.1.fasta"))
+  writeLines(fake_tax_sintax, file.path(build_dir, "KSGP_v3.1.tax"))
+  writeLines(fake_tax_lca, file.path(build_dir, "KSGP_lca_v3.1.tax"))
+  tar_gz <- tempfile(fileext = ".tar.gz")
+  old_wd <- setwd(build_dir)
+  utils::tar(
+    tar_gz,
+    files = c("KSGP_v3.1.fasta", "KSGP_v3.1.tax", "KSGP_lca_v3.1.tax")
+  )
+
+  dest_dir <- file.path(tempdir(), "test_ksgp_archive_lca")
+  dir.create(dest_dir, showWarnings = FALSE)
+  file.copy(
+    tar_gz,
+    file.path(dest_dir, "KSGP_v3.1.tar.gz"),
+    overwrite = TRUE
+  )
+
+  testthat::local_mocked_bindings(
+    download_file = function(url, dest_path, verbose = TRUE, timeout = Inf) {
+      invisible(dest_path)
+    }
+  )
+
+  on.exit(
+    {
+      setwd(old_wd)
+      unlink(tar_gz)
+      unlink(build_dir, recursive = TRUE)
+      unlink(dest_dir, recursive = TRUE)
+    },
+    add = TRUE
+  )
+
+  result_path <- download_ksgp_db(
+    dest_dir = dest_dir,
+    file_type = "fasta",
+    tax_format = "sintax",
+    annotation = "lca",
+    verbose = FALSE
+  )
+  out_lines <- readLines(result_path)
+  # With annotation = "lca", the LCA .tax (which covers both seq1 and
+  # seq2) is used, so both sequences end up with `;tax=...` headers.
+  expect_true(any(grepl(
+    "^>seq1;tax=k:Bacteria,p:Bacteroidota",
+    out_lines
+  )))
+  expect_true(any(grepl(
+    "^>seq2;tax=k:Archaea,p:Euryarchaeota",
+    out_lines
+  )))
+  # The .tax files were removed from dest_dir (the user is left with
+  # a single FASTA only).
+  expect_false(file.exists(file.path(dest_dir, "KSGP_v3.1.tax")))
+  expect_false(file.exists(file.path(dest_dir, "KSGP_lca_v3.1.tax")))
 })

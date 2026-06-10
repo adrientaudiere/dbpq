@@ -1,6 +1,10 @@
 # dbpq (development version)
 
-* `download_ksgp_db()` now downloads the FASTA (and companion `.tax` when `tax_format != "none"`) from the `KSGP_v<version>.tar.gz` archive in a single HTTP request, then extracts the requested files locally. The v3.1 archive is ~686 MB compressed vs. ~2.4 GB for the raw FASTA, so the transfer is ~3.5x smaller and avoids the 60-second R default that previously timed out mid-download. The archive is removed from `dest_dir` after extraction.
+* `download_ksgp_db()` now downloads the FASTA (and companion `.tax` when `tax_format != "none"`) from the `KSGP_v<version>.tar.gz` archive in a single HTTP request, then extracts the requested files locally. The v3.1 archive is ~686 MB compressed vs. ~2.4 GB for the raw FASTA, so the transfer is ~3.5x smaller and avoids the 60-second R default that previously timed out mid-download. The archive is removed from `dest_dir` after extraction; when `tax_format = "sintax"` or `"dada2"`, the merged FASTA is the only file left in `dest_dir` (the extracted `.tax` is removed after its taxonomy has been written into the headers).
+
+* `download_ksgp_db()` SINTAX output now preserves the original prefix letter from the KSGP `.tax` file: a line starting with `k__Bacteria; p__Bacteroidota; ...` is written as `>ID;tax=k:Bacteria,p:Bacteroidota,...` (previously the `k` was collapsed to `d` by the shared lineage parser, producing `d:Bacteria,...`).
+
+* `download_ksgp_db()` now defaults `annotation` to `"lca"` (was `"sintax"`). The LCA annotation covers a much larger fraction of the FASTA sequences than the SINTAX `.tax` (the SINTAX `.tax` only annotates ~33% of the FASTA — the SILVA-derived portion is left as accession-only headers). The `annotation` argument is also now honoured when merging the `.tax` into the FASTA (`file_type = "fasta"`, `tax_format != "none"`). Non-KSGP databases (which only ship a `sintax` `.tax`) emit a warning if a different `annotation` is requested.
 
 * `download_ksgp_db()` (and the internal `download_file()` helper used by every `download_*_db()`) gain a `timeout` argument, default `Inf`, so multi-GB downloads no longer hit R's 60-second `options("timeout")` ceiling. Set `timeout = 600` (or any other value in seconds) to restore a strict deadline.
 

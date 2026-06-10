@@ -8,7 +8,7 @@ download_ksgp_db(
   dest_dir = ".",
   database = c("KSGP", "GTDB_plus", "GTDB_cleaned"),
   file_type = c("fasta", "tax", "archive"),
-  annotation = c("sintax", "lca", "ksgp_plus"),
+  annotation = c("lca", "sintax", "ksgp_plus"),
   tax_format = c("dada2", "sintax", "none"),
   version = "3.1",
   verbose = TRUE,
@@ -35,10 +35,13 @@ supplement).
 annotation variants). Only available for \code{database = "KSGP"}.
 }}
 
-\item{annotation}{(Character, default \code{"sintax"}) Taxonomic annotation
-method. One of \code{"sintax"}, \code{"lca"}, or \code{"ksgp_plus"}. Only applies
-when \code{database = "KSGP"} and \code{file_type = "tax"}. Only \code{"sintax"} is
-available for version \code{"1.0"}.}
+\item{annotation}{(Character, default \code{"lca"}) Taxonomic annotation
+method. One of \code{"lca"}, \code{"sintax"}, or \code{"ksgp_plus"}. Used to pick
+the matching \code{.tax} file when \code{file_type = "tax"}, and to pick the
+taxonomy merged into the FASTA headers when \code{file_type = "fasta"}
+and \code{tax_format != "none"}. The \code{lca} annotation has the broadest
+sequence coverage and is the default for a fully-annotated KSGP
+FASTA. Only \code{"sintax"} is available for version \code{"1.0"}.}
 
 \item{tax_format}{(Character, default \code{"dada2"}) When \code{file_type = "fasta"},
 also download the companion \code{.tax} file and merge its taxonomy into the
@@ -93,11 +96,20 @@ FASTA — and, when \code{tax_format != "none"}, the chosen \code{.tax} file —
 smaller than the raw FASTA (e.g. ~686 MB vs ~2.4 GB for v3.1), so
 this is both faster and lighter on the server than two separate
 requests. The KSGP FASTA and taxonomy files are otherwise separate
-downloads. To use KSGP for taxonomic assignment:
+downloads.
+
+With \code{tax_format = "sintax"} (or \code{"dada2"}), the taxonomy is merged
+into the FASTA headers (one sequence ID per row, matched against the
+\code{.tax} file) and the \code{.tax} file is removed, so the result is a
+single FASTA ready for VSEARCH/dada2 — the original prefix letters
+from the \code{.tax} are preserved in the SINTAX output (a KSGP line
+starting with \code{k__Bacteria;} becomes \verb{>ID;tax=k:Bacteria,...},
+not \verb{d:Bacteria,...}). To use KSGP for taxonomic assignment:
 \itemize{
 \item With VSEARCH SINTAX: download the FASTA (\code{file_type = "fasta"},
-default \code{tax_format = "dada2"}); the \code{.tax} file is fetched and
-merged in automatically.
+\code{tax_format = "sintax"}).
+\item With dada2: download the FASTA (\code{file_type = "fasta"},
+\code{tax_format = "dada2"}).
 \item With LotuS2: the KSGP database is integrated directly.
 \item For a complete set of all files: use \code{file_type = "archive"}.
 }

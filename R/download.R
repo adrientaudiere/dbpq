@@ -1438,6 +1438,43 @@ download_diatbarcode_db <- function(
 # KSGP
 # ——————————————————————————————————————————————————————————————————————
 
+# Parse one KSGP .tax lineage into a named character vector whose names are
+# the **original** prefix letters (e.g. "k", "p", "c", ...). Unlike
+# `.lineage_to_ranks()` — which collapses both `d` and `k` to the canonical
+# `d` rank key — this helper preserves the letter the source file actually
+# uses, so the SINTAX renderer emits `k:Bacteria` (not `d:Bacteria`) for a
+# KSGP line that starts with `k__Bacteria`.
+#
+# The value is taken as everything after the first `__` (greedy), which
+# is what KSGP needs: compartment-tagged values such as
+# `Eukaryota__mito` are kept as a single value rather than being split on
+# the inner `__`.
+.lineage_to_ranks_ksgp <- function(lineage, sep = ";") {
+  if (length(lineage) != 1L || is.na(lineage) || !nzchar(trimws(lineage))) {
+    return(character(0))
+  }
+  tokens <- strsplit(lineage, sep, fixed = TRUE)[[1]]
+  out <- character(0)
+  for (tok in tokens) {
+    tok <- trimws(tok)
+    if (!nzchar(tok)) {
+      next
+    }
+    pm <- regmatches(tok, regexec("^([a-zA-Z])__(.+)$", tok))[[1]]
+    if (length(pm) != 3L) {
+      next
+    }
+    letter <- tolower(pm[[2]])
+    value <- pm[[3]]
+    if (.is_missing_tax(value)) {
+      next
+    }
+    out[[letter]] <- value
+  }
+  out
+}
+
+
 #' Download the KSGP or GTDB+ reference database
 #'
 #' @description
@@ -1473,10 +1510,13 @@ download_diatbarcode_db <- function(
 #'   - `"tax"`: Taxonomy file (`.tax`) with taxonomic annotations.
 #'   - `"archive"`: Complete `.tar.gz` archive (all KSGP files, all
 #'     annotation variants). Only available for `database = "KSGP"`.
-#' @param annotation (Character, default `"sintax"`) Taxonomic annotation
-#'   method. One of `"sintax"`, `"lca"`, or `"ksgp_plus"`. Only applies
-#'   when `database = "KSGP"` and `file_type = "tax"`. Only `"sintax"` is
-#'   available for version `"1.0"`.
+#' @param annotation (Character, default `"lca"`) Taxonomic annotation
+#'   method. One of `"lca"`, `"sintax"`, or `"ksgp_plus"`. Used to pick
+#'   the matching `.tax` file when `file_type = "tax"`, and to pick the
+#'   taxonomy merged into the FASTA headers when `file_type = "fasta"`
+#'   and `tax_format != "none"`. The `lca` annotation has the broadest
+#'   sequence coverage and is the default for a fully-annotated KSGP
+#'   FASTA. Only `"sintax"` is available for version `"1.0"`.
 #' @param tax_format (Character, default `"dada2"`) When `file_type = "fasta"`,
 #'   also download the companion `.tax` file and merge its taxonomy into the
 #'   FASTA headers (matched by sequence ID), so the file feeds
@@ -1500,11 +1540,23 @@ download_diatbarcode_db <- function(
 #' When `file_type = "fasta"`, the function downloads the matching
 #' `KSGP_v<version>.tar.gz` archive (one HTTP request) and extracts the
 #' FASTA — and, when `tax_format != "none"`, the chosen `.tax` file — to
-#' `dest_dir`, then removes the archive. The KSGP FASTA and taxonomy files are otherwise separate
-#' downloads. To use KSGP for taxonomic assignment:
+#' `dest_dir`, then removes the archive. The archive is roughly 3.5x
+#' smaller than the raw FASTA (e.g. ~686 MB vs ~2.4 GB for v3.1), so
+#' this is both faster and lighter on the server than two separate
+#' requests. The KSGP FASTA and taxonomy files are otherwise separate
+#' downloads.
+#'
+#' With `tax_format = "sintax"` (or `"dada2"`), the taxonomy is merged
+#' into the FASTA headers (one sequence ID per row, matched against the
+#' `.tax` file) and the `.tax` file is removed, so the result is a
+#' single FASTA ready for VSEARCH/dada2 — the original prefix letters
+#' from the `.tax` are preserved in the SINTAX output (a KSGP line
+#' starting with `k__Bacteria;` becomes `>ID;tax=k:Bacteria,...`,
+#' not `d:Bacteria,...`). To use KSGP for taxonomic assignment:
 #' - With VSEARCH SINTAX: download the FASTA (`file_type = "fasta"`,
-#'   default `tax_format = "dada2"`); the `.tax` file is fetched and
-#'   merged in automatically.
+#'   `tax_format = "sintax"`).
+#' - With dada2: download the FASTA (`file_type = "fasta"`,
+#'   `tax_format = "dada2"`).
 #' - With LotuS2: the KSGP database is integrated directly.
 #' - For a complete set of all files: use `file_type = "archive"`.
 #'
@@ -1545,7 +1597,7 @@ download_ksgp_db <- function(
   dest_dir = ".",
   database = c("KSGP", "GTDB_plus", "GTDB_cleaned"),
   file_type = c("fasta", "tax", "archive"),
-  annotation = c("sintax", "lca", "ksgp_plus"),
+  annotation = c("lca", "sintax", "ksgp_plus"),
   tax_format = c("dada2", "sintax", "none"),
   version = "3.1",
   verbose = TRUE,
@@ -1683,13 +1735,31 @@ download_ksgp_db <- function(
       )
 
       # Pre-pick the .tax filename we'll also need, if any, so a single
-      # `untar()` call can extract both files in one pass.
+      # `untar()` call can extract both files in one pass. For the KSGP
+      # FASTA workflow the user-selected `annotation` chooses which
+      # variant (sintax / lca / ksgp_plus) to merge in. Non-KSGP
+      # databases only ship a sintax .tax.
       if (tax_format != "none") {
+        fasta_annotation <- if (database == "KSGP") {
+          annotation
+        } else {
+          if (annotation != "sintax") {
+            warning(
+              "database='",
+              database,
+              "' only has a 'sintax' .tax; ignoring annotation='",
+              annotation,
+              "'.",
+              call. = FALSE
+            )
+          }
+          "sintax"
+        }
         tax_filename_inline <- file_lookup[[paste(
           version,
           database,
           "tax",
-          lookup_annotation,
+          fasta_annotation,
           sep = ":"
         )]]
       }
@@ -1814,7 +1884,7 @@ download_ksgp_db <- function(
         col.names = c("id", "tax")
       )
       id2ranks <- stats::setNames(
-        lapply(tax_tab$tax, .lineage_to_ranks, sep = ";"),
+        lapply(tax_tab$tax, .lineage_to_ranks_ksgp, sep = ";"),
         tax_tab$id
       )
       .write_tax_fasta(
@@ -1824,6 +1894,11 @@ download_ksgp_db <- function(
         output_path = dest_file,
         verbose = verbose
       )
+      # The user wants a single FASTA with taxonomy in the header, not
+      # the .tax file left alongside it. Remove the extracted .tax.
+      if (file.exists(tax_path)) {
+        unlink(tax_path)
+      }
     }
   }
 
