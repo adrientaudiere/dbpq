@@ -307,18 +307,23 @@ unwanted_tax_patterns_default <- function() {
   }
   # Built-in fallback (kept in sync with MiscMetabar)
   c(
-    "NA-like (NA, NaN, nan)" = "^[Nn][Aa][Nn]?$",
-    "NA-like (N/A, n/a)" = "^[Nn]/[Aa]$",
-    "None / none" = "^[Nn]one$",
-    "empty string" = "^$",
-    "whitespace only" = "^\\s+$",
-    "unclassified" = "[Uu]nclassified",
-    "unknown" = "[Uu]nknown",
-    "unidentified" = "[Uu]nidentified",
-    "uncultured" = "[Uu]ncultured",
-    "incertae sedis" = "[Ii]ncertae[_\\s]?[Ss]edis",
-    "metagenome" = "^[Mm]etagenome$",
-    "environmental" = "^[Ee]nvironmental",
-    "empty QIIME-style rank" = "^[kpcofgs]__$"
+  "NA-like (NA, NaN, nan)" = "^[Nn][Aa][Nn]?$",
+  "NA-like (N/A, n/a)" = "^[Nn]/[Aa]$",
+  "None / none" = "^[Nn]one$",
+  "empty string" = "^$",
+  "whitespace only" = "^\\s+$",
+  "question mark" = "^\\?$",
+  "unclassified" = "[Uu]nclassified",
+  "unknown" = "[Uu]nknown",
+  "unidentified" = "[Uu]nidentified",
+  "uncultured" = "[Uu]ncultured",
+  "incertae sedis" = "[Ii]ncertae[_\\s]?[Ss]edis",
+  "metagenome" = "^[Mm]etagenome$",
+  "environmental" = "^[Ee]nvironmental",
+  "empty QIIME-style rank" = "^[kpcofgs]__$",
+  "unknown species (_sp prefix)" = "^_sp",
+  "unknown species (_species prefix)" = "^_species",
+  "unknown cluster (_uc prefix, e.g. MMseqs2 assignation)" = "_uc$",
+  "unknown ranks (_X, _XX, ... prefix e.g. PR2 database)" = "__X+$"
   )
 }

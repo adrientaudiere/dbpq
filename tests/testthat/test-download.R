@@ -268,8 +268,10 @@ test_that("download_ksgp_db routes FASTA downloads through the tar.gz archive", 
     "^>seq1;tax=k:Bacteria,p:Pseudomonadota,c:Gammaproteobacteria",
     out_lines
   )))
+  # The awk fast path converts the `__` compartment tag to `:` in the
+  # value (SINTAX canonical form: `k:Eukaryota:mito`).
   expect_true(any(grepl(
-    "^>seq2;tax=k:Eukaryota__mito,p:Ascomycota__mito",
+    "^>seq2;tax=k:Eukaryota:mito,p:Ascomycota:mito",
     out_lines
   )))
 })
@@ -399,4 +401,54 @@ test_that("download_ksgp_db annotation = 'lca' routes the merge through the LCA 
   # a single FASTA only).
   expect_false(file.exists(file.path(dest_dir, "KSGP_v3.1.tax")))
   expect_false(file.exists(file.path(dest_dir, "KSGP_lca_v3.1.tax")))
+})
+
+test_that(".merge_tax_ksgp_sintax produces VSEARCH-compatible SINTAX headers", {
+  if (Sys.which("awk") == "") {
+    skip("awk not available on PATH")
+  }
+  tax_path <- tempfile(fileext = ".tax")
+  fasta_path <- tempfile(fileext = ".fasta")
+  out_path <- tempfile(fileext = ".fasta")
+  on.exit(
+    unlink(c(tax_path, fasta_path, out_path)),
+    add = TRUE
+  )
+  writeLines(
+    c(
+      "seq1\tk__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Prevotella; s__Prevotella_copri",
+      "seq2\tk__Eukaryota__mito; p__Ascomycota__mito; c__Sordariomycetes__mito; o__Hypocreales__mito; f__Nectriaceae__mito; g__Fusarium__mito; s__Fusarium_oxysporum__mito"
+    ),
+    tax_path
+  )
+  writeLines(
+    c(">seq1", "ACGT", ">seq2", "TTGG", ">seq3_unmatched", "GGTT"),
+    fasta_path
+  )
+
+  .merge_tax_ksgp_sintax(
+    tax_path = tax_path,
+    fasta_path = fasta_path,
+    output_path = out_path,
+    verbose = FALSE
+  )
+
+  out_lines <- readLines(out_path)
+  # Matched IDs get the canonical VSEARCH SINTAX form (commas, `:`).
+  expect_true(any(grepl(
+    "^>seq1;tax=k:Bacteria,p:Bacteroidota,c:Bacteroidia",
+    out_lines
+  )))
+  # Compartment tag (`__mito`) is converted to `:` in the value
+  # (still a valid SINTAX value).
+  expect_true(any(grepl(
+    "^>seq2;tax=k:Eukaryota:mito,p:Ascomycota:mito",
+    out_lines
+  )))
+  # Unmatched IDs pass through unchanged.
+  expect_true(any(grepl("^>seq3_unmatched$", out_lines)))
+  # Sequence lines are preserved.
+  expect_true("ACGT" %in% out_lines)
+  expect_true("TTGG" %in% out_lines)
+  expect_true("GGTT" %in% out_lines)
 })

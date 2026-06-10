@@ -2,6 +2,27 @@
 # Profile reference databases: taxonomic richness and cross-database overlap
 # ——————————————————————————————————————————————————————————————————————
 
+# Canonical rank order used to order the x-axis of richness plots and the
+# iteration/comparison order of per-rank Venn/UpSet panels.
+canonical_rank_levels <- c("k", "d", "p", "c", "o", "f", "g", "s")
+
+
+# Reorder a character vector of rank names to the canonical order. Ranks not in
+# the canonical set (e.g. `level_1`, `level_2`, ... from positional formats) are
+# appended in their original order at the end.
+order_ranks <- function(ranks) {
+  if (length(ranks) == 0) {
+    return(ranks)
+  }
+  in_canon <- match(ranks, canonical_rank_levels)
+  canon_first <- ranks[!is.na(in_canon)]
+  extras <- ranks[is.na(in_canon)]
+  c(
+    canon_first[order(in_canon[!is.na(in_canon)])],
+    extras
+  )
+}
+
 #' Profile the taxonomic content of one or several FASTA databases
 #'
 #' @description
@@ -295,7 +316,7 @@ richness_plot <- function(richness) {
   if (nrow(richness) == 0) {
     return(NULL)
   }
-  richness$rank <- factor(richness$rank, levels = unique(richness$rank))
+  richness$rank <- factor(richness$rank, levels = order_ranks(unique(richness$rank)))
   ggplot2::ggplot(
     richness,
     ggplot2::aes(
@@ -330,7 +351,7 @@ compare_taxa_across_db <- function(
   venn_max = 7L,
   build_plots = TRUE
 ) {
-  ranks <- unique(taxa$rank)
+  ranks <- order_ranks(unique(taxa$rank))
   db_labels <- unique(taxa$file)
 
   # Sequence weighting can only be drawn with a working ComplexUpset; the
