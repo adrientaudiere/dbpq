@@ -1,6 +1,9 @@
 #' Filter a FASTA database by taxonomic pattern
 #'
 #' @description
+#' <a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+#' <img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+#'
 #' Filters sequences from a FASTA database whose header lines match a given
 #' pattern. Accepts gzip files. May not work on Windows.
 #'
@@ -19,8 +22,11 @@
 #' @export
 #' @author Adrien Taudière
 #' @seealso [count_pattern_db()]
-#' @examples
-#' # filter_db("database.fasta.gz", "Rhizophydiales", "output.fasta")
+#' @examplesIf tolower(Sys.info()[["sysname"]]) != "windows"
+#' db <- system.file("extdata", "example_unite.fasta", package = "dbpq")
+#' out <- tempfile(fileext = ".fasta")
+#' filter_db(db, "Amanita", output = out)
+#' count_seq_db(out)
 filter_db <- function(
   ref_fasta,
   pattern,
@@ -34,45 +40,34 @@ filter_db <- function(
 
   if (force_two_lines_per_seq) {
     tmp_file <- tempfile()
-    if (is_gzipped(ref_fasta)) {
-      system(paste0(
-        "zcat ",
-        normalizePath(ref_fasta),
-        " | sed ':a;N;/>/!s/\\n//;ta;P;D'  > ",
-        tmp_file
-      ))
+    reader <- if (is_gzipped(ref_fasta)) {
+      "zcat "
     } else {
-      system(paste0(
-        "cat ",
-        normalizePath(ref_fasta),
-        " | sed ':a;N;/>/!s/\\n//;ta;P;D'  > ",
-        tmp_file
-      ))
+      "cat "
     }
+    system(paste0(
+      reader,
+      shQuote(normalizePath(ref_fasta)),
+      " | sed ':a;N;/>/!s/\\n//;ta;P;D'  > ",
+      shQuote(tmp_file)
+    ))
     ref_fasta <- tmp_file
   }
 
-  if (is_gzipped(ref_fasta)) {
-    system(paste0(
-      "zcat ",
-      normalizePath(ref_fasta),
-      " | grep -i '",
-      pattern,
-      "' ",
-      "-A 1 | sed -E 's/--//g' | sed -E '/^$/d' > ",
-      output
-    ))
+  # `shQuote()` protects the path and pattern from shell metacharacters.
+  reader <- if (is_gzipped(ref_fasta)) {
+    "zcat "
   } else {
-    system(paste0(
-      "cat ",
-      normalizePath(ref_fasta),
-      " | grep -i '",
-      pattern,
-      "' ",
-      "-A 1 | sed -E 's/--//g' | sed -E '/^$/d' > ",
-      output
-    ))
+    "cat "
   }
+  system(paste0(
+    reader,
+    shQuote(normalizePath(ref_fasta)),
+    " | grep -i ",
+    shQuote(pattern),
+    " -A 1 | sed -E 's/--//g' | sed -E '/^$/d' > ",
+    shQuote(output)
+  ))
 
   if (force_two_lines_per_seq && !keep_temporary_files) {
     unlink(tmp_file)
@@ -89,6 +84,9 @@ filter_db <- function(
 #' Remove primers from a FASTA database using cutadapt
 #'
 #' @description
+#' <a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+#' <img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+#'
 #' Removes pairs of primers and flanking regions from a FASTA reference
 #' database using [cutadapt](https://github.com/marcelm/cutadapt/).
 #' Uses linked adapters to trim between forward and reverse primers.
@@ -185,12 +183,24 @@ cutadapt_rm_primers_db <- function(
   cmd <- paste0(cmd, " ", normalizePath(ref_fasta))
 
   if (cmd_is_run) {
-    writeLines(cmd, paste0(tempdir(), "/script_cutadapt.sh"))
-    system2("bash", paste0(tempdir(), "/script_cutadapt.sh"))
+    script_path <- file.path(tempdir(), "script_cutadapt.sh")
+    writeLines(cmd, script_path)
+    exit_code <- system2("bash", script_path)
+    unlink(script_path)
+    if (exit_code != 0L) {
+      stop(
+        "cutadapt failed (exit code ",
+        exit_code,
+        "). ",
+        "Ensure cutadapt is installed and accessible, ",
+        "or set `cmd_is_run = FALSE` to inspect the command without",
+        " running it.",
+        call. = FALSE
+      )
+    }
     if (verbose) {
       message("Output file is available: ", normalizePath(output))
     }
-    unlink(paste0(tempdir(), "/script_cutadapt.sh"))
   } else {
     return(cmd)
   }
@@ -226,13 +236,19 @@ cutadapt_rm_primers_db <- function(
       " nucleotides, for a final number of ",
       n_nuc_final,
       " nucleotides.\n The mean width of references sequences is now ",
-      round(mean(Biostrings::width(
-        Biostrings::readDNAStringSet(output)
-      )), 2),
+      round(
+        mean(Biostrings::width(
+          Biostrings::readDNAStringSet(output)
+        )),
+        2
+      ),
       " vs ",
-      round(mean(Biostrings::width(
-        Biostrings::readDNAStringSet(ref_fasta)
-      )), 2),
+      round(
+        mean(Biostrings::width(
+          Biostrings::readDNAStringSet(ref_fasta)
+        )),
+        2
+      ),
       " in the original database."
     )
   }

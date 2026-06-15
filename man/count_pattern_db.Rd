@@ -16,11 +16,20 @@ often a FASTA file.}
 An integer, the number of matching lines.
 }
 \description{
+\if{html}{\out{
+<a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+<img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+}}
+
+
 Count lines (sequences if fasta file) matching a pattern.
 Accepts gzip files. May not work on Windows.
 }
 \examples{
-# count_pattern_db("my_database.fasta", "Fungi")
+\dontshow{if (tolower(Sys.info()[["sysname"]]) != "windows") withAutoprint(\{ # examplesIf}
+db <- system.file("extdata", "example_unite.fasta", package = "dbpq")
+count_pattern_db(db, "Amanita")
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 \code{\link[=filter_db]{filter_db()}}, \code{\link[=count_seq_db]{count_seq_db()}}

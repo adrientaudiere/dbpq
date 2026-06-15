@@ -7,6 +7,13 @@ template:
     primary: "#63450f"
     secondary: "#3e135a"
 
+articles:
+- title: Articles
+  navbar: ~
+  contents:
+  - taxonomy-formats
+  - articles/database-relationships
+
 reference:
 - title: Download databases
   desc: Download latest versions of reference databases.
@@ -14,13 +21,20 @@ reference:
   - download_unite_db
   - download_silva_db
   - download_pr2_db
+  - download_greengenes2_db
+  - download_rdp_db
+  - download_midori2_db
   - download_bold_db
+  - download_diatbarcode_db
+  - download_ksgp_db
+  - download_ltplus_db
   - download_marjaam_db
   - download_eukaryome_db
 
 - title: Format taxonomy headers
-  desc: Convert between taxonomy header formats (dada2, SINTAX).
+  desc: Convert between taxonomy header formats (SINTAX, UNITE, Greengenes2, dada2).
   contents:
+  - format_fasta_db
   - format2dada2
   - format2dada2_species
   - format2sintax
@@ -30,8 +44,22 @@ reference:
   contents:
   - count_seq_db
   - count_pattern_db
+  - count_unwanted_tax
   - list_ranks_db
   - summarize_db
+
+- title: Diagnose & profile databases
+  desc: >
+    Check format, integrity, and quality, and profile taxonomic richness and
+    cross-database overlap.
+  contents:
+  - diagnose_db
+  - profile_db
+
+- title: Taxonomic assignment
+  desc: Assign taxonomy to sequences.
+  contents:
+  - add_sh_to_taxonomy
 
 - title: Modify databases
   desc: Filter, trim, and transform FASTA databases.
@@ -43,3 +71,7 @@ reference:
   desc: Helper functions.
   contents:
   - get_file_extension
+  - tax_prefixes
+  - detect_tax_format
+  - is_vsearch_installed
+  - find_vsearch

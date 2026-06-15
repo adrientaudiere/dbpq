@@ -8,6 +8,9 @@ download_unite_db(
   dest_dir = ".",
   type = c("dynamic", "static"),
   taxon_group = c("fungi", "eukaryotes"),
+  version = "10.0",
+  taxonomic_format = c("default", "sintax"),
+  doi = NULL,
   verbose = TRUE
 )
 }
@@ -16,10 +19,26 @@ download_unite_db(
 downloaded file.}
 
 \item{type}{(Character, default \code{"dynamic"}) One of \code{"dynamic"} or
-\code{"static"}. Dynamic files include singletons, static do not.}
+\code{"static"}. Dynamic files include singletons. Only used when
+\code{taxonomic_format = "default"}. Note: as of UNITE v10.0, separate
+static/dynamic archives are not available for \code{taxon_group = "fungi"};
+both options download the same archive.}
 
 \item{taxon_group}{(Character, default \code{"fungi"}) One of \code{"fungi"} or
 \code{"eukaryotes"}.}
+
+\item{version}{(Character, default \code{"10.0"}) UNITE version. Use \code{"10.0"}
+for the 2024 release.}
+
+\item{taxonomic_format}{(Character, default \code{"default"}) One of
+\code{"default"} or \code{"sintax"}. When \code{"default"}, downloads the general
+FASTA release (\code{.tgz} archive with \code{k__}/\code{p__} taxonomy). When
+\code{"sintax"}, downloads a single FASTA file already formatted for
+VSEARCH SINTAX classification (with \code{tax=d:...} headers).}
+
+\item{doi}{(Character) If provided, overrides version-based URL
+construction with a direct DOI download. Useful for older or
+alternative releases.}
 
 \item{verbose}{(Logical, default \code{TRUE}) Print progress messages.}
 }
@@ -27,12 +46,57 @@ downloaded file.}
 The path to the downloaded file (invisibly).
 }
 \description{
-Downloads the latest UNITE fungal ITS database for taxonomic assignment.
+\if{html}{\out{
+<a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+<img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+}}
+
+
+Downloads the UNITE fungal ITS database for taxonomic assignment from
+the UNITE DOI repository (PlutoF/Zenodo). Provides both "dynamic"
+(including singletons) and "static" versions, for fungi or all eukaryotes.
+
+UNITE general FASTA releases use the \code{k__}/\code{p__} taxonomy format and
+are compatible with dada2, VSEARCH, and other classifiers after
+reformatting with \code{\link[=format2dada2]{format2dada2()}} or \code{\link[=format2sintax]{format2sintax()}}.
+}
+\details{
+When \code{taxonomic_format = "default"}: since UNITE v10.0, the \code{.tgz}
+archive contains all clustering variants (dynamic, 97\%, 99\%) bundled
+together. After downloading, extract the archive and select the
+appropriate FASTA file.
+
+When \code{taxonomic_format = "sintax"}: the downloaded \code{.gz} file is a
+single FASTA with SINTAX-ready taxonomy headers. This file can be used
+directly with \code{vsearch --sintax}.
+
+The S3 download URLs use opaque UUIDs that change between releases.
+If the automatic URL fails, visit
+\url{https://unite.ut.ee/repository.php} to find the current DOI and pass
+it via the \code{doi} parameter, or download manually.
+
+Please cite UNITE: Abarenkov K et al. (2024) UNITE general FASTA
+release for Fungi. UNITE Community.
+\doi{10.15156/BIO/2959336}
 }
 \examples{
 \dontrun{
-download_unite_db()
+# Download UNITE v10.0 default (general FASTA archive) for fungi
+download_unite_db(dest_dir = "databases")
+
+# Download UNITE v10.0 SINTAX-formatted for fungi
+download_unite_db(dest_dir = "databases", taxonomic_format = "sintax")
+
+# Download for all eukaryotes in SINTAX format
+download_unite_db(
+  dest_dir = "databases",
+  taxon_group = "eukaryotes",
+  taxonomic_format = "sintax"
+)
 }
+}
+\seealso{
+\code{\link[=format2dada2]{format2dada2()}}, \code{\link[=format2sintax]{format2sintax()}}
 }
 \author{
 Adrien Taudière

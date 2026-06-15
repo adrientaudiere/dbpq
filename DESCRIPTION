@@ -6,9 +6,10 @@ Authors@R:
            comment = c(ORCID = "0000-0003-1088-1182"))
 Description: Download, format, summarize, and modify FASTA reference
     databases used for taxonomic assignment in metabarcoding pipelines.
-    Supports major databases (UNITE, SILVA, PR2, BOLD, MaarjAM, Eukaryome)
-    and converts between taxonomy header formats (dada2, SINTAX). Part of
-    the 'pqverse' ecosystem.
+    Supports major databases ('UNITE', 'SILVA', 'PR2', 'Greengenes2', 'RDP',
+    'MIDORI2', 'BOLD', 'Diat.barcode', 'MaarjAM', 'Eukaryome') and converts
+    between taxonomy header formats ('dada2', 'SINTAX', 'Greengenes2'). Part
+    of the 'pqverse' ecosystem.
 License: MIT + file LICENSE
 URL: https://github.com/adrientaudiere/dbpq
 BugReports: https://github.com/adrientaudiere/dbpq/issues
@@ -16,19 +17,35 @@ Depends:
     R (>= 4.1.0)
 Imports:
     Biostrings,
+    cli,
+    methods,
     dplyr,
+    jsonlite,
     purrr,
+    rlang,
     stringr,
     tibble,
     tidyr,
-    tools
+    tools,
+    utils
 Suggests:
+    ComplexUpset,
     dada2,
+    ggplot2,
+    ggVennDiagram,
     knitr,
+    lifecycle,
+    MiscMetabar,
+    phyloseq,
     rmarkdown,
     R.utils,
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    visNetwork
+Remotes:
+    krassowski/complex-upset
+VignetteBuilder: knitr
+RdMacros: lifecycle
 Config/testthat/edition: 3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.3
+Config/roxygen2/version: 8.0.0

@@ -7,40 +7,60 @@
 format2sintax(
   fasta_db = NULL,
   taxnames = NULL,
-  pattern_tax = "k__",
-  pattern_sintax = "tax=k:",
-  output_path = NULL
+  input_format = "auto",
+  output_path = NULL,
+  id_prefix = "seq"
 )
 }
 \arguments{
 \item{fasta_db}{(Character) Path to a FASTA file. Mutually exclusive
 with \code{taxnames}.}
 
-\item{taxnames}{(Character vector) Taxonomy header strings. Mutually
-exclusive with \code{fasta_db}.}
+\item{taxnames}{(Character vector) Taxonomy header strings (without
+leading \code{>}). Mutually exclusive with \code{fasta_db}.}
 
-\item{pattern_tax}{(Character, default \code{"k__"}) Pattern identifying the
-start of taxonomy in the original format.}
-
-\item{pattern_sintax}{(Character, default \code{"tax=k:"}) Pattern for the
-start of taxonomy in SINTAX format.}
+\item{input_format}{(Character, default \code{"auto"}) Input taxonomy format.
+One of \code{"auto"}, \code{"unite"}, \code{"greengenes2"}, \code{"dada2"}.}
 
 \item{output_path}{(Character) If provided and \code{fasta_db} is used, write
 the reformatted FASTA to this path.}
+
+\item{id_prefix}{(Character, default \code{"seq"}) Prefix for synthetic
+sequence IDs generated when the input has none (e.g. \code{"dada2"}).}
 }
 \value{
 If \code{taxnames} is used, a character vector of reformatted names.
 If \code{fasta_db} is used, a \code{DNAStringSet} with reformatted names.
 }
 \description{
-Converts taxonomy headers from the common \verb{k__Kingdom;p__Phylum;...}
-format to the VSEARCH SINTAX format (\verb{tax=k:Kingdom,p:Phylum,...}).
+\if{html}{\out{
+<a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+<img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+}}
+
+
+Converts taxonomy headers to the VSEARCH SINTAX format
+(\verb{>ID;tax=k:Kingdom,p:Phylum,...}). Wrapper around \code{\link[=format_fasta_db]{format_fasta_db()}}.
 }
 \examples{
+# UNITE format → SINTAX
 format2sintax(taxnames = "AB123;k__Fungi;p__Ascomycota;c__Sordariomycetes")
+
+# Greengenes2 format → SINTAX
+format2sintax(
+  taxnames = "abc123 d__Bacteria;p__Pseudomonadota",
+  input_format = "greengenes2"
+)
+
+# dada2 trainset (taxonomy-only, positional) → SINTAX with synthetic IDs
+format2sintax(
+  taxnames = "Bacteria;Pseudomonadota;Gammaproteobacteria;Vibrio;",
+  input_format = "dada2",
+  id_prefix = "SILVA_"
+)
 }
 \seealso{
-\code{\link[=format2dada2]{format2dada2()}}, \code{\link[=format2dada2_species]{format2dada2_species()}}
+\code{\link[=format_fasta_db]{format_fasta_db()}}, \code{\link[=format2dada2]{format2dada2()}}, \code{\link[=format2dada2_species]{format2dada2_species()}}
 }
 \author{
 Adrien Taudière

@@ -7,42 +7,52 @@
 format2dada2_species(
   fasta_db = NULL,
   taxnames = NULL,
-  from_sintax = FALSE,
-  output_path = NULL,
-  ...
+  input_format = "auto",
+  output_path = NULL
 )
 }
 \arguments{
 \item{fasta_db}{(Character) Path to a FASTA file. Mutually exclusive
 with \code{taxnames}.}
 
-\item{taxnames}{(Character vector) Taxonomy header strings. Mutually
-exclusive with \code{fasta_db}.}
+\item{taxnames}{(Character vector) Taxonomy header strings (without
+leading \code{>}). Mutually exclusive with \code{fasta_db}.}
 
-\item{from_sintax}{(Logical, default \code{FALSE}) If TRUE, input is in
-SINTAX format. If FALSE, input uses standard \code{k__} format.}
+\item{input_format}{(Character, default \code{"auto"}) Input taxonomy format.
+One of \code{"auto"}, \code{"sintax"}, \code{"unite"}, \code{"greengenes2"}.}
 
 \item{output_path}{(Character) If provided and \code{fasta_db} is used, write
 the reformatted FASTA to this path.}
-
-\item{...}{Additional arguments passed to internal functions.}
 }
 \value{
-If \code{taxnames} is used, a character vector. If \code{fasta_db} is used,
-a \code{DNAStringSet} with reformatted names.
+If \code{taxnames} is used, a character vector. If \code{fasta_db} is
+used, a \code{DNAStringSet} with reformatted names.
 }
 \description{
+\if{html}{\out{
+<a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+<img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+}}
+
+
 Converts taxonomy headers to the format expected by
-\code{dada2::addSpecies()}: \verb{AccessionID Genus Species}.
+\code{dada2::addSpecies()}: \verb{ID Genus Species}. Wrapper around
+\code{\link[=format_fasta_db]{format_fasta_db()}}.
 }
 \examples{
+# UNITE format → dada2_species
 format2dada2_species(
-  taxnames = "AB123;k__Fungi;g__Aspergillus;s__fumigatus",
-  from_sintax = FALSE
+  taxnames = "AB123;k__Fungi;g__Aspergillus;s__fumigatus"
+)
+
+# SINTAX format → dada2_species
+format2dada2_species(
+  taxnames = "AB123;tax=k:Fungi,g:Aspergillus,s:fumigatus",
+  input_format = "sintax"
 )
 }
 \seealso{
-\code{\link[=format2dada2]{format2dada2()}}, \code{\link[=format2sintax]{format2sintax()}}
+\code{\link[=format_fasta_db]{format_fasta_db()}}, \code{\link[=format2sintax]{format2sintax()}}, \code{\link[=format2dada2]{format2dada2()}}
 }
 \author{
 Adrien Taudière

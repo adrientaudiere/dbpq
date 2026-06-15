@@ -10,10 +10,18 @@ get_file_extension(file_path)
 \item{file_path}{(Character, required) Path to a file.}
 }
 \value{
-A character vector of file extensions.
+A character vector of file extensions (one element per extension).
 }
 \description{
-Get file extension(s)
+\if{html}{\out{
+<a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+<img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+}}
+
+
+Returns all extensions from a file name. Double extensions such as
+\code{.fasta.gz} are treated as a first-class case and returned as a two-element
+vector (e.g. \code{c("fasta", "gz")}).
 }
 \examples{
 get_file_extension("my_database.fasta")

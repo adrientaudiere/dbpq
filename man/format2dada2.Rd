@@ -7,49 +7,59 @@
 format2dada2(
   fasta_db = NULL,
   taxnames = NULL,
+  input_format = "auto",
   output_path = NULL,
-  from_sintax = TRUE,
-  pattern_to_remove = NULL,
-  ...
+  pattern_to_remove = NULL
 )
 }
 \arguments{
 \item{fasta_db}{(Character) Path to a FASTA file. Mutually exclusive
 with \code{taxnames}.}
 
-\item{taxnames}{(Character vector) Taxonomy header strings. Mutually
-exclusive with \code{fasta_db}.}
+\item{taxnames}{(Character vector) Taxonomy header strings (without
+leading \code{>}). Mutually exclusive with \code{fasta_db}.}
+
+\item{input_format}{(Character, default \code{"auto"}) Input taxonomy format.
+One of \code{"auto"}, \code{"sintax"}, \code{"unite"}, \code{"greengenes2"}.}
 
 \item{output_path}{(Character) If provided and \code{fasta_db} is used, write
-the reformatted FASTA to this path.}
-
-\item{from_sintax}{(Logical, default \code{TRUE}) If TRUE, input is in SINTAX
-format. If FALSE, input is converted from standard format via
-\code{\link[=format2sintax]{format2sintax()}} first.}
+the reformatted FASTA to this path. The \code{DNAStringSet} is returned
+invisibly.}
 
 \item{pattern_to_remove}{(Character) Optional regex pattern to remove
-from the reformatted names.}
-
-\item{...}{Additional arguments passed to \code{\link[=format2sintax]{format2sintax()}} when
-\code{from_sintax = FALSE}.}
+from the reformatted names (applied after conversion).}
 }
 \value{
-If \code{taxnames} is used, a character vector. If \code{fasta_db} is used,
-a \code{DNAStringSet} with reformatted names. When \code{output_path} is provided,
-the FASTA file is written and the \code{DNAStringSet} is returned invisibly.
+If \code{taxnames} is used, a character vector. If \code{fasta_db} is
+used, a \code{DNAStringSet} with reformatted names. When \code{output_path} is
+provided, returned invisibly.
 }
 \description{
+\if{html}{\out{
+<a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+<img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+}}
+
+
 Converts taxonomy headers to the format expected by
-\code{dada2::assignTaxonomy()}: \verb{Kingdom;Phylum;Class;Order;Family;Genus;}.
+\code{dada2::assignTaxonomy()}: unprefixed semicolon-delimited taxonomy
+(\verb{>Kingdom;Phylum;Class;Order;Family;Genus;}). Wrapper around
+\code{\link[=format_fasta_db]{format_fasta_db()}}.
 }
 \examples{
+# SINTAX format → dada2
 format2dada2(
-  taxnames = "AB123;tax=k:Fungi,p:Ascomycota,c:Sordariomycetes",
-  from_sintax = TRUE
+  taxnames = "AB123;tax=k:Fungi,p:Ascomycota,c:Sordariomycetes"
+)
+
+# UNITE format → dada2
+format2dada2(
+  taxnames = "AB123;k__Fungi;p__Ascomycota;c__Sordariomycetes",
+  input_format = "unite"
 )
 }
 \seealso{
-\code{\link[=format2sintax]{format2sintax()}}, \code{\link[=format2dada2_species]{format2dada2_species()}}
+\code{\link[=format_fasta_db]{format_fasta_db()}}, \code{\link[=format2sintax]{format2sintax()}}, \code{\link[=format2dada2_species]{format2dada2_species()}}
 }
 \author{
 Adrien Taudière

@@ -2,16 +2,36 @@
 % Please edit documentation in R/download.R
 \name{download_bold_db}
 \alias{download_bold_db}
-\title{Download a BOLD reference database}
+\title{Download sequences from BOLD Systems}
 \usage{
-download_bold_db(dest_dir = ".", marker = "COI-5P", verbose = TRUE)
+download_bold_db(
+  dest_dir = ".",
+  taxon = NULL,
+  marker = "COI-5P",
+  tax_format = c("dada2", "sintax", "none"),
+  verbose = TRUE
+)
 }
 \arguments{
 \item{dest_dir}{(Character, default \code{"."}) Directory to save the
 downloaded file.}
 
-\item{marker}{(Character, default \code{"COI-5P"}) The barcode marker to
-download.}
+\item{taxon}{(Character, required) Taxonomic name to query (e.g.,
+\code{"Fungi"}, \code{"Arthropoda"}, \code{"Mammalia"}).}
+
+\item{marker}{(Character, default \code{"COI-5P"}) The barcode marker. Common
+values: \code{"COI-5P"}, \code{"ITS"}, \code{"matK"}, \code{"rbcL"}.}
+
+\item{tax_format}{(Character, default \code{"dada2"}) Taxonomy format written
+into the FASTA headers, so the file can feed
+\code{MiscMetabar::add_new_taxonomy_pq()}. One of:
+\itemize{
+\item \code{"dada2"}: unprefixed, positional ranks
+(\verb{>Phylum;Class;Order;Family;Genus;Species;}).
+\item \code{"sintax"}: \verb{>processid;tax=p:Phylum,c:Class,...}.
+\item \code{"none"}: the raw BOLD sequence FASTA with \code{processid|taxon|marker}
+headers (no ranked taxonomy).
+}}
 
 \item{verbose}{(Logical, default \code{TRUE}) Print progress messages.}
 }
@@ -19,11 +39,46 @@ download.}
 The path to the downloaded file (invisibly).
 }
 \description{
-Downloads reference sequences from BOLD Systems (Barcode of Life Data).
+\if{html}{\out{
+<a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+<img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+}}
+
+
+Downloads reference sequences from BOLD Systems (Barcode of Life Data)
+for a given taxonomic group. Unlike other databases, BOLD does not
+provide a single pre-built reference FASTA — sequences are queried by
+taxon via the BOLD API.
+}
+\details{
+This function uses the BOLD public API hosted at \code{v3.boldsystems.org},
+which remains available after the main BOLD site's migration to v5. With
+\code{tax_format = "none"} it queries the \code{sequence} endpoint (FASTA). With
+\code{"dada2"}/\code{"sintax"} it queries the \code{combined} endpoint (TSV with the full
+ranked taxonomy), keeps the requested \code{marker}, and writes a
+taxonomy-headed FASTA (gaps removed). BOLD's taxonomy starts at phylum, so
+the dada2 output has no kingdom level.
+
+For very large taxa the download may be slow or hit server limits; use
+narrower queries, or the \href{https://www.boldsystems.org/data/boldconnectr/}{BOLDconnectR}
+package for the full v5 (BCDM) data model.
+
+Please cite: Ratnasingham S & Hebert PDN (2007) BOLD: The Barcode of
+Life Data System. Molecular Ecology Notes 7:355-364.
+\doi{10.1111/j.1471-8286.2007.01678.x}
 }
 \examples{
 \dontrun{
-download_bold_db()
+# COI reference for a genus, dada2 taxonomy headers
+download_bold_db(dest_dir = "databases", taxon = "Danaus")
+
+# ITS sequences for an order, SINTAX headers
+download_bold_db(
+  dest_dir = "databases",
+  taxon = "Agaricales",
+  marker = "ITS",
+  tax_format = "sintax"
+)
 }
 }
 \author{
