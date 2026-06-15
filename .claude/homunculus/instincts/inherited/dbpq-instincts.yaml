@@ -1,0 +1,591 @@
+# Instincts generated from https://github.com/adrientaudiere/dbpq
+# Generated: 2026-06-15T14:10:32.357Z
+# Version: 2.0
+# NOTE: This file supplements (does not replace) any existing curated instincts.
+# High-confidence manually curated instincts should be preserved alongside these.
+
+---
+id: dbpq-commit-length
+trigger: "when writing a commit message"
+confidence: 0.6
+domain: git
+source: repo-analysis
+source_repo: https://github.com/adrientaudiere/dbpq
+---
+
+# Dbpq Commit Length
+
+## Action
+
+Write moderate-length commit messages (~50 characters)
+
+## Evidence
+
+- Average commit message length: 50 chars
+- Based on 20 commits
+
+---
+id: dbpq-naming-files
+trigger: "when creating a new file"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/adrientaudiere/dbpq
+---
+
+# Dbpq Naming Files
+
+## Action
+
+Use snake_case naming convention
+
+## Evidence
+
+- Analyzed file naming patterns in repository
+- Dominant pattern: snake_case
+
+---
+id: dbpq-import-relative
+trigger: "when importing modules"
+confidence: 0.75
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/adrientaudiere/dbpq
+---
+
+# Dbpq Import Relative
+
+## Action
+
+Use relative imports for project files
+
+## Evidence
+
+- Import analysis shows relative import pattern
+- Example: import { x } from '../lib/x'
+
+---
+id: dbpq-export-style
+trigger: "when exporting from a module"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/adrientaudiere/dbpq
+---
+
+# Dbpq Export Style
+
+## Action
+
+Prefer named exports
+
+## Evidence
+
+- Export pattern analysis
+- Dominant style: named
+
+---
+id: dbpq-test-separate
+trigger: "when writing tests"
+confidence: 0.8
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/adrientaudiere/dbpq
+---
+
+# Dbpq Test Separate
+
+## Action
+
+Place tests in the tests/ or __tests__/ directory, mirroring src structure
+
+## Evidence
+
+- Separate test directory pattern detected
+- Tests live in dedicated test folders
+
+---
+id: dbpq-test-naming
+trigger: "when creating a test file"
+confidence: 0.85
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/adrientaudiere/dbpq
+---
+
+# Dbpq Test Naming
+
+## Action
+
+Name test files using the pattern: *.test.ts
+
+## Evidence
+
+- File pattern: *.test.ts
+- Consistent across test files
+
+---
+id: dbpq-workflow-feature-development
+trigger: "when implementing a new feature"
+confidence: 0.9
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/adrientaudiere/dbpq
+---
+
+# Dbpq Workflow Feature Development
+
+## Action
+
+Follow the feature-development workflow:
+1. Add feature implementation
+2. Add tests for feature
+3. Update documentation
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~18x per month
+- Files: **/*.test.*
+
+---
+id: dbpq-workflow-add-new-database-download-function
+trigger: "when doing add new database download function"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/adrientaudiere/dbpq
+---
+
+# Dbpq Workflow Add New Database Download Function
+
+## Action
+
+Follow the add-new-database-download-function workflow:
+1. Add new function to R/download.R
+2. Update DESCRIPTION and/or NAMESPACE
+3. Add corresponding man/*.Rd documentation file
+4. Update or add tests in tests/testthat/test-download.R
+5. Update README.md if needed
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: R/download.R, DESCRIPTION, NAMESPACE
+
+---
+id: dbpq-workflow-add-new-analysis-or-utility-function
+trigger: "when doing add new analysis or utility function"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/adrientaudiere/dbpq
+---
+
+# Dbpq Workflow Add New Analysis Or Utility Function
+
+## Action
+
+Follow the add-new-analysis-or-utility-function workflow:
+1. Add new function to appropriate R/*.R file (e.g., R/summarize.R, R/annotate.R, R/diagnose.R, R/profile.R)
+2. Update NAMESPACE and NEWS.md
+3. Add or update man/*.Rd documentation
+4. Add or update tests in tests/testthat/
+5. Update _pkgdown.yml if needed
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: R/*.R, NAMESPACE, NEWS.md
+
+---
+id: dbpq-workflow-add-or-update-format-conversion
+trigger: "when doing add or update format conversion"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/adrientaudiere/dbpq
+---
+
+# Dbpq Workflow Add Or Update Format Conversion
+
+## Action
+
+Follow the add-or-update-format-conversion workflow:
+1. Add or update function in R/format.R
+2. Update NAMESPACE and NEWS.md
+3. Add or update man/format*.Rd documentation
+4. Add or update tests in tests/testthat/test-format.R
+5. Update or add vignettes/taxonomy-formats.Rmd
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: R/format.R, NAMESPACE, NEWS.md
+
+---
+id: dbpq-workflow-add-or-update-documentation-and-readme
+trigger: "when doing add or update documentation and readme"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/adrientaudiere/dbpq
+---
+
+# Dbpq Workflow Add Or Update Documentation And Readme
+
+## Action
+
+Follow the add-or-update-documentation-and-readme workflow:
+1. Edit README.md and/or README.html
+2. Edit or add vignettes or docs/articles
+3. Update man/figures or logo if needed
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: README.md, README.html, vignettes/*.Rmd
+
+---
+id: dbpq-workflow-add-or-update-test-suites
+trigger: "when doing add or update test suites"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/adrientaudiere/dbpq
+---
+
+# Dbpq Workflow Add Or Update Test Suites
+
+## Action
+
+Follow the add-or-update-test-suites workflow:
+1. Add new test files or update existing ones in tests/testthat/
+2. Add or update fixtures in tests/testthat/fixtures/
+3. Update NEWS.md if relevant
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: tests/testthat/test-*.R, tests/testthat/fixtures/*, tests/testthat/helper-*.R
+
+---
+id: dbpq-instinct-file-naming
+trigger: "When creating a new file"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: adrientaudiere/dbpq
+---
+
+# Dbpq Instinct File Naming
+
+## Action
+
+Name the file using snake_case
+
+## Evidence
+
+- Pattern in files: R/download.R, R/format.R, tests/testthat/test-download.R
+
+---
+id: dbpq-instinct-function-naming
+trigger: "When defining a new function"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: adrientaudiere/dbpq
+---
+
+# Dbpq Instinct Function Naming
+
+## Action
+
+Name the function using camelCase
+
+## Evidence
+
+- Pattern in codeStyle.namingConventions.functions
+- Seen in R/*.R
+
+---
+id: dbpq-instinct-class-naming
+trigger: "When defining a new class"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: adrientaudiere/dbpq
+---
+
+# Dbpq Instinct Class Naming
+
+## Action
+
+Name the class using PascalCase
+
+## Evidence
+
+- Pattern in codeStyle.namingConventions.classes
+
+---
+id: dbpq-instinct-constant-naming
+trigger: "When defining a constant"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: adrientaudiere/dbpq
+---
+
+# Dbpq Instinct Constant Naming
+
+## Action
+
+Name the constant using SCREAMING_SNAKE_CASE
+
+## Evidence
+
+- Pattern in codeStyle.namingConventions.constants
+
+---
+id: dbpq-instinct-import-style
+trigger: "When importing modules"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: adrientaudiere/dbpq
+---
+
+# Dbpq Instinct Import Style
+
+## Action
+
+Use relative import paths
+
+## Evidence
+
+- Pattern in codeStyle.importStyle
+
+---
+id: dbpq-instinct-export-style
+trigger: "When exporting functions or classes"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: adrientaudiere/dbpq
+---
+
+# Dbpq Instinct Export Style
+
+## Action
+
+Use named exports
+
+## Evidence
+
+- Pattern in codeStyle.exportStyle
+
+---
+id: dbpq-instinct-test-file-pattern
+trigger: "When adding a new test file"
+confidence: 0.9
+domain: testing
+source: repo-analysis
+source_repo: adrientaudiere/dbpq
+---
+
+# Dbpq Instinct Test File Pattern
+
+## Action
+
+Name the test file as tests/testthat/test-<feature>.R
+
+## Evidence
+
+- Pattern in testing.filePattern
+- Files: tests/testthat/test-download.R, tests/testthat/test-format.R
+
+---
+id: dbpq-instinct-add-tests-for-features
+trigger: "When implementing a new feature"
+confidence: 0.9
+domain: testing
+source: repo-analysis
+source_repo: adrientaudiere/dbpq
+---
+
+# Dbpq Instinct Add Tests For Features
+
+## Action
+
+Add or update corresponding tests in tests/testthat/
+
+## Evidence
+
+- Workflow: feature-development
+- Workflow: add-new-database-download-function
+- Workflow: add-new-analysis-or-utility-function
+
+---
+id: dbpq-instinct-test-coverage-config
+trigger: "When configuring tests"
+confidence: 0.7
+domain: testing
+source: repo-analysis
+source_repo: adrientaudiere/dbpq
+---
+
+# Dbpq Instinct Test Coverage Config
+
+## Action
+
+Ensure test coverage configuration is present
+
+## Evidence
+
+- Pattern in testing.coverageConfig
+
+---
+id: dbpq-instinct-commit-prefix
+trigger: "When writing a commit message"
+confidence: 0.9
+domain: git
+source: repo-analysis
+source_repo: adrientaudiere/dbpq
+---
+
+# Dbpq Instinct Commit Prefix
+
+## Action
+
+Prefix the message with feat, refactor, or fix as appropriate
+
+## Evidence
+
+- Seen in commit: 'Feat: add count_unwanted_tax'
+- Seen in commit: 'refactor(diagnose): migrate messaging to cli and add profile_db function'
+- Seen in commit: 'fix: handle ComplexUpset/ggplot2 incompatibility and update profile_db docs'
+
+---
+id: dbpq-instinct-commit-length
+trigger: "When writing a commit message"
+confidence: 0.7
+domain: git
+source: repo-analysis
+source_repo: adrientaudiere/dbpq
+---
+
+# Dbpq Instinct Commit Length
+
+## Action
+
+Keep the commit message concise (average ~50 characters)
+
+## Evidence
+
+- Pattern in commits.averageLength
+
+---
+id: dbpq-instinct-add-database-download-function
+trigger: "When someone wants to support downloading a new reference database"
+confidence: 0.95
+domain: workflow
+source: repo-analysis
+source_repo: adrientaudiere/dbpq
+---
+
+# Dbpq Instinct Add Database Download Function
+
+## Action
+
+Add new function to R/download.R, update DESCRIPTION and/or NAMESPACE, add man/download_*.Rd, update or add tests in tests/testthat/test-download.R, update README.md if needed
+
+## Evidence
+
+- Workflow: add-new-database-download-function
+- Example commits and files in workflow
+
+---
+id: dbpq-instinct-add-analysis-or-utility-function
+trigger: "When someone wants to provide a new analysis, summary, or utility for databases"
+confidence: 0.9
+domain: workflow
+source: repo-analysis
+source_repo: adrientaudiere/dbpq
+---
+
+# Dbpq Instinct Add Analysis Or Utility Function
+
+## Action
+
+Add new function to appropriate R/*.R file, update NAMESPACE and NEWS.md, add or update man/*.Rd, add or update tests in tests/testthat/, update _pkgdown.yml if needed
+
+## Evidence
+
+- Workflow: add-new-analysis-or-utility-function
+- Example commits and files in workflow
+
+---
+id: dbpq-instinct-add-or-update-format-conversion
+trigger: "When someone wants to add or improve format conversion utilities"
+confidence: 0.85
+domain: workflow
+source: repo-analysis
+source_repo: adrientaudiere/dbpq
+---
+
+# Dbpq Instinct Add Or Update Format Conversion
+
+## Action
+
+Add or update function in R/format.R, update NAMESPACE and NEWS.md, add or update man/format*.Rd, add or update tests in tests/testthat/test-format.R, update or add vignettes/taxonomy-formats.Rmd
+
+## Evidence
+
+- Workflow: add-or-update-format-conversion
+- Example commits and files in workflow
+
+---
+id: dbpq-instinct-add-or-update-documentation-and-readme
+trigger: "When someone wants to improve user-facing documentation"
+confidence: 0.9
+domain: workflow
+source: repo-analysis
+source_repo: adrientaudiere/dbpq
+---
+
+# Dbpq Instinct Add Or Update Documentation And Readme
+
+## Action
+
+Edit README.md and/or README.html, edit or add vignettes or docs/articles, update man/figures or logo if needed
+
+## Evidence
+
+- Workflow: add-or-update-documentation-and-readme
+- Example commits and files in workflow
+
+---
+id: dbpq-instinct-add-or-update-test-suites
+trigger: "When someone wants to ensure new or existing features are robust"
+confidence: 0.85
+domain: workflow
+source: repo-analysis
+source_repo: adrientaudiere/dbpq
+---
+
+# Dbpq Instinct Add Or Update Test Suites
+
+## Action
+
+Add new test files or update existing ones in tests/testthat/, add or update fixtures in tests/testthat/fixtures/, update NEWS.md if relevant
+
+## Evidence
+
+- Workflow: add-or-update-test-suites
+- Example commits and files in workflow
+
