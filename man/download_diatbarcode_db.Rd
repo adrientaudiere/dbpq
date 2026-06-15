@@ -28,6 +28,12 @@ The path to the downloaded file (invisibly), or a message
 with download instructions if no URL is provided.
 }
 \description{
+\if{html}{\out{
+<a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+<img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+}}
+
+
 Downloads the Diat.barcode reference database for diatom rbcL barcoding.
 This is a curated database for diatom identification using the rbcL
 marker gene. The recommended access method is through the

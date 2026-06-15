@@ -16,6 +16,12 @@ often a FASTA file.}
 An integer, the number of matching lines.
 }
 \description{
+\if{html}{\out{
+<a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+<img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+}}
+
+
 Count lines (sequences if fasta file) matching a pattern.
 Accepts gzip files. May not work on Windows.
 }

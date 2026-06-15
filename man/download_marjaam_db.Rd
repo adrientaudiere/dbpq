@@ -34,6 +34,12 @@ changed.}
 The path to the downloaded FASTA file (invisibly).
 }
 \description{
+\if{html}{\out{
+<a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+<img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+}}
+
+
 Downloads the MaarjAM database of arbuscular mycorrhizal fungi (AMF)
 virtual taxa (VT) sequences, maintained at the University of Tartu. The
 QIIME-formatted release (a zip bundling a FASTA and a taxonomy table) is

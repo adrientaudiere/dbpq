@@ -29,6 +29,12 @@ prefixes. For positional formats: a named integer vector of rank
 positions.
 }
 \description{
+\if{html}{\out{
+<a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+<img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+}}
+
+
 Returns the taxonomic rank information for common reference database
 formats. For prefix-based formats (unite, sintax, greengenes2), returns
 a named character vector of prefixes. For positional formats (pr2),

@@ -5,6 +5,9 @@
 #' Diagnose one or several FASTA reference databases
 #'
 #' @description
+#' <a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+#' <img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+#'
 #' Runs format, integrity, and quality checks on one or more FASTA reference
 #' databases and returns a structured diagnosis: per-file statistics,
 #' per-rank taxonomic coverage, a table of collected warnings, a cross-file

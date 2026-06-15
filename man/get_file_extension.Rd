@@ -13,6 +13,12 @@ get_file_extension(file_path)
 A character vector of file extensions (one element per extension).
 }
 \description{
+\if{html}{\out{
+<a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+<img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+}}
+
+
 Returns all extensions from a file name. Double extensions such as
 \code{.fasta.gz} are treated as a first-class case and returned as a two-element
 vector (e.g. \code{c("fasta", "gz")}).

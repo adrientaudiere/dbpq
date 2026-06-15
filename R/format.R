@@ -462,6 +462,9 @@
 #' Convert a FASTA database to a specified taxonomy format
 #'
 #' @description
+#' <a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+#' <img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+#'
 #' Detects (or uses) the input taxonomy format and rewrites sequence headers
 #' to the requested output format. This is the primary conversion function;
 #' [format2sintax()], [format2dada2()], and [format2dada2_species()] are
@@ -605,6 +608,9 @@ format_fasta_db <- function(
 #' Format taxonomy headers to SINTAX format
 #'
 #' @description
+#' <a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+#' <img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+#'
 #' Converts taxonomy headers to the VSEARCH SINTAX format
 #' (`>ID;tax=k:Kingdom,p:Phylum,...`). Wrapper around [format_fasta_db()].
 #'
@@ -661,6 +667,9 @@ format2sintax <- function(
 #' Format taxonomy headers for dada2::assignTaxonomy
 #'
 #' @description
+#' <a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+#' <img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+#'
 #' Converts taxonomy headers to the format expected by
 #' `dada2::assignTaxonomy()`: unprefixed semicolon-delimited taxonomy
 #' (`>Kingdom;Phylum;Class;Order;Family;Genus;`). Wrapper around
@@ -723,6 +732,9 @@ format2dada2 <- function(
 #' Format taxonomy headers for dada2::addSpecies
 #'
 #' @description
+#' <a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+#' <img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+#'
 #' Converts taxonomy headers to the format expected by
 #' `dada2::addSpecies()`: `ID Genus Species`. Wrapper around
 #' [format_fasta_db()].

@@ -66,6 +66,12 @@ strict timeout.}
 The path to the downloaded file (invisibly).
 }
 \description{
+\if{html}{\out{
+<a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+<img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+}}
+
+
 Downloads the KSGP (Karst, Silva, GTDB, and PR2) reference database for
 SSU rRNA taxonomic assignment, particularly optimized for Archaea
 communities. KSGP combines near full-length rRNA sequences from Karst

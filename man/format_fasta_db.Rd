@@ -44,6 +44,12 @@ If \code{fasta_db} is used, a \code{DNAStringSet} with reformatted names
 (invisibly when \code{output_path} is given).
 }
 \description{
+\if{html}{\out{
+<a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+<img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+}}
+
+
 Detects (or uses) the input taxonomy format and rewrites sequence headers
 to the requested output format. This is the primary conversion function;
 \code{\link[=format2sintax]{format2sintax()}}, \code{\link[=format2dada2]{format2dada2()}}, and \code{\link[=format2dada2_species]{format2dada2_species()}} are

@@ -5,6 +5,9 @@
 #' Get rank information for a taxonomy format
 #'
 #' @description
+#' <a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+#' <img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+#'
 #' Returns the taxonomic rank information for common reference database
 #' formats. For prefix-based formats (unite, sintax, greengenes2), returns
 #' a named character vector of prefixes. For positional formats (pr2),
@@ -94,6 +97,9 @@ tax_prefixes <- function(
 #' Detect taxonomy format from FASTA headers
 #'
 #' @description
+#' <a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+#' <img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+#'
 #' Reads a few sequence headers from a FASTA file and guesses the
 #' taxonomy format based on characteristic patterns.
 #'
@@ -252,6 +258,9 @@ is_gzipped <- function(file_path) {
 #' Get file extension(s)
 #'
 #' @description
+#' <a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+#' <img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+#'
 #' Returns all extensions from a file name. Double extensions such as
 #' `.fasta.gz` are treated as a first-class case and returned as a two-element
 #' vector (e.g. `c("fasta", "gz")`).

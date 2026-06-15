@@ -16,6 +16,12 @@ A character string: one of \code{"unite"}, \code{"sintax"},
 \code{"greengenes2"}, \code{"pr2"}, or \code{"unknown"}.
 }
 \description{
+\if{html}{\out{
+<a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+<img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+}}
+
+
 Reads a few sequence headers from a FASTA file and guesses the
 taxonomy format based on characteristic patterns.
 }

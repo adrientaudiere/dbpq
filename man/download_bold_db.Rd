@@ -39,6 +39,12 @@ headers (no ranked taxonomy).
 The path to the downloaded file (invisibly).
 }
 \description{
+\if{html}{\out{
+<a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+<img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+}}
+
+
 Downloads reference sequences from BOLD Systems (Barcode of Life Data)
 for a given taxonomic group. Unlike other databases, BOLD does not
 provide a single pre-built reference FASTA — sequences are queried by

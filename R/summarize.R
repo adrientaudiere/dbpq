@@ -1,6 +1,9 @@
 #' Count sequences in a FASTA file
 #'
 #' @description
+#' <a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+#' <img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+#'
 #' Counts the number of sequences in a FASTA file by counting header lines
 #' (lines starting with `>`). Accepts gzip files.
 #'
@@ -21,6 +24,9 @@ count_seq_db <- function(file) {
 #' Count lines matching a pattern in a FASTA file
 #'
 #' @description
+#' <a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+#' <img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+#'
 #' Count lines (sequences if fasta file) matching a pattern.
 #' Accepts gzip files. May not work on Windows.
 #'
@@ -135,6 +141,9 @@ count_pattern_db <- function(file, pattern = ">") {
 #' }
 
 count_unwanted_tax <- function(
+#' <a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+#' <img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+#'
   x,
   patterns = unwanted_tax_patterns_default(),
   tax_format = "auto"
@@ -310,6 +319,9 @@ extract_tax_matrix <- function(x, tax_format = "auto") {
 #' List and count taxonomic ranks from a FASTA database
 #'
 #' @description
+#' <a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+#' <img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+#'
 #' Extracts and counts occurrences of a given taxonomic rank from FASTA
 #' sequence headers. Supports both prefix-based formats (unite, sintax,
 #' greengenes2) and positional formats (dada2, pr2).
@@ -406,6 +418,9 @@ list_ranks_db <- function(
 #' Summarize a FASTA reference database
 #'
 #' @description
+#' <a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+#' <img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+#'
 #' Provides an overview of a FASTA reference database: number of sequences,
 #' sequence length distribution, and taxonomic coverage at each rank.
 #' Supports both prefix-based formats (unite, sintax, greengenes2) and

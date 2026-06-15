@@ -44,6 +44,12 @@ is the converted \verb{*_sintax.fasta.gz}; the intermediate trainset is also
 kept in \code{dest_dir}.
 }
 \description{
+\if{html}{\out{
+<a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+<img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+}}
+
+
 Downloads the SILVA ribosomal RNA database (16S/18S/23S/28S). By default,
 downloads the dada2-formatted training sets from the official arb-silva.de
 DADA2 release (available for both SSU and LSU). Can also produce a

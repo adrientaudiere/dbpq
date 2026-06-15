@@ -21,6 +21,12 @@ The path to the downloaded file (invisibly), or a message
 with download instructions if no URL is provided.
 }
 \description{
+\if{html}{\out{
+<a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+<img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+}}
+
+
 Downloads the Eukaryome database for eukaryotic organisms. Supports
 multiple markers (SSU 18S, ITS, LSU 28S) and output formats (general
 FASTA, dada2, mothur).

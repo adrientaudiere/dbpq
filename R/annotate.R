@@ -5,6 +5,9 @@
 #' Find the vsearch executable
 #'
 #' @description
+#' <a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+#' <img src="https://img.shields.io/badge/lifecycle-maturing-blue" alt="lifecycle-maturing"></a>
+#'
 #' Locates the `vsearch` executable on the system PATH, or verifies a
 #' user-supplied path. This is a lightweight standalone version of the
 #' helper found in MiscMetabar, so that dbpq does not need to depend on
@@ -31,6 +34,9 @@ find_vsearch <- function(path = NULL) {
 #' Check whether vsearch is installed
 #'
 #' @description
+#' <a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+#' <img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+#'
 #' Tests whether the `vsearch` executable is available on the system.
 #'
 #' @param path (Character, default `NULL`) Explicit path to the vsearch
@@ -59,6 +65,9 @@ is_vsearch_installed <- function(path = find_vsearch()) {
 #' Annotate query sequences with UNITE Species Hypothesis (SH) names
 #'
 #' @description
+#' <a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+#' <img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+#'
 #' `r lifecycle::badge("experimental")`
 #'
 #' Runs `vsearch --usearch_global` to match query sequences against a

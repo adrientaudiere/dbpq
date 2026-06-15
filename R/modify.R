@@ -1,6 +1,9 @@
 #' Filter a FASTA database by taxonomic pattern
 #'
 #' @description
+#' <a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+#' <img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+#'
 #' Filters sequences from a FASTA database whose header lines match a given
 #' pattern. Accepts gzip files. May not work on Windows.
 #'
@@ -81,6 +84,9 @@ filter_db <- function(
 #' Remove primers from a FASTA database using cutadapt
 #'
 #' @description
+#' <a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+#' <img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+#'
 #' Removes pairs of primers and flanking regions from a FASTA reference
 #' database using [cutadapt](https://github.com/marcelm/cutadapt/).
 #' Uses linked adapters to trim between forward and reverse primers.

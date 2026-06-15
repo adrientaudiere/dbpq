@@ -33,6 +33,12 @@ If \code{taxnames} is used, a character vector of reformatted names.
 If \code{fasta_db} is used, a \code{DNAStringSet} with reformatted names.
 }
 \description{
+\if{html}{\out{
+<a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+<img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+}}
+
+
 Converts taxonomy headers to the VSEARCH SINTAX format
 (\verb{>ID;tax=k:Kingdom,p:Phylum,...}). Wrapper around \code{\link[=format_fasta_db]{format_fasta_db()}}.
 }

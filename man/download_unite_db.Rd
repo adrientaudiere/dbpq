@@ -46,6 +46,12 @@ alternative releases.}
 The path to the downloaded file (invisibly).
 }
 \description{
+\if{html}{\out{
+<a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+<img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+}}
+
+
 Downloads the UNITE fungal ITS database for taxonomic assignment from
 the UNITE DOI repository (PlutoF/Zenodo). Provides both "dynamic"
 (including singletons) and "static" versions, for fungi or all eukaryotes.

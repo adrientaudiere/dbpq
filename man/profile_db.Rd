@@ -62,6 +62,12 @@ named list of per-rank Venn/UpSet plots, or \code{NULL}).}
 }
 }
 \description{
+\if{html}{\out{
+<a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+<img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+}}
+
+
 Builds a taxonomic profile of one or more FASTA reference databases. It
 first runs \code{\link[=diagnose_db]{diagnose_db()}} (format/integrity/quality checks) and then adds:
 \itemize{

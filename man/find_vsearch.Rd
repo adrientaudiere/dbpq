@@ -16,6 +16,12 @@ A character string with the path to vsearch, or \code{NA} if not
 found.
 }
 \description{
+\if{html}{\out{
+<a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+<img src="https://img.shields.io/badge/lifecycle-maturing-blue" alt="lifecycle-maturing"></a>
+}}
+
+
 Locates the \code{vsearch} executable on the system PATH, or verifies a
 user-supplied path. This is a lightweight standalone version of the
 helper found in MiscMetabar, so that dbpq does not need to depend on

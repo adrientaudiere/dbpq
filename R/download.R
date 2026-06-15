@@ -81,6 +81,9 @@ download_file <- function(url, dest_path, verbose = TRUE, timeout = Inf) {
 #' Download a UNITE reference database
 #'
 #' @description
+#' <a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+#' <img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+#'
 #' Downloads the UNITE fungal ITS database for taxonomic assignment from
 #' the UNITE DOI repository (PlutoF/Zenodo). Provides both "dynamic"
 #' (including singletons) and "static" versions, for fungi or all eukaryotes.
@@ -325,6 +328,9 @@ download_unite_db <- function(
 #' Download a SILVA reference database NR99 version
 #'
 #' @description
+#' <a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+#' <img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+#'
 #' Downloads the SILVA ribosomal RNA database (16S/18S/23S/28S). By default,
 #' downloads the dada2-formatted training sets from the official arb-silva.de
 #' DADA2 release (available for both SSU and LSU). Can also produce a
@@ -475,6 +481,9 @@ download_silva_db <- function(
 #' Download a PR2 reference database
 #'
 #' @description
+#' <a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+#' <img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+#'
 #' Downloads the PR2 protist ribosomal reference database from GitHub
 #' releases. PR2 provides 18S rRNA gene sequences for protists and other
 #' eukaryotes.
@@ -631,6 +640,9 @@ download_pr2_db <- function(
 #' Download sequences from BOLD Systems
 #'
 #' @description
+#' <a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+#' <img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+#'
 #' Downloads reference sequences from BOLD Systems (Barcode of Life Data)
 #' for a given taxonomic group. Unlike other databases, BOLD does not
 #' provide a single pre-built reference FASTA — sequences are queried by
@@ -806,6 +818,9 @@ download_bold_db <- function(
 #' Download the MaarjAM reference database
 #'
 #' @description
+#' <a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+#' <img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+#'
 #' Downloads the MaarjAM database of arbuscular mycorrhizal fungi (AMF)
 #' virtual taxa (VT) sequences, maintained at the University of Tartu. The
 #' QIIME-formatted release (a zip bundling a FASTA and a taxonomy table) is
@@ -934,6 +949,9 @@ download_marjaam_db <- function(
 #' Download the Eukaryome reference database
 #'
 #' @description
+#' <a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+#' <img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+#'
 #' Downloads the Eukaryome database for eukaryotic organisms. Supports
 #' multiple markers (SSU 18S, ITS, LSU 28S) and output formats (general
 #' FASTA, dada2, mothur).
@@ -1013,6 +1031,9 @@ download_eukaryome_db <- function(
 #' Download a Greengenes2 reference database
 #'
 #' @description
+#' <a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+#' <img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+#'
 #' Downloads the Greengenes2 16S rRNA database. By default, downloads the
 #' dada2-formatted training sets from Zenodo (maintained by Benjamin
 #' Callahan). Alternatively, downloads backbone sequences from the
@@ -1156,6 +1177,9 @@ download_greengenes2_db <- function(
 #' Download an RDP reference database
 #'
 #' @description
+#' <a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+#' <img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+#'
 #' Downloads the Ribosomal Database Project (RDP) 16S rRNA database.
 #' By default, downloads the dada2-formatted training sets from Zenodo
 #' (maintained by Benjamin Callahan).
@@ -1248,6 +1272,9 @@ download_rdp_db <- function(
 #' Download a MIDORI2 reference database
 #'
 #' @description
+#' <a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+#' <img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+#'
 #' Downloads the MIDORI2 reference database for eukaryotic mitochondrial
 #' genes (COI, 12S, 16S, Cytb, etc.). MIDORI2 provides pre-formatted
 #' FASTA files for multiple classifiers (dada2, SINTAX, RDP, BLAST).
@@ -1354,6 +1381,9 @@ download_midori2_db <- function(
 #' Download a Diat.barcode reference database
 #'
 #' @description
+#' <a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+#' <img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+#'
 #' Downloads the Diat.barcode reference database for diatom rbcL barcoding.
 #' This is a curated database for diatom identification using the rbcL
 #' marker gene. The recommended access method is through the
@@ -1557,6 +1587,9 @@ download_diatbarcode_db <- function(
 #' Download the KSGP or GTDB+ reference database
 #'
 #' @description
+#' <a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+#' <img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+#'
 #' Downloads the KSGP (Karst, Silva, GTDB, and PR2) reference database for
 #' SSU rRNA taxonomic assignment, particularly optimized for Archaea
 #' communities. KSGP combines near full-length rRNA sequences from Karst
@@ -2013,6 +2046,9 @@ download_ksgp_db <- function(
 #' Download the LTPlus reference database
 #'
 #' @description
+#' <a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+#' <img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+#'
 #' Downloads the LTPlus 16S rRNA gene reference FASTA for Bacteria and
 #' Archaea. LTPlus extends the All-Species Living Tree Project (LTP)
 #' type-strain collection with the best-quality non-type sequences selected

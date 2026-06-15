@@ -32,6 +32,12 @@ line). If \code{FALSE}, the input must already be in this format.}
 The path to the output file (invisibly).
 }
 \description{
+\if{html}{\out{
+<a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+<img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+}}
+
+
 Filters sequences from a FASTA database whose header lines match a given
 pattern. Accepts gzip files. May not work on Windows.
 }

@@ -13,6 +13,12 @@ count_seq_db(file)
 An integer, the number of sequences.
 }
 \description{
+\if{html}{\out{
+<a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+<img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+}}
+
+
 Counts the number of sequences in a FASTA file by counting header lines
 (lines starting with \code{>}). Accepts gzip files.
 }

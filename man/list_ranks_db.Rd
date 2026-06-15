@@ -33,6 +33,12 @@ A named integer vector of counts, sorted in decreasing order.
 Names are the taxonomic rank values.
 }
 \description{
+\if{html}{\out{
+<a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+<img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+}}
+
+
 Extracts and counts occurrences of a given taxonomic rank from FASTA
 sequence headers. Supports both prefix-based formats (unite, sintax,
 greengenes2) and positional formats (dada2, pr2).

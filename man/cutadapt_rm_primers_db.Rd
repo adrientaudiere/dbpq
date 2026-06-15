@@ -62,6 +62,12 @@ The cutadapt command string, or the output file path if
 \code{return_file_path = TRUE}.
 }
 \description{
+\if{html}{\out{
+<a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+<img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+}}
+
+
 Removes pairs of primers and flanking regions from a FASTA reference
 database using \href{https://github.com/marcelm/cutadapt/}{cutadapt}.
 Uses linked adapters to trim between forward and reverse primers.

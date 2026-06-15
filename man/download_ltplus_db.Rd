@@ -48,6 +48,12 @@ to \code{FALSE} to keep the original RNA file unchanged. Requires the
 The path to the downloaded file (invisibly).
 }
 \description{
+\if{html}{\out{
+<a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+<img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+}}
+
+
 Downloads the LTPlus 16S rRNA gene reference FASTA for Bacteria and
 Archaea. LTPlus extends the All-Species Living Tree Project (LTP)
 type-strain collection with the best-quality non-type sequences selected

@@ -29,6 +29,12 @@ If \code{taxnames} is used, a character vector. If \code{fasta_db} is
 used, a \code{DNAStringSet} with reformatted names.
 }
 \description{
+\if{html}{\out{
+<a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+<img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+}}
+
+
 Converts taxonomy headers to the format expected by
 \code{dada2::addSpecies()}: \verb{ID Genus Species}. Wrapper around
 \code{\link[=format_fasta_db]{format_fasta_db()}}.

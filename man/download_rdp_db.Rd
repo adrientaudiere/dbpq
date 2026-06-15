@@ -30,6 +30,12 @@ downloaded file.}
 The path to the downloaded file (invisibly).
 }
 \description{
+\if{html}{\out{
+<a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+<img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+}}
+
+
 Downloads the Ribosomal Database Project (RDP) 16S rRNA database.
 By default, downloads the dada2-formatted training sets from Zenodo
 (maintained by Benjamin Callahan).

@@ -33,6 +33,12 @@ are merged).}
 The path to the downloaded file (invisibly).
 }
 \description{
+\if{html}{\out{
+<a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
+<img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+}}
+
+
 Downloads the PR2 protist ribosomal reference database from GitHub
 releases. PR2 provides 18S rRNA gene sequences for protists and other
 eukaryotes.
