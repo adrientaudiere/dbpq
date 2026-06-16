@@ -13,6 +13,8 @@ Useful links:
 
 - <https://github.com/adrientaudiere/dbpq>
 
+- <https://adrientaudiere.github.io/dbpq/>
+
 - Report bugs at <https://github.com/adrientaudiere/dbpq/issues>
 
 ## Author

@@ -1,5 +1,7 @@
 # Download the MaarjAM reference database
 
+[![lifecycle-experimental](https://img.shields.io/badge/lifecycle-experimental-orange)](https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle)
+
 Downloads the MaarjAM database of arbuscular mycorrhizal fungi (AMF)
 virtual taxa (VT) sequences, maintained at the University of Tartu. The
 QIIME-formatted release (a zip bundling a FASTA and a taxonomy table) is

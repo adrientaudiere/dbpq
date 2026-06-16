@@ -2,6 +2,66 @@
 
 ## dbpq (development version)
 
+- [`download_ksgp_db()`](https://adrientaudiere.github.io/dbpq/reference/download_ksgp_db.md)
+  now downloads the FASTA (and companion `.tax` when
+  `tax_format != "none"`) from the `KSGP_v<version>.tar.gz` archive in a
+  single HTTP request, then extracts the requested files locally. The
+  v3.1 archive is ~686 MB compressed vs. ~2.4 GB for the raw FASTA, so
+  the transfer is ~3.5x smaller and avoids the 60-second R default that
+  previously timed out mid-download. The archive is removed from
+  `dest_dir` after extraction; when `tax_format = "sintax"` or
+  `"dada2"`, the merged FASTA is the only file left in `dest_dir` (the
+  extracted `.tax` is removed after its taxonomy has been written into
+  the headers).
+
+- [`download_ksgp_db()`](https://adrientaudiere.github.io/dbpq/reference/download_ksgp_db.md)
+  SINTAX output now preserves the original prefix letter from the KSGP
+  `.tax` file: a line starting with `k__Bacteria; p__Bacteroidota; ...`
+  is written as `>ID;tax=k:Bacteria,p:Bacteroidota,...` (previously the
+  `k` was collapsed to `d` by the shared lineage parser, producing
+  `d:Bacteria,...`).
+
+- [`download_ksgp_db()`](https://adrientaudiere.github.io/dbpq/reference/download_ksgp_db.md)
+  now defaults `annotation` to `"lca"` (was `"sintax"`). The LCA
+  annotation covers a much larger fraction of the FASTA sequences than
+  the SINTAX `.tax` (the SINTAX `.tax` only annotates ~33% of the FASTA
+  — the SILVA-derived portion is left as accession-only headers). The
+  `annotation` argument is also now honoured when merging the `.tax`
+  into the FASTA (`file_type = "fasta"`, `tax_format != "none"`).
+  Non-KSGP databases (which only ship a `sintax` `.tax`) emit a warning
+  if a different `annotation` is requested.
+
+- `download_ksgp_db(tax_format = "sintax")` now merges the `.tax` into
+  the FASTA by streaming both files through `awk` (via
+  `system2("awk", "-f ...", tax, fasta)`). The R-side per-record
+  `lapply` that previously took 20+ minutes on the 2.4 GB / 1.77
+  M-record KSGP v3.1 FASTA is replaced by a single shell pass that
+  completes in seconds. The output form
+  (`>ID;tax=k:Bacteria,p:Bacteroidota,c:Bacteroidia,...`,
+  VSEARCH/USEARCH SINTAX-compatible) is identical to the previous R
+  pipeline. The `__` compartment tag used by KSGP for organelles
+  (e.g. `Eukaryota__mito`) is now converted to `:` in the value
+  (canonical SINTAX form, still parseable by VSEARCH). The other
+  `tax_format` values (`"dada2"`, `"dada2_species"`, `"unite"`,
+  `"greengenes2"`) keep the slower R-based merge since they are not used
+  with KSGP.
+
+- [`download_ksgp_db()`](https://adrientaudiere.github.io/dbpq/reference/download_ksgp_db.md)
+  (and the internal
+  [`download_file()`](https://adrientaudiere.github.io/dbpq/reference/download_file.md)
+  helper used by every `download_*_db()`) gain a `timeout` argument,
+  default `Inf`, so multi-GB downloads no longer hit R’s 60-second
+  `options("timeout")` ceiling. Set `timeout = 600` (or any other value
+  in seconds) to restore a strict deadline.
+
+- Added a comprehensive test suite
+  (`tests/testthat/test-format-databases.R`) for the format- and
+  summarize-related functions, covering all supported taxonomy header
+  formats (UNITE, SINTAX, Greengenes2, dada2, dada2_species, PR2) plus
+  deliberately erroneous fixtures (empty file, short sequences,
+  duplicated IDs, duplicated sequences, ambiguous bases, unrecognized
+  format, inconsistent ranks, unwanted taxonomic values, gzipped input).
+
 - Download functions now produce FASTA files with taxonomy in the
   headers, ready for
   [`MiscMetabar::add_new_taxonomy_pq()`](https://adrientaudiere.github.io/MiscMetabar/reference/add_new_taxonomy_pq.html),
@@ -85,6 +145,19 @@
   falling through to `"unknown"`.
 
 - New function
+  [`diagnose_db()`](https://adrientaudiere.github.io/dbpq/reference/diagnose_db.md)
+  runs format, integrity, and quality checks on one or several FASTA
+  reference databases at once and returns a structured `dbpq_diagnosis`
+  object: per-file statistics, per-rank annotation coverage, a tibble of
+  collected issues (with `info`/`warning`/`error` severities), a
+  cross-file comparison that flags a mixed taxonomy format, and optional
+  `ggplot2` diagnostic plots. It detects empty or short sequences,
+  duplicated IDs and sequences, ambiguous (non-ACGT) bases, unwanted
+  taxonomic values, and unreadable or truncated files. When
+  `verbose = TRUE` (default) it shows a `cli` progress bar with a
+  per-file ETA and a colour-coded summary of the collected issues.
+
+- New function
   [`add_sh_to_taxonomy()`](https://adrientaudiere.github.io/dbpq/reference/add_sh_to_taxonomy.md)
   (marked experimental) annotates query sequences with UNITE Species
   Hypothesis (SH) names by running `vsearch --usearch_global` against a
@@ -120,6 +193,20 @@
   prefix, suggesting
   [`detect_tax_format()`](https://adrientaudiere.github.io/dbpq/reference/detect_tax_format.md)
   to identify the file’s taxonomy format.
+
+- New function
+  [`profile_db()`](https://adrientaudiere.github.io/dbpq/reference/profile_db.md)
+  profiles the taxonomic content of one or several databases: it runs
+  [`diagnose_db()`](https://adrientaudiere.github.io/dbpq/reference/diagnose_db.md)
+  and adds a per-rank richness table and bar plot (number of distinct
+  taxa, or “levels”, at each rank) and, for multiple databases, a
+  per-rank cross-database comparison of the taxa present, drawn as a
+  Venn diagram (`ggVennDiagram`, up to `venn_max` databases) or an UpSet
+  plot (`ComplexUpset`). With `weight_by_seqs = TRUE` the UpSet
+  intersections are weighted by the number of sequences instead of the
+  number of taxa; on ggplot2 \>= 4.0.0 this needs the dev `ComplexUpset`
+  (\>= 1.3.6), otherwise an unweighted Venn is drawn and the weighted
+  counts remain available in `comparison$signatures`.
 
 - [`summarize_db()`](https://adrientaudiere.github.io/dbpq/reference/summarize_db.md)
   now handles empty FASTA databases gracefully, reporting zero sequences

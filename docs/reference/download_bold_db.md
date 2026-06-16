@@ -1,5 +1,7 @@
 # Download sequences from BOLD Systems
 
+[![lifecycle-experimental](https://img.shields.io/badge/lifecycle-experimental-orange)](https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle)
+
 Downloads reference sequences from BOLD Systems (Barcode of Life Data)
 for a given taxonomic group. Unlike other databases, BOLD does not
 provide a single pre-built reference FASTA — sequences are queried by

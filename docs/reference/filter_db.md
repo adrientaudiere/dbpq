@@ -1,5 +1,7 @@
 # Filter a FASTA database by taxonomic pattern
 
+[![lifecycle-experimental](https://img.shields.io/badge/lifecycle-experimental-orange)](https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle)
+
 Filters sequences from a FASTA database whose header lines match a given
 pattern. Accepts gzip files. May not work on Windows.
 

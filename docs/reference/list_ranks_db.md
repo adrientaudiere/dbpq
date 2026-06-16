@@ -1,5 +1,7 @@
 # List and count taxonomic ranks from a FASTA database
 
+[![lifecycle-experimental](https://img.shields.io/badge/lifecycle-experimental-orange)](https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle)
+
 Extracts and counts occurrences of a given taxonomic rank from FASTA
 sequence headers. Supports both prefix-based formats (unite, sintax,
 greengenes2) and positional formats (dada2, pr2).

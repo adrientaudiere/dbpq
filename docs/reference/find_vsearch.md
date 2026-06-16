@@ -1,5 +1,7 @@
 # Find the vsearch executable
 
+[![lifecycle-maturing](https://img.shields.io/badge/lifecycle-maturing-blue)](https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle)
+
 Locates the `vsearch` executable on the system PATH, or verifies a
 user-supplied path. This is a lightweight standalone version of the
 helper found in MiscMetabar, so that dbpq does not need to depend on

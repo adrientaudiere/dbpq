@@ -100,17 +100,19 @@ download_ltplus_db(dest_dir = "databases")
 
 ### Taxonomic coverage overview
 
-    Tree of Life
-    ├── Bacteria ──────────────── SILVA (SSU 16S), Greengenes2 (SSU 16S), RDP (SSU 16S), KSGP (SSU 16S), LTPlus (SSU 16S)
-    ├── Archaea ───────────────── SILVA (SSU 16S), Greengenes2 (SSU 16S), KSGP⁴ (SSU 16S), LTPlus (SSU 16S)
-    └── Eukaryota
-        ├── "Protists"¹ ───────── PR2 (SSU 18S), SILVA (SSU/LSU), Eukaryome (SSU/ITS/LSU)
-        │   └── incl. plastids ── PR2 (plastid 16S)
-        ├── Fungi ─────────────── UNITE³ (ITS), SILVA (SSU/LSU), Eukaryome (SSU/ITS/LSU), BOLD²
-        │   └── Glomeromycota ─── MaarjAM (SSU 18S)   ← AMF only, Eukaryome (SSU)
-        ├── Viridiplantae ─────── SILVA (SSU/LSU), Eukaryome (SSU/ITS/LSU), BOLD² (matK, rbcL)
-        ├── Metazoa ───────────── SILVA (SSU/LSU), Eukaryome (SSU/LSU), BOLD² (COI), MIDORI2 (COI/12S/16S/Cytb)
-        └── Organelles ────────── MIDORI2 (mitochondrial 12S/16S/COI/Cytb), Diat.barcode (plastid rbcL)
+``` R
+Tree of Life
+├── Bacteria ──────────────── SILVA (SSU 16S), Greengenes2 (SSU 16S), RDP (SSU 16S), KSGP (SSU 16S), LTPlus (SSU 16S)
+├── Archaea ───────────────── SILVA (SSU 16S), Greengenes2 (SSU 16S), KSGP⁴ (SSU 16S), LTPlus (SSU 16S)
+└── Eukaryota
+    ├── "Protists"¹ ───────── PR2 (SSU 18S), SILVA (SSU/LSU), Eukaryome (SSU/ITS/LSU)
+    │   └── incl. plastids ── PR2 (plastid 16S)
+    ├── Fungi ─────────────── UNITE³ (ITS), SILVA (SSU/LSU), Eukaryome (SSU/ITS/LSU), BOLD²
+    │   └── Glomeromycota ─── MaarjAM (SSU 18S)   ← AMF only, Eukaryome (SSU)
+    ├── Viridiplantae ─────── SILVA (SSU/LSU), Eukaryome (SSU/ITS/LSU), BOLD² (matK, rbcL)
+    ├── Metazoa ───────────── SILVA (SSU/LSU), Eukaryome (SSU/LSU), BOLD² (COI), MIDORI2 (COI/12S/16S/Cytb)
+    └── Organelles ────────── MIDORI2 (mitochondrial 12S/16S/COI/Cytb), Diat.barcode (plastid rbcL)
+```
 
 ¹ “Protists” is paraphyletic; PR2 covers SAR, Excavata, Amoebozoa, and
 related unicellular eukaryotic lineages. ² BOLD is query-based: it

@@ -1,5 +1,7 @@
 # Detect taxonomy format from FASTA headers
 
+[![lifecycle-experimental](https://img.shields.io/badge/lifecycle-experimental-orange)](https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle)
+
 Reads a few sequence headers from a FASTA file and guesses the taxonomy
 format based on characteristic patterns.
 

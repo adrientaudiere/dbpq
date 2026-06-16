@@ -1,5 +1,7 @@
 # Format taxonomy headers for dada2::addSpecies
 
+[![lifecycle-experimental](https://img.shields.io/badge/lifecycle-experimental-orange)](https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle)
+
 Converts taxonomy headers to the format expected by
 [`dada2::addSpecies()`](https://rdrr.io/pkg/dada2/man/addSpecies.html):
 `ID Genus Species`. Wrapper around

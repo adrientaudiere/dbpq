@@ -58,6 +58,16 @@ Describe and explore database contents.
 - [`summarize_db()`](https://adrientaudiere.github.io/dbpq/reference/summarize_db.md)
   : Summarize a FASTA reference database
 
+## Diagnose & profile databases
+
+Check format, integrity, and quality, and profile taxonomic richness and
+cross-database overlap.
+
+- [`diagnose_db()`](https://adrientaudiere.github.io/dbpq/reference/diagnose_db.md)
+  : Diagnose one or several FASTA reference databases
+- [`profile_db()`](https://adrientaudiere.github.io/dbpq/reference/profile_db.md)
+  : Profile the taxonomic content of one or several FASTA databases
+
 ## Taxonomic assignment
 
 Assign taxonomy to sequences.

@@ -1,5 +1,7 @@
 # Download the Eukaryome reference database
 
+[![lifecycle-experimental](https://img.shields.io/badge/lifecycle-experimental-orange)](https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle)
+
 Downloads the Eukaryome database for eukaryotic organisms. Supports
 multiple markers (SSU 18S, ITS, LSU 28S) and output formats (general
 FASTA, dada2, mothur).

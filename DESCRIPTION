@@ -11,7 +11,8 @@ Description: Download, format, summarize, and modify FASTA reference
     between taxonomy header formats ('dada2', 'SINTAX', 'Greengenes2'). Part
     of the 'pqverse' ecosystem.
 License: AGPL-3
-URL: https://github.com/adrientaudiere/dbpq
+URL: https://github.com/adrientaudiere/dbpq,
+    https://adrientaudiere.github.io/dbpq/
 BugReports: https://github.com/adrientaudiere/dbpq/issues
 Depends:
     R (>= 4.1.0)

@@ -1,5 +1,7 @@
 # Check whether vsearch is installed
 
+[![lifecycle-stable](https://img.shields.io/badge/lifecycle-stable-green)](https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle)
+
 Tests whether the `vsearch` executable is available on the system.
 
 ## Usage

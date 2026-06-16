@@ -1,5 +1,7 @@
 # Download a UNITE reference database
 
+[![lifecycle-experimental](https://img.shields.io/badge/lifecycle-experimental-orange)](https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle)
+
 Downloads the UNITE fungal ITS database for taxonomic assignment from
 the UNITE DOI repository (PlutoF/Zenodo). Provides both "dynamic"
 (including singletons) and "static" versions, for fungi or all

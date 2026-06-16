@@ -1,5 +1,7 @@
 # Download a Diat.barcode reference database
 
+[![lifecycle-experimental](https://img.shields.io/badge/lifecycle-experimental-orange)](https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle)
+
 Downloads the Diat.barcode reference database for diatom rbcL barcoding.
 This is a curated database for diatom identification using the rbcL
 marker gene. The recommended access method is through the

@@ -1,5 +1,7 @@
 # Convert a FASTA database to a specified taxonomy format
 
+[![lifecycle-experimental](https://img.shields.io/badge/lifecycle-experimental-orange)](https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle)
+
 Detects (or uses) the input taxonomy format and rewrites sequence
 headers to the requested output format. This is the primary conversion
 function;

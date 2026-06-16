@@ -1,5 +1,7 @@
 # Download a PR2 reference database
 
+[![lifecycle-experimental](https://img.shields.io/badge/lifecycle-experimental-orange)](https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle)
+
 Downloads the PR2 protist ribosomal reference database from GitHub
 releases. PR2 provides 18S rRNA gene sequences for protists and other
 eukaryotes.

@@ -138,32 +138,32 @@
 <div class="section level3">
 <h3 id="taxonomic-coverage-overview">Taxonomic coverage overview<a class="anchor" aria-label="anchor" href="#taxonomic-coverage-overview"></a>
 </h3>
-<pre><code>Tree of Life
-├── Bacteria ──────────────── SILVA (SSU 16S), Greengenes2 (SSU 16S), RDP (SSU 16S), KSGP (SSU 16S), LTPlus (SSU 16S)
-├── Archaea ───────────────── SILVA (SSU 16S), Greengenes2 (SSU 16S), KSGP⁴ (SSU 16S), LTPlus (SSU 16S)
-└── Eukaryota
-    ├── "Protists"¹ ───────── PR2 (SSU 18S), SILVA (SSU/LSU), Eukaryome (SSU/ITS/LSU)
-    │   └── incl. plastids ── PR2 (plastid 16S)
-    ├── Fungi ─────────────── UNITE³ (ITS), SILVA (SSU/LSU), Eukaryome (SSU/ITS/LSU), BOLD²
-    │   └── Glomeromycota ─── MaarjAM (SSU 18S)   ← AMF only, Eukaryome (SSU)
-    ├── Viridiplantae ─────── SILVA (SSU/LSU), Eukaryome (SSU/ITS/LSU), BOLD² (matK, rbcL)
-    ├── Metazoa ───────────── SILVA (SSU/LSU), Eukaryome (SSU/LSU), BOLD² (COI), MIDORI2 (COI/12S/16S/Cytb)
-    └── Organelles ────────── MIDORI2 (mitochondrial 12S/16S/COI/Cytb), Diat.barcode (plastid rbcL)</code></pre>
+<div class="sourceCode" id="cb3"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>Tree of Life</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>├── Bacteria ──────────────── <span class="fu">SILVA</span> (SSU <span class="dv">16</span>S), <span class="fu">Greengenes2</span> (SSU <span class="dv">16</span>S), <span class="fu">RDP</span> (SSU <span class="dv">16</span>S), <span class="fu">KSGP</span> (SSU <span class="dv">16</span>S), <span class="fu">LTPlus</span> (SSU <span class="dv">16</span>S)</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>├── Archaea ───────────────── <span class="fu">SILVA</span> (SSU <span class="dv">16</span>S), <span class="fu">Greengenes2</span> (SSU <span class="dv">16</span>S), KSGP⁴ (SSU <span class="dv">16</span>S), <span class="fu">LTPlus</span> (SSU <span class="dv">16</span>S)</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>└── Eukaryota</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>    ├── <span class="st">"Protists"</span>¹ ───────── <span class="fu">PR2</span> (SSU <span class="dv">18</span>S), <span class="fu">SILVA</span> (SSU<span class="sc">/</span>LSU), <span class="fu">Eukaryome</span> (SSU<span class="sc">/</span>ITS<span class="sc">/</span>LSU)</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>    │   └── incl. plastids ── <span class="fu">PR2</span> (plastid <span class="dv">16</span>S)</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>    ├── Fungi ─────────────── UNITE³ (ITS), <span class="fu">SILVA</span> (SSU<span class="sc">/</span>LSU), <span class="fu">Eukaryome</span> (SSU<span class="sc">/</span>ITS<span class="sc">/</span>LSU), BOLD²</span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>    │   └── Glomeromycota ─── <span class="fu">MaarjAM</span> (SSU <span class="dv">18</span>S)   ← AMF only, <span class="fu">Eukaryome</span> (SSU)</span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>    ├── Viridiplantae ─────── <span class="fu">SILVA</span> (SSU<span class="sc">/</span>LSU), <span class="fu">Eukaryome</span> (SSU<span class="sc">/</span>ITS<span class="sc">/</span>LSU), BOLD² (matK, rbcL)</span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>    ├── Metazoa ───────────── <span class="fu">SILVA</span> (SSU<span class="sc">/</span>LSU), <span class="fu">Eukaryome</span> (SSU<span class="sc">/</span>LSU), BOLD² (COI), <span class="fu">MIDORI2</span> (COI<span class="sc">/</span><span class="dv">12</span>S<span class="sc">/</span><span class="dv">16</span>S<span class="sc">/</span>Cytb)</span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>    └── Organelles ────────── <span class="fu">MIDORI2</span> (mitochondrial <span class="dv">12</span>S<span class="sc">/</span><span class="dv">16</span>S<span class="sc">/</span>COI<span class="sc">/</span>Cytb), <span class="fu">Diat.barcode</span> (plastid rbcL)</span></code></pre></div>
 <p>¹ “Protists” is paraphyletic; PR2 covers SAR, Excavata, Amoebozoa, and related unicellular eukaryotic lineages. ² BOLD is query-based: it covers any taxon but only the marker requested. ³ UNITE (eukaryotes version) adds secondary coverage of Viridiplantae and Metazoa (useful for filtering non-fungal reads). ⁴ KSGP includes eukaryote sequences from PR2 and MIDORI2 for contamination control, not for fine-grained eukaryote assignment.</p>
 </div>
 <div class="section level3">
 <h3 id="database-details">Database details<a class="anchor" aria-label="anchor" href="#database-details"></a>
 </h3>
 <p>One row per marker, since each marker targets a different set of organisms. The “Output format” column shows what the download function produces with default parameters.</p>
-<table class="table">
+<table style="width:100%;" class="table">
 <colgroup>
-<col width="10%">
-<col width="10%">
-<col width="8%">
-<col width="18%">
-<col width="21%">
-<col width="13%">
-<col width="16%">
+<col width="14%">
+<col width="14%">
+<col width="14%">
+<col width="14%">
+<col width="14%">
+<col width="14%">
+<col width="14%">
 </colgroup>
 <thead><tr>
 <th>Database</th>
@@ -355,10 +355,9 @@
 <h3 id="database-relationships">Database relationships<a class="anchor" aria-label="anchor" href="#database-relationships"></a>
 </h3>
 <p>Databases relate in two distinct ways: some <strong>incorporate sequences</strong> from others (derivation / nestedness), while others independently <strong>cover the same clades</strong> (parallel use). The matrix below reads as “sequences from the <em>column</em> database are incorporated <strong>into</strong> the <em>row</em> database” — every edge verified against each database’s describing paper. Lighter cells mark annotation-only links (taxonomy transferred without sequences).</p>
-<div class="float">
-<img src="reference/figures/derivation-matrix.png" alt="Derivation adjacency matrix of dbpq reference databases"><div class="figcaption">Derivation adjacency matrix of dbpq reference databases</div>
-</div>
-<p>Two relationships are easy to get wrong: <strong>Eukaryome is not independent</strong> — it compiles sequences from SILVA, PR2 and UNITE — and <strong>Greengenes2 derives from GTDB r207 directly</strong> (with LTP and Karst 2018), sharing the Karst 2018 source with KSGP.</p>
+<figure><img src="reference/figures/derivation-matrix.png" alt="Derivation adjacency matrix of dbpq reference databases"><figcaption aria-hidden="true">
+Derivation adjacency matrix of dbpq reference databases
+</figcaption></figure><p>Two relationships are easy to get wrong: <strong>Eukaryome is not independent</strong> — it compiles sequences from SILVA, PR2 and UNITE — and <strong>Greengenes2 derives from GTDB r207 directly</strong> (with LTP and Karst 2018), sharing the Karst 2018 source with KSGP.</p>
 <blockquote>
 <p><strong>The full picture</strong> — an interactive derivation network, this derivation matrix, and a marker × clade coverage heatmap — is in the article <a href="https://adrientaudiere.github.io/dbpq/articles/database-relationships.html"><em>How reference databases relate</em></a>.</p>
 </blockquote>
@@ -498,9 +497,8 @@
 <div class="license">
 <h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
-<li>
-<a href="https://opensource.org/licenses/mit-license.php" class="external-link">MIT</a> + file <a href="LICENSE-text.html">LICENSE</a>
-</li>
+<li><a href="LICENSE.html">Full license</a></li>
+<li><small><a href="https://www.r-project.org/Licenses/AGPL-3" class="external-link">AGPL-3</a></small></li>
 </ul>
 </div>
 

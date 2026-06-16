@@ -1,5 +1,7 @@
 # Annotate query sequences with UNITE Species Hypothesis (SH) names
 
+[![lifecycle-experimental](https://img.shields.io/badge/lifecycle-experimental-orange)](https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle)
+
 **\[experimental\]**
 
 Runs `vsearch --usearch_global` to match query sequences against a UNITE

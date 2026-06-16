@@ -1,5 +1,7 @@
 # Download the LTPlus reference database
 
+[![lifecycle-experimental](https://img.shields.io/badge/lifecycle-experimental-orange)](https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle)
+
 Downloads the LTPlus 16S rRNA gene reference FASTA for Bacteria and
 Archaea. LTPlus extends the All-Species Living Tree Project (LTP)
 type-strain collection with the best-quality non-type sequences selected

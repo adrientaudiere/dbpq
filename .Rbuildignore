@@ -2,3 +2,4 @@
 ^_pkgdown\.yml$
 ^\.github$
 ^vignettes/articles$
+^README\.Rmd$

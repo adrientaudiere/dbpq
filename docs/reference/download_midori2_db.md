@@ -1,5 +1,7 @@
 # Download a MIDORI2 reference database
 
+[![lifecycle-experimental](https://img.shields.io/badge/lifecycle-experimental-orange)](https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle)
+
 Downloads the MIDORI2 reference database for eukaryotic mitochondrial
 genes (COI, 12S, 16S, Cytb, etc.). MIDORI2 provides pre-formatted FASTA
 files for multiple classifiers (dada2, SINTAX, RDP, BLAST).

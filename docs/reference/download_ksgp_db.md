@@ -1,5 +1,7 @@
 # Download the KSGP or GTDB+ reference database
 
+[![lifecycle-experimental](https://img.shields.io/badge/lifecycle-experimental-orange)](https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle)
+
 Downloads the KSGP (Karst, Silva, GTDB, and PR2) reference database for
 SSU rRNA taxonomic assignment, particularly optimized for Archaea
 communities. KSGP combines near full-length rRNA sequences from Karst et
@@ -30,10 +32,11 @@ download_ksgp_db(
   dest_dir = ".",
   database = c("KSGP", "GTDB_plus", "GTDB_cleaned"),
   file_type = c("fasta", "tax", "archive"),
-  annotation = c("sintax", "lca", "ksgp_plus"),
+  annotation = c("lca", "sintax", "ksgp_plus"),
   tax_format = c("dada2", "sintax", "none"),
   version = "3.1",
-  verbose = TRUE
+  verbose = TRUE,
+  timeout = Inf
 )
 ```
 
@@ -67,10 +70,13 @@ download_ksgp_db(
 
 - annotation:
 
-  (Character, default `"sintax"`) Taxonomic annotation method. One of
-  `"sintax"`, `"lca"`, or `"ksgp_plus"`. Only applies when
-  `database = "KSGP"` and `file_type = "tax"`. Only `"sintax"` is
-  available for version `"1.0"`.
+  (Character, default `"lca"`) Taxonomic annotation method. One of
+  `"lca"`, `"sintax"`, or `"ksgp_plus"`. Used to pick the matching
+  `.tax` file when `file_type = "tax"`, and to pick the taxonomy merged
+  into the FASTA headers when `file_type = "fasta"` and
+  `tax_format != "none"`. The `lca` annotation has the broadest sequence
+  coverage and is the default for a fully-annotated KSGP FASTA. Only
+  `"sintax"` is available for version `"1.0"`.
 
 - tax_format:
 
@@ -92,18 +98,40 @@ download_ksgp_db(
 
   (Logical, default `TRUE`) Print progress messages.
 
+- timeout:
+
+  (Numeric, default `Inf`) Timeout in seconds for each HTTP request. The
+  default disables R's 60-second timeout so the multi-hundred-MB to
+  multi-GB downloads (KSGP FASTA, the v3.1 archive) can complete. Set to
+  a positive number of seconds to restore a strict timeout.
+
 ## Value
 
 The path to the downloaded file (invisibly).
 
 ## Details
 
-The KSGP FASTA and taxonomy files are separate downloads. To use KSGP
-for taxonomic assignment:
+When `file_type = "fasta"`, the function downloads the matching
+`KSGP_v<version>.tar.gz` archive (one HTTP request) and extracts the
+FASTA — and, when `tax_format != "none"`, the chosen `.tax` file — to
+`dest_dir`, then removes the archive. The archive is roughly 3.5x
+smaller than the raw FASTA (e.g. ~686 MB vs ~2.4 GB for v3.1), so this
+is both faster and lighter on the server than two separate requests. The
+KSGP FASTA and taxonomy files are otherwise separate downloads.
 
-- With VSEARCH SINTAX: download both the FASTA (`file_type = "fasta"`)
-  and the SINTAX taxonomy (`file_type = "tax"`,
-  `annotation = "sintax"`).
+With `tax_format = "sintax"` (or `"dada2"`), the taxonomy is merged into
+the FASTA headers (one sequence ID per row, matched against the `.tax`
+file) and the `.tax` file is removed, so the result is a single FASTA
+ready for VSEARCH/dada2 — the original prefix letters from the `.tax`
+are preserved in the SINTAX output (a KSGP line starting with
+`k__Bacteria;` becomes `>ID;tax=k:Bacteria,...`, not `d:Bacteria,...`).
+To use KSGP for taxonomic assignment:
+
+- With VSEARCH SINTAX: download the FASTA (`file_type = "fasta"`,
+  `tax_format = "sintax"`).
+
+- With dada2: download the FASTA (`file_type = "fasta"`,
+  `tax_format = "dada2"`).
 
 - With LotuS2: the KSGP database is integrated directly.
 

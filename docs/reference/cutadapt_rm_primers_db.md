@@ -1,5 +1,7 @@
 # Remove primers from a FASTA database using cutadapt
 
+[![lifecycle-experimental](https://img.shields.io/badge/lifecycle-experimental-orange)](https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle)
+
 Removes pairs of primers and flanking regions from a FASTA reference
 database using [cutadapt](https://github.com/marcelm/cutadapt/). Uses
 linked adapters to trim between forward and reverse primers.

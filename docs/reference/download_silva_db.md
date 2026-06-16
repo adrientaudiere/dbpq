@@ -1,5 +1,7 @@
 # Download a SILVA reference database NR99 version
 
+[![lifecycle-experimental](https://img.shields.io/badge/lifecycle-experimental-orange)](https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle)
+
 Downloads the SILVA ribosomal RNA database (16S/18S/23S/28S). By
 default, downloads the dada2-formatted training sets from the official
 arb-silva.de DADA2 release (available for both SSU and LSU). Can also

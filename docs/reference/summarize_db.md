@@ -1,5 +1,7 @@
 # Summarize a FASTA reference database
 
+[![lifecycle-experimental](https://img.shields.io/badge/lifecycle-experimental-orange)](https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle)
+
 Provides an overview of a FASTA reference database: number of sequences,
 sequence length distribution, and taxonomic coverage at each rank.
 Supports both prefix-based formats (unite, sintax, greengenes2) and

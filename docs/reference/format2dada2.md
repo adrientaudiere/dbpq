@@ -1,5 +1,7 @@
 # Format taxonomy headers for dada2::assignTaxonomy
 
+[![lifecycle-maturing](https://img.shields.io/badge/lifecycle-maturing-blue)](https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle)
+
 Converts taxonomy headers to the format expected by
 [`dada2::assignTaxonomy()`](https://rdrr.io/pkg/dada2/man/assignTaxonomy.html):
 unprefixed semicolon-delimited taxonomy

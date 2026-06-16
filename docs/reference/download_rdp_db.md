@@ -1,5 +1,7 @@
 # Download an RDP reference database
 
+[![lifecycle-experimental](https://img.shields.io/badge/lifecycle-experimental-orange)](https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle)
+
 Downloads the Ribosomal Database Project (RDP) 16S rRNA database. By
 default, downloads the dada2-formatted training sets from Zenodo
 (maintained by Benjamin Callahan).

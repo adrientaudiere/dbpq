@@ -1,5 +1,7 @@
 # Count lines matching a pattern in a FASTA file
 
+[![lifecycle-experimental](https://img.shields.io/badge/lifecycle-experimental-orange)](https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle)
+
 Count lines (sequences if fasta file) matching a pattern. Accepts gzip
 files. May not work on Windows.
 

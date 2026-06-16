@@ -140,36 +140,3 @@ The default patterns are:
 Adrien Taudière
 
 ## Examples
-
-``` r
-# From a FASTA file (no unwanted values in example data)
-db <- system.file("extdata", "example_unite.fasta", package = "dbpq")
-count_unwanted_tax(db)
-#> No unwanted taxonomic values found.
-#> # A tibble: 0 × 5
-#> # ℹ 5 variables: pattern <chr>, description <chr>, rank <chr>, n_matches <int>,
-#> #   example_values <chr>
-
-if(requireNamespace("MiscMetabar", quietly = TRUE)) {
- ref_fasta <- Biostrings::readDNAStringSet(system.file("extdata",
-   "mini_UNITE_fungi.fasta.gz",
-   package = "MiscMetabar", mustWork = TRUE
- ))
-data("data_fungi_mini", package = "MiscMetabar")
-physeq_new <- MiscMetabar::assign_mmseqs2(
-   MiscMetabar::data_fungi_mini,
-   ref_fasta = ref_fasta,
-   behavior = "add_to_phyloseq"
- )
-count_unwanted_tax(physeq_new)
-}
-#> Found 42 unwanted value(s) matching 1 pattern(s) across 4 rank(s).
-#> Tip: use MiscMetabar::verify_tax_table() to clean these values in your phyloseq object.
-#> # A tibble: 4 × 5
-#>   pattern                      description    rank      n_matches example_values
-#>   <chr>                        <chr>          <chr>         <int> <chr>         
-#> 1 "[Ii]ncertae[_\\s]?[Ss]edis" incertae sedis Family            4 Cantharellale…
-#> 2 "[Ii]ncertae[_\\s]?[Ss]edis" incertae sedis Order_mm…         2 Agaricomycete…
-#> 3 "[Ii]ncertae[_\\s]?[Ss]edis" incertae sedis Family_m…        15 Trechisporale…
-#> 4 "[Ii]ncertae[_\\s]?[Ss]edis" incertae sedis Genus_mm…        21 Tricholomatac…
-```

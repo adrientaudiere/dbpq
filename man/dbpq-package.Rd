@@ -14,6 +14,7 @@ Download, format, summarize, and modify FASTA reference databases used for taxon
 Useful links:
 \itemize{
   \item \url{https://github.com/adrientaudiere/dbpq}
+  \item \url{https://adrientaudiere.github.io/dbpq/}
   \item Report bugs at \url{https://github.com/adrientaudiere/dbpq/issues}
 }
 

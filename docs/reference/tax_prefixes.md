@@ -1,5 +1,7 @@
 # Get rank information for a taxonomy format
 
+[![lifecycle-experimental](https://img.shields.io/badge/lifecycle-experimental-orange)](https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle)
+
 Returns the taxonomic rank information for common reference database
 formats. For prefix-based formats (unite, sintax, greengenes2), returns
 a named character vector of prefixes. For positional formats (pr2),

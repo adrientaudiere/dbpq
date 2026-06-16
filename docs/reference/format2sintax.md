@@ -1,5 +1,7 @@
 # Format taxonomy headers to SINTAX format
 
+[![lifecycle-maturing](https://img.shields.io/badge/lifecycle-maturing-blue)](https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle)
+
 Converts taxonomy headers to the VSEARCH SINTAX format
 (`>ID;tax=k:Kingdom,p:Phylum,...`). Wrapper around
 [`format_fasta_db()`](https://adrientaudiere.github.io/dbpq/reference/format_fasta_db.md).

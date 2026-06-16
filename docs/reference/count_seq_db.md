@@ -1,5 +1,7 @@
 # Count sequences in a FASTA file
 
+[![lifecycle-experimental](https://img.shields.io/badge/lifecycle-experimental-orange)](https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle)
+
 Counts the number of sequences in a FASTA file by counting header lines
 (lines starting with `>`). Accepts gzip files.
 
