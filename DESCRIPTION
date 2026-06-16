@@ -10,7 +10,7 @@ Description: Download, format, summarize, and modify FASTA reference
     'MIDORI2', 'BOLD', 'Diat.barcode', 'MaarjAM', 'Eukaryome') and converts
     between taxonomy header formats ('dada2', 'SINTAX', 'Greengenes2'). Part
     of the 'pqverse' ecosystem.
-License: MIT
+License: AGPL-3
 URL: https://github.com/adrientaudiere/dbpq
 BugReports: https://github.com/adrientaudiere/dbpq/issues
 Depends:
