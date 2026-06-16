@@ -259,7 +259,7 @@ is_gzipped <- function(file_path) {
 #'
 #' @description
 #' <a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
-#' <img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+#' <img src="https://img.shields.io/badge/lifecycle-stable-green" alt="lifecycle-stable"></a>
 #'
 #' Returns all extensions from a file name. Double extensions such as
 #' `.fasta.gz` are treated as a first-class case and returned as a two-element

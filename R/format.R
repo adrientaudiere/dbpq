@@ -609,7 +609,7 @@ format_fasta_db <- function(
 #'
 #' @description
 #' <a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
-#' <img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+#' <img src="https://img.shields.io/badge/lifecycle-maturing-blue" alt="lifecycle-maturing"></a>
 #'
 #' Converts taxonomy headers to the VSEARCH SINTAX format
 #' (`>ID;tax=k:Kingdom,p:Phylum,...`). Wrapper around [format_fasta_db()].
@@ -668,7 +668,7 @@ format2sintax <- function(
 #'
 #' @description
 #' <a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
-#' <img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
+#' <img src="https://img.shields.io/badge/lifecycle-maturing-blue" alt="lifecycle-maturing"></a>
 #'
 #' Converts taxonomy headers to the format expected by
 #' `dada2::assignTaxonomy()`: unprefixed semicolon-delimited taxonomy
