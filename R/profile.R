@@ -319,7 +319,10 @@ richness_plot <- function(richness) {
   if (nrow(richness) == 0) {
     return(NULL)
   }
-  richness$rank <- factor(richness$rank, levels = order_ranks(unique(richness$rank)))
+  richness$rank <- factor(
+    richness$rank,
+    levels = order_ranks(unique(richness$rank))
+  )
   ggplot2::ggplot(
     richness,
     ggplot2::aes(

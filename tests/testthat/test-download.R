@@ -140,11 +140,11 @@ test_that("download_ksgp_db has expected formals", {
 test_that("download_file cleans up on failure", {
   tmp <- tempfile(fileext = ".fasta")
   expect_error(
-    download_file(
+    suppressWarnings(download_file(
       "https://invalid.example.com/nonexistent.fasta",
       tmp,
       verbose = FALSE
-    ),
+    )),
     "Download failed"
   )
   expect_false(file.exists(tmp))
@@ -157,10 +157,10 @@ test_that("download_unite_db creates dest_dir if needed", {
   }
   # Use an invalid version to trigger an error after dir creation
   expect_error(
-    download_unite_db(
+    suppressWarnings(download_unite_db(
       dest_dir = tmp_dir,
       doi = "10.0000/nonexistent"
-    )
+    ))
   )
   expect_true(dir.exists(tmp_dir))
   unlink(tmp_dir, recursive = TRUE)
