@@ -1,5 +1,4 @@
-# dbpq 0.0.0 (development version)
-
+# dbpq 0.0.0
 * `download_ksgp_db()` now downloads the FASTA (and companion `.tax` when `tax_format != "none"`) from the `KSGP_v<version>.tar.gz` archive in a single HTTP request, then extracts the requested files locally. The v3.1 archive is ~686 MB compressed vs. ~2.4 GB for the raw FASTA, so the transfer is ~3.5x smaller and avoids the 60-second R default that previously timed out mid-download. The archive is removed from `dest_dir` after extraction; when `tax_format = "sintax"` or `"dada2"`, the merged FASTA is the only file left in `dest_dir` (the extracted `.tax` is removed after its taxonomy has been written into the headers).
 
 * `download_ksgp_db()` SINTAX output now preserves the original prefix letter from the KSGP `.tax` file: a line starting with `k__Bacteria; p__Bacteroidota; ...` is written as `>ID;tax=k:Bacteria,p:Bacteroidota,...` (previously the `k` was collapsed to `d` by the shared lineage parser, producing `d:Bacteria,...`).
