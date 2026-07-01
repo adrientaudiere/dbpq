@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">dbpq</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,7 +37,10 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="development version" id="dbpq-development-version">dbpq (development version)<a class="anchor" aria-label="anchor" href="#dbpq-development-version"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.1.0" id="dbpq-010-development-version">dbpq 0.1.0 (Development version)<a class="anchor" aria-label="anchor" href="#dbpq-010-development-version"></a></h2>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.0" id="dbpq-000">dbpq 0.0.0<a class="anchor" aria-label="anchor" href="#dbpq-000"></a></h2>
 <ul><li><p><code><a href="../reference/download_ksgp_db.html">download_ksgp_db()</a></code> now downloads the FASTA (and companion <code>.tax</code> when <code>tax_format != "none"</code>) from the <code>KSGP_v&lt;version&gt;.tar.gz</code> archive in a single HTTP request, then extracts the requested files locally. The v3.1 archive is ~686 MB compressed vs. ~2.4 GB for the raw FASTA, so the transfer is ~3.5x smaller and avoids the 60-second R default that previously timed out mid-download. The archive is removed from <code>dest_dir</code> after extraction; when <code>tax_format = "sintax"</code> or <code>"dada2"</code>, the merged FASTA is the only file left in <code>dest_dir</code> (the extracted <code>.tax</code> is removed after its taxonomy has been written into the headers).</p></li>
 <li><p><code><a href="../reference/download_ksgp_db.html">download_ksgp_db()</a></code> SINTAX output now preserves the original prefix letter from the KSGP <code>.tax</code> file: a line starting with <code>k__Bacteria; p__Bacteroidota; ...</code> is written as <code>&gt;ID;tax=k:Bacteria,p:Bacteroidota,...</code> (previously the <code>k</code> was collapsed to <code>d</code> by the shared lineage parser, producing <code>d:Bacteria,...</code>).</p></li>
 <li><p><code><a href="../reference/download_ksgp_db.html">download_ksgp_db()</a></code> now defaults <code>annotation</code> to <code>"lca"</code> (was <code>"sintax"</code>). The LCA annotation covers a much larger fraction of the FASTA sequences than the SINTAX <code>.tax</code> (the SINTAX <code>.tax</code> only annotates ~33% of the FASTA — the SILVA-derived portion is left as accession-only headers). The <code>annotation</code> argument is also now honoured when merging the <code>.tax</code> into the FASTA (<code>file_type = "fasta"</code>, <code>tax_format != "none"</code>). Non-KSGP databases (which only ship a <code>sintax</code> <code>.tax</code>) emit a warning if a different <code>annotation</code> is requested.</p></li>

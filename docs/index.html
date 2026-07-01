@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="index.html">dbpq</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -155,17 +155,17 @@
 <h3 id="database-details">Database details<a class="anchor" aria-label="anchor" href="#database-details"></a>
 </h3>
 <p>One row per marker, since each marker targets a different set of organisms. The “Output format” column shows what the download function produces with default parameters.</p>
-<table style="width:100%;" class="table">
+<table class="table">
 <colgroup>
-<col width="14%">
-<col width="14%">
-<col width="14%">
-<col width="14%">
-<col width="14%">
-<col width="14%">
-<col width="14%">
+<col width="15%">
+<col width="12%">
+<col width="7%">
+<col width="9%">
+<col width="15%">
+<col width="16%">
+<col width="23%">
 </colgroup>
-<thead><tr>
+<thead><tr class="header">
 <th>Database</th>
 <th>Function</th>
 <th>Marker</th>
@@ -175,7 +175,7 @@
 <th>Output format</th>
 </tr></thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td><a href="https://unite.ut.ee/" class="external-link">UNITE</a></td>
 <td><code><a href="reference/download_unite_db.html">download_unite_db()</a></code></td>
 <td>ITS</td>
@@ -184,7 +184,7 @@
 <td>Species Hypotheses (SH)</td>
 <td>UNITE <code>k__/p__</code> (<code>.tgz</code> archive) or SINTAX (<code>.gz</code>)</td>
 </tr>
-<tr>
+<tr class="even">
 <td><a href="https://unite.ut.ee/" class="external-link">UNITE</a></td>
 <td><code>download_unite_db(taxon_group = "eukaryotes")</code></td>
 <td>ITS</td>
@@ -193,7 +193,7 @@
 <td>Species Hypotheses (SH)</td>
 <td>UNITE <code>k__/p__</code> (<code>.tgz</code> archive) or SINTAX (<code>.gz</code>)</td>
 </tr>
-<tr>
+<tr class="odd">
 <td><a href="https://www.arb-silva.de/" class="external-link">SILVA</a></td>
 <td><code><a href="reference/download_silva_db.html">download_silva_db()</a></code></td>
 <td>SSU 16S/18S</td>
@@ -202,7 +202,7 @@
 <td>NR99 (99% identity; other versions available directly from SILVA)</td>
 <td>dada2 <code>k__/p__</code> (<code>.fa.gz</code>)</td>
 </tr>
-<tr>
+<tr class="even">
 <td><a href="https://www.arb-silva.de/" class="external-link">SILVA</a></td>
 <td><code>download_silva_db(target = "LSU")</code></td>
 <td>LSU 23S/28S</td>
@@ -211,7 +211,7 @@
 <td>NR99 (99% identity; other versions available directly from SILVA)</td>
 <td>Raw SILVA FASTA (<code>.fasta.gz</code>)</td>
 </tr>
-<tr>
+<tr class="odd">
 <td><a href="https://pr2-database.org/" class="external-link">PR2</a></td>
 <td><code><a href="reference/download_pr2_db.html">download_pr2_db()</a></code></td>
 <td>SSU 18S</td>
@@ -220,7 +220,7 @@
 <td>—</td>
 <td>dada2 (<code>.fasta.gz</code>)</td>
 </tr>
-<tr>
+<tr class="even">
 <td><a href="https://pr2-database.org/" class="external-link">PR2</a></td>
 <td><code>download_pr2_db(marker = "plastid")</code></td>
 <td>Plastid 16S</td>
@@ -229,7 +229,7 @@
 <td>—</td>
 <td>dada2 (<code>.fasta.gz</code>)</td>
 </tr>
-<tr>
+<tr class="odd">
 <td><a href="https://www.boldsystems.org/" class="external-link">BOLD</a></td>
 <td><code>download_bold_db(taxon, marker)</code></td>
 <td>COI-5P, ITS, matK, rbcL, …</td>
@@ -238,7 +238,7 @@
 <td>—</td>
 <td>dada2/sintax FASTA (ranked taxonomy from BOLD <code>combined</code>; <code>tax_format</code>)</td>
 </tr>
-<tr>
+<tr class="even">
 <td><a href="https://maarjam.ut.ee/" class="external-link">MaarjAM</a></td>
 <td><code><a href="reference/download_marjaam_db.html">download_marjaam_db()</a></code></td>
 <td>SSU 18S</td>
@@ -247,7 +247,7 @@
 <td>Virtual Taxa (VT; phylogeny-based)</td>
 <td>dada2/sintax FASTA (QIIME release; <code>tax_format</code>)</td>
 </tr>
-<tr>
+<tr class="odd">
 <td><a href="https://eukaryome.org/" class="external-link">Eukaryome</a></td>
 <td><code>download_eukaryome_db(url)</code></td>
 <td>SSU 18S</td>
@@ -256,7 +256,7 @@
 <td>—</td>
 <td>As-is from URL (dada2 / SINTAX / mothur / QIIME2)</td>
 </tr>
-<tr>
+<tr class="even">
 <td><a href="https://eukaryome.org/" class="external-link">Eukaryome</a></td>
 <td><code>download_eukaryome_db(url)</code></td>
 <td>ITS</td>
@@ -265,7 +265,7 @@
 <td>—</td>
 <td>As-is from URL (dada2 / SINTAX / mothur / QIIME2)</td>
 </tr>
-<tr>
+<tr class="odd">
 <td><a href="https://eukaryome.org/" class="external-link">Eukaryome</a></td>
 <td><code>download_eukaryome_db(url)</code></td>
 <td>LSU 28S</td>
@@ -274,7 +274,7 @@
 <td>—</td>
 <td>As-is from URL (dada2 / SINTAX / mothur / QIIME2)</td>
 </tr>
-<tr>
+<tr class="even">
 <td><a href="https://ftp.microbio.me/greengenes_release/" class="external-link">Greengenes2</a></td>
 <td><code><a href="reference/download_greengenes2_db.html">download_greengenes2_db()</a></code></td>
 <td>SSU 16S</td>
@@ -283,7 +283,7 @@
 <td>Reference phylogenetic tree (DEPP placement, not identity-based)</td>
 <td>dada2 (<code>d__</code> prefixes stripped by default; <code>tax_format</code>) (<code>.fa.gz</code>)</td>
 </tr>
-<tr>
+<tr class="odd">
 <td><a href="https://rdp.cme.msu.edu/" class="external-link">RDP</a></td>
 <td><code><a href="reference/download_rdp_db.html">download_rdp_db()</a></code></td>
 <td>SSU 16S</td>
@@ -292,7 +292,7 @@
 <td>Trainset (manually curated)</td>
 <td>dada2 <code>k__/p__</code> (<code>.fa.gz</code>)</td>
 </tr>
-<tr>
+<tr class="even">
 <td><a href="https://www.reference-midori.info/" class="external-link">MIDORI2</a></td>
 <td><code>download_midori2_db(url)</code></td>
 <td>COI, 12S, 16S, Cytb</td>
@@ -301,7 +301,7 @@
 <td>UNIQ (all haplotypes) or LONGEST (one per species)</td>
 <td>dada2 / SINTAX / RDP / BLAST (from URL)</td>
 </tr>
-<tr>
+<tr class="odd">
 <td><a href="https://www.reference-midori.info/" class="external-link">Diat.barcode</a></td>
 <td><code>download_diatbarcode_db(url)</code></td>
 <td>rbcL</td>
@@ -310,7 +310,7 @@
 <td>Curated (species-level)</td>
 <td>dada2 (<code>.fasta.gz</code>)</td>
 </tr>
-<tr>
+<tr class="even">
 <td><a href="https://ksgp.earlham.ac.uk/" class="external-link">KSGP</a></td>
 <td><code><a href="reference/download_ksgp_db.html">download_ksgp_db()</a></code></td>
 <td>SSU 16S/18S</td>
@@ -319,7 +319,7 @@
 <td>None</td>
 <td>dada2/sintax FASTA (<code>.tax</code> merged into headers by default via <code>tax_format</code>; partial coverage)</td>
 </tr>
-<tr>
+<tr class="odd">
 <td><a href="https://ksgp.earlham.ac.uk/" class="external-link">KSGP — GTDB+</a></td>
 <td><code>download_ksgp_db(database = "GTDB_plus")</code></td>
 <td>SSU 16S</td>
@@ -329,7 +329,7 @@
 <td>Plain FASTA (<code>.fasta</code>) + <code>.tax</code>
 </td>
 </tr>
-<tr>
+<tr class="even">
 <td><a href="https://ksgp.earlham.ac.uk/" class="external-link">KSGP — GTDB_cleaned</a></td>
 <td><code>download_ksgp_db(database = "GTDB_cleaned")</code></td>
 <td>SSU 16S</td>
@@ -339,7 +339,7 @@
 <td>Plain FASTA (<code>.fasta</code>) + <code>.tax</code>
 </td>
 </tr>
-<tr>
+<tr class="odd">
 <td><a href="https://bioinfo.uib.es/ltp/" class="external-link">LTPlus</a></td>
 <td><code><a href="reference/download_ltplus_db.html">download_ltplus_db()</a></code></td>
 <td>SSU 16S</td>
@@ -364,37 +364,37 @@ Derivation adjacency matrix of dbpq reference databases
 <p><strong>Independent databases</strong> — independently curated, with no cross-database sequence incorporation (though all ultimately draw from INSDc/GenBank); use them in parallel based on marker and taxonomic scope:</p>
 <table class="table">
 <colgroup>
-<col width="33%">
-<col width="33%">
-<col width="33%">
+<col width="16%">
+<col width="23%">
+<col width="60%">
 </colgroup>
-<thead><tr>
+<thead><tr class="header">
 <th>Database</th>
 <th>Marker</th>
 <th>Why independent</th>
 </tr></thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>UNITE</td>
 <td>ITS</td>
 <td>Fungal ITS, distinct marker (but feeds Eukaryome)</td>
 </tr>
-<tr>
+<tr class="even">
 <td>BOLD</td>
 <td>COI, matK, rbcL, …</td>
 <td>Barcode markers, independently curated</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>MaarjAM</td>
 <td>SSU 18S</td>
 <td>AMF-specific, independent curation</td>
 </tr>
-<tr>
+<tr class="even">
 <td>Diat.barcode</td>
 <td>rbcL (plastid)</td>
 <td>Diatom-specific, independent curation</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>RDP</td>
 <td>SSU 16S</td>
 <td>Independent curation, trainset-based</td>

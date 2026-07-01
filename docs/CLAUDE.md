@@ -35,14 +35,14 @@ Rscript -e "devtools::check()"
 
 ### Key Modules
 
-| Module | Purpose |
-|----|----|
-| `dbpq-package.R` | Package documentation and imports |
-| `utils.R` | Internal helpers (is_gzipped, read_lines_db, get_file_extension) |
-| `download.R` | download\_\*\_db() functions for major databases |
-| `format.R` | format2dada2(), format2sintax(), format2dada2_species() |
-| `summarize.R` | count_seq_db(), count_pattern_db(), list_ranks_db(), summarize_db() |
-| `modify.R` | filter_db(), cutadapt_rm_primers_db() |
+| Module           | Purpose                                                             |
+|------------------|---------------------------------------------------------------------|
+| `dbpq-package.R` | Package documentation and imports                                   |
+| `utils.R`        | Internal helpers (is_gzipped, read_lines_db, get_file_extension)    |
+| `download.R`     | download\_\*\_db() functions for major databases                    |
+| `format.R`       | format2dada2(), format2sintax(), format2dada2_species()             |
+| `summarize.R`    | count_seq_db(), count_pattern_db(), list_ranks_db(), summarize_db() |
+| `modify.R`       | filter_db(), cutadapt_rm_primers_db()                               |
 
 ### Function Naming Convention
 
@@ -68,3 +68,21 @@ Rscript -e "devtools::check()"
 - Use `\() ...` for single-line anonymous functions, `function() {...}`
   otherwise
 - Tests for `R/{name}.R` go in `tests/testthat/test-{name}.R`
+
+## Agent skills
+
+### Issue tracker
+
+Issues and PRDs are tracked as GitHub issues via the `gh` CLI; external
+PRs are not a triage surface. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Uses the five canonical triage labels (`needs-triage`, `needs-info`,
+`ready-for-agent`, `ready-for-human`, `wontfix`). See
+`docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: one `CONTEXT.md` + `docs/adr/` at the repo root. See
+`docs/agents/domain.md`.

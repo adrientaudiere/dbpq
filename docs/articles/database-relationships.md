@@ -28,7 +28,6 @@ are not themselves downloadable through dbpq.
 Code
 
 ``` r
-
 derivation <- tribble(
   ~from,          ~to,            ~what,                                  ~source,
   # ---- KSGP / GTDB+ lineage (KSGP 3.1, Bahram et al. 2025) ----
@@ -76,38 +75,37 @@ annotation <- tribble(
 knitr::kable(derivation, caption = "Confirmed sequence-derivation edges (source -> target).")
 ```
 
-| from | to | what | source |
-|:---|:---|:---|:---|
-| GTDB | GTDB_cleaned | 16S, domain-checked & deduplicated | KSGP 3.1 (2025) |
-| GTDB_cleaned | GTDB+ | prokaryote 16S backbone | KSGP 3.1 (2025) |
-| PR2 | GTDB+ | eukaryote 18S + plastid | KSGP 3.1 (2025) |
-| MIDORI2 | GTDB+ | mitochondrial SSU | KSGP 3.1 (2025) |
-| GTDB+ | KSGP | prokaryote backbone | KSGP 3.1 (2025) |
-| SILVA | KSGP | Archaea 138.1, re-annotated | KSGP 3.1 (2025) |
-| Karst 2018 | KSGP | near-full-length environmental SSU | KSGP 3.1 (2025) |
-| GTDB | Greengenes2 | r207 full-length 16S + taxonomy | Greengenes2 (2023) |
-| LTP | Greengenes2 | Living Tree Project Jan 2022 | Greengenes2 (2023) |
-| Karst 2018 | Greengenes2 | near-complete 16S | Greengenes2 (2023) |
-| EMP500 | Greengenes2 | 16S (Earth Microbiome Project) | Greengenes2 (2023) |
-| LTP | LTPlus | type-strain backbone | LTPlus (2026) |
-| SILVA | LTPlus | non-redundant 16S | LTPlus (2026) |
-| GTDB | LTPlus | 16S | LTPlus (2026) |
-| INSDc | LTPlus | best-quality NCBI 16S (2019-2025) | LTPlus (2026) |
-| SILVA | Eukaryome | v138.1 SSU/LSU | EUKARYOME (2024) |
-| PR2 | Eukaryome | v4.14.1 SSU | EUKARYOME (2024) |
-| UNITE | Eukaryome | v9.0 ITS | EUKARYOME (2024) |
-| INSDc | Eukaryome | full-length (meta)genomic reads | EUKARYOME (2024) |
-| INSDc | PR2 | 18S records (GenBank/EMBL/WGS) | PR2 documentation |
-| INSDc | SILVA | rRNA records | SILVA |
-| INSDc | UNITE | ITS records | UNITE |
-| INSDc | MIDORI2 | mitochondrial records | MIDORI2 (2022) |
-| INSDc | MaarjAM | Glomeromycota SSU records | MaarjAM (2010) |
-| INSDc | RDP | 16S records | RDP |
-| INSDc | Diat.barcode | rbcL records | Diat.barcode |
-| INSDc | BOLD | barcode records (mirrored to INSDc) | BOLD |
+| from         | to           | what                                | source             |
+|:-------------|:-------------|:------------------------------------|:-------------------|
+| GTDB         | GTDB_cleaned | 16S, domain-checked & deduplicated  | KSGP 3.1 (2025)    |
+| GTDB_cleaned | GTDB+        | prokaryote 16S backbone             | KSGP 3.1 (2025)    |
+| PR2          | GTDB+        | eukaryote 18S + plastid             | KSGP 3.1 (2025)    |
+| MIDORI2      | GTDB+        | mitochondrial SSU                   | KSGP 3.1 (2025)    |
+| GTDB+        | KSGP         | prokaryote backbone                 | KSGP 3.1 (2025)    |
+| SILVA        | KSGP         | Archaea 138.1, re-annotated         | KSGP 3.1 (2025)    |
+| Karst 2018   | KSGP         | near-full-length environmental SSU  | KSGP 3.1 (2025)    |
+| GTDB         | Greengenes2  | r207 full-length 16S + taxonomy     | Greengenes2 (2023) |
+| LTP          | Greengenes2  | Living Tree Project Jan 2022        | Greengenes2 (2023) |
+| Karst 2018   | Greengenes2  | near-complete 16S                   | Greengenes2 (2023) |
+| EMP500       | Greengenes2  | 16S (Earth Microbiome Project)      | Greengenes2 (2023) |
+| LTP          | LTPlus       | type-strain backbone                | LTPlus (2026)      |
+| SILVA        | LTPlus       | non-redundant 16S                   | LTPlus (2026)      |
+| GTDB         | LTPlus       | 16S                                 | LTPlus (2026)      |
+| INSDc        | LTPlus       | best-quality NCBI 16S (2019-2025)   | LTPlus (2026)      |
+| SILVA        | Eukaryome    | v138.1 SSU/LSU                      | EUKARYOME (2024)   |
+| PR2          | Eukaryome    | v4.14.1 SSU                         | EUKARYOME (2024)   |
+| UNITE        | Eukaryome    | v9.0 ITS                            | EUKARYOME (2024)   |
+| INSDc        | Eukaryome    | full-length (meta)genomic reads     | EUKARYOME (2024)   |
+| INSDc        | PR2          | 18S records (GenBank/EMBL/WGS)      | PR2 documentation  |
+| INSDc        | SILVA        | rRNA records                        | SILVA              |
+| INSDc        | UNITE        | ITS records                         | UNITE              |
+| INSDc        | MIDORI2      | mitochondrial records               | MIDORI2 (2022)     |
+| INSDc        | MaarjAM      | Glomeromycota SSU records           | MaarjAM (2010)     |
+| INSDc        | RDP          | 16S records                         | RDP                |
+| INSDc        | Diat.barcode | rbcL records                        | Diat.barcode       |
+| INSDc        | BOLD         | barcode records (mirrored to INSDc) | BOLD               |
 
-Confirmed sequence-derivation edges (source -\> target). {.table
-.caption-top}
+Confirmed sequence-derivation edges (source -\> target).
 
 ## The derivation network
 
@@ -118,7 +116,6 @@ download with dbpq; round nodes are upstream *(external)* sources.
 Code
 
 ``` r
-
 library(visNetwork)
 
 dbpq_dbs <- c(
@@ -171,7 +168,6 @@ in a lighter shade to keep them distinct from true nestedness.
 Code
 
 ``` r
-
 lvls <- c(
   "INSDc", "GTDB", "Karst 2018", "LTP", "EMP500",
   "SILVA", "PR2", "UNITE", "MIDORI2", "EukRef", "EukRibo",
@@ -238,7 +234,6 @@ are complementary.
 Code
 
 ``` r
-
 coverage <- tribble(
   ~database,       ~clade,            ~marker,    ~role,
   "SILVA",         "Bacteria",        "SSU 16S",  "primary",

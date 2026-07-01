@@ -1,6 +1,8 @@
 # Changelog
 
-## dbpq (development version)
+## dbpq 0.1.0 (Development version)
+
+## dbpq 0.0.0
 
 - [`download_ksgp_db()`](https://adrientaudiere.github.io/dbpq/reference/download_ksgp_db.md)
   now downloads the FASTA (and companion `.tax` when
