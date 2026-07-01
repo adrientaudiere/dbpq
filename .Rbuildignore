@@ -3,3 +3,13 @@
 ^\.github$
 ^vignettes/articles$
 ^README\.Rmd$
+^CONTEXT\.md$
+^\.claude$
+^README\.html$
+^Rplots\.pdf$
+^LICENSE\.md$
+^audits$
+^dev$
+^docs$
+^pkgdown$
+^cran-comments\.md$
