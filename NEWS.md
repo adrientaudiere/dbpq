@@ -1,5 +1,7 @@
 # dbpq 0.1.0 (Development version)
 
+* `search_taxa_db()` retrieves sequences from a FASTA database (plain or gzip) by one or more taxonomic name parts and returns a `Biostrings::DNAStringSet` with original headers preserved. Multi-part `match = "all"` (default) requires every name part to be present, so the same query works across header formats (UNITE, SINTAX, dada2, ...); `match = "any"` matches at least one. An optional `output_path` writes the matched sequences to a (gzipped) FASTA file.
+
 # dbpq 0.0.0
 * `download_ksgp_db()` now downloads the FASTA (and companion `.tax` when `tax_format != "none"`) from the `KSGP_v<version>.tar.gz` archive in a single HTTP request, then extracts the requested files locally. The v3.1 archive is ~686 MB compressed vs. ~2.4 GB for the raw FASTA, so the transfer is ~3.5x smaller and avoids the 60-second R default that previously timed out mid-download. The archive is removed from `dest_dir` after extraction; when `tax_format = "sintax"` or `"dada2"`, the merged FASTA is the only file left in `dest_dir` (the extracted `.tax` is removed after its taxonomy has been written into the headers).
 

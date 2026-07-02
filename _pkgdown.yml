@@ -67,6 +67,11 @@ reference:
   - filter_db
   - cutadapt_rm_primers_db
 
+- title: Search sequences
+  desc: Retrieve sequences by taxonomic name.
+  contents:
+  - search_taxa_db
+
 - title: Utilities
   desc: Helper functions.
   contents:

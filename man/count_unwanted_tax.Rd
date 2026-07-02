@@ -88,12 +88,6 @@ physeq_new <- MiscMetabar::assign_mmseqs2(
  )
 count_unwanted_tax(physeq_new)
 }
-<a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
-<img src="https://img.shields.io/badge/lifecycle-maturing-blue" alt="lifecycle-maturing"></a>
-
-<a href="https://adrientaudiere.github.io/MiscMetabar/articles/Rules.html#lifecycle">
-<img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
-
 }
 \seealso{
 \code{\link[=summarize_db]{summarize_db()}}, \code{\link[=list_ranks_db]{list_ranks_db()}}
