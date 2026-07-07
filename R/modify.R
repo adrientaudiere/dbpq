@@ -120,7 +120,7 @@ filter_db <- function(
 #' @author Adrien Taudière
 #' @details
 #' This function is mainly a wrapper of the work of others.
-#'   Please cite cutadapt (\doi{doi:10.14806/ej.17.1.200}).
+#'   Please cite cutadapt (\doi{10.14806/ej.17.1.200}).
 #' @examplesIf tolower(Sys.info()[["sysname"]]) != "windows"
 #' \dontrun{
 #' cutadapt_rm_primers_db(
