@@ -35,14 +35,14 @@ Rscript -e "devtools::check()"
 
 ### Key Modules
 
-| Module | Purpose |
-|----|----|
-| `dbpq-package.R` | Package documentation and imports |
-| `utils.R` | Internal helpers (is_gzipped, read_lines_db, get_file_extension) |
-| `download.R` | download\_\*\_db() functions for major databases |
-| `format.R` | format2dada2(), format2sintax(), format2dada2_species() |
-| `summarize.R` | count_seq_db(), count_pattern_db(), list_ranks_db(), summarize_db() |
-| `modify.R` | filter_db(), cutadapt_rm_primers_db() |
+| Module           | Purpose                                                             |
+|------------------|---------------------------------------------------------------------|
+| `dbpq-package.R` | Package documentation and imports                                   |
+| `utils.R`        | Internal helpers (is_gzipped, read_lines_db, get_file_extension)    |
+| `download.R`     | download\_\*\_db() functions for major databases                    |
+| `format.R`       | format2dada2(), format2sintax(), format2dada2_species()             |
+| `summarize.R`    | count_seq_db(), count_pattern_db(), list_ranks_db(), summarize_db() |
+| `modify.R`       | filter_db(), cutadapt_rm_primers_db()                               |
 
 ### Function Naming Convention
 

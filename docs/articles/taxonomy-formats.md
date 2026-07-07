@@ -128,13 +128,13 @@ PR2 uses 9 taxonomic levels specific to protist taxonomy:
 Beyond taxonomy encoding, formats differ in where the sequence name
 (accession number, e.g. `AB123456`) appears in the FASTA header:
 
-| Format | Sequence name location | Separator | Example header |
-|----|----|----|----|
-| UNITE (`k__`) | Between `>` and first `;` | `;` | `>AB123456;k__Fungi;p__Ascomycota;...` |
-| SINTAX / UTAX | Between `>` and `;tax=` | `;tax=` | `>AB123456;tax=d:Eukaryota,k:Fungi,...` |
-| Greengenes2 | Between `>` and first space | space | `>abc123 d__Bacteria;p__Pseudomonadota;...` |
-| PR2 (positional) | Between `>` and first space | space | `>EU293891.1.1750_U Eukaryota;Archaeplastida;...` |
-| dada2 (positional) | Last taxonomic level (often species) | `;` | `>Bacteria;Proteobacteria;...;Escherichia` |
+| Format             | Sequence name location               | Separator | Example header                                    |
+|--------------------|--------------------------------------|-----------|---------------------------------------------------|
+| UNITE (`k__`)      | Between `>` and first `;`            | `;`       | `>AB123456;k__Fungi;p__Ascomycota;...`            |
+| SINTAX / UTAX      | Between `>` and `;tax=`              | `;tax=`   | `>AB123456;tax=d:Eukaryota,k:Fungi,...`           |
+| Greengenes2        | Between `>` and first space          | space     | `>abc123 d__Bacteria;p__Pseudomonadota;...`       |
+| PR2 (positional)   | Between `>` and first space          | space     | `>EU293891.1.1750_U Eukaryota;Archaeplastida;...` |
+| dada2 (positional) | Last taxonomic level (often species) | `;`       | `>Bacteria;Proteobacteria;...;Escherichia`        |
 
 In prefix-based formats (UNITE, SINTAX, Greengenes2), the sequence name
 is clearly separated from the taxonomy string. In the dada2 positional
@@ -154,7 +154,6 @@ must correctly extract or relocate the sequence name.
 ### Detecting the format
 
 ``` r
-
 library(dbpq)
 
 # Auto-detect format from file headers
@@ -169,7 +168,6 @@ returns rank prefixes (character vector) for prefix-based formats and
 rank positions (integer vector) for positional formats:
 
 ``` r
-
 library(dbpq)
 
 # Prefix-based formats
@@ -194,7 +192,6 @@ tax_prefixes("pr2")
 ### Summarizing databases
 
 ``` r
-
 # UNITE format
 summarize_db("unite_database.fasta", tax_format = "unite")
 
@@ -214,7 +211,6 @@ summarize_db("some_database.fasta", tax_format = "auto")
 ### Listing ranks
 
 ``` r
-
 # Prefix-based: list phyla in a UNITE-format database
 list_ranks_db("database.fasta", rank_prefix = "p__")
 
@@ -234,7 +230,6 @@ list_ranks_db("database.fasta", rank_position = 2)
 ### Converting between formats
 
 ``` r
-
 # UNITE (k__) → SINTAX
 format_fasta_db(
   taxnames = "AB123;k__Fungi;p__Ascomycota;c__Sordariomycetes",
@@ -263,7 +258,6 @@ Several databases offer SINTAX-formatted downloads alongside their
 default format:
 
 ``` r
-
 download_unite_db(dest_dir = "databases", taxonomic_format = "sintax")
 download_pr2_db(dest_dir = "databases", format = "sintax")
 download_midori2_db(gene = "CO1", format = "SINTAX")
@@ -277,14 +271,14 @@ table below shows which formats work with which classifiers, including
 those available via
 [`MiscMetabar::add_new_taxonomy_pq()`](https://adrientaudiere.github.io/MiscMetabar/reference/add_new_taxonomy_pq.html):
 
-| Classifier | Expected format | dbpq download | `add_new_taxonomy_pq()` method |
-|----|----|----|----|
-| [`dada2::assignTaxonomy()`](https://rdrr.io/pkg/dada2/man/assignTaxonomy.html) | Any `;`-separated taxonomy | `format = "dada2"` | `method = "dada2"` |
-| [`dada2::addSpecies()`](https://rdrr.io/pkg/dada2/man/addSpecies.html) | `ID Genus species` | `format = "dada2_species"` | `method = "dada2_2steps"` |
-| `vsearch --sintax` | SINTAX (`tax=`) | `taxonomic_format = "sintax"` | `method = "sintax"` |
-| VSEARCH LCA (`--usearch_global`) | Any FASTA | Any | `method = "lca"` |
-| IDTAXA | Custom training set | Convert with [`format2dada2()`](https://adrientaudiere.github.io/dbpq/reference/format2dada2.md) | `method = "idtaxa"` |
-| BLASTn | Any FASTA | Any | `method = "blastn"` |
+| Classifier                                                                     | Expected format            | dbpq download                                                                                    | `add_new_taxonomy_pq()` method |
+|--------------------------------------------------------------------------------|----------------------------|--------------------------------------------------------------------------------------------------|--------------------------------|
+| [`dada2::assignTaxonomy()`](https://rdrr.io/pkg/dada2/man/assignTaxonomy.html) | Any `;`-separated taxonomy | `format = "dada2"`                                                                               | `method = "dada2"`             |
+| [`dada2::addSpecies()`](https://rdrr.io/pkg/dada2/man/addSpecies.html)         | `ID Genus species`         | `format = "dada2_species"`                                                                       | `method = "dada2_2steps"`      |
+| `vsearch --sintax`                                                             | SINTAX (`tax=`)            | `taxonomic_format = "sintax"`                                                                    | `method = "sintax"`            |
+| VSEARCH LCA (`--usearch_global`)                                               | Any FASTA                  | Any                                                                                              | `method = "lca"`               |
+| IDTAXA                                                                         | Custom training set        | Convert with [`format2dada2()`](https://adrientaudiere.github.io/dbpq/reference/format2dada2.md) | `method = "idtaxa"`            |
+| BLASTn                                                                         | Any FASTA                  | Any                                                                                              | `method = "blastn"`            |
 
 ### Choosing a database and classifier
 

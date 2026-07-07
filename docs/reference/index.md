@@ -73,7 +73,7 @@ cross-database overlap.
 Assign taxonomy to sequences.
 
 - [`add_sh_to_taxonomy()`](https://adrientaudiere.github.io/dbpq/reference/add_sh_to_taxonomy.md)
-  **\[experimental\]** : Annotate query sequences with UNITE Species
+  **\[expérimentale\]** : Annotate query sequences with UNITE Species
   Hypothesis (SH) names
 
 ## Modify databases
