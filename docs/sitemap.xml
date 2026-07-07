@@ -28,6 +28,7 @@
 <url><loc>https://adrientaudiere.github.io/dbpq/reference/diagnosis_plots.html</loc></url>
 <url><loc>https://adrientaudiere.github.io/dbpq/reference/diagnosis_report.html</loc></url>
 <url><loc>https://adrientaudiere.github.io/dbpq/reference/diagnosis_warning.html</loc></url>
+<url><loc>https://adrientaudiere.github.io/dbpq/reference/dot-search_taxa_db_in_memory.html</loc></url>
 <url><loc>https://adrientaudiere.github.io/dbpq/reference/download_bold_db.html</loc></url>
 <url><loc>https://adrientaudiere.github.io/dbpq/reference/download_diatbarcode_db.html</loc></url>
 <url><loc>https://adrientaudiere.github.io/dbpq/reference/download_eukaryome_db.html</loc></url>
@@ -65,6 +66,7 @@
 <url><loc>https://adrientaudiere.github.io/dbpq/reference/rank_info_for_format.html</loc></url>
 <url><loc>https://adrientaudiere.github.io/dbpq/reference/read_lines_db.html</loc></url>
 <url><loc>https://adrientaudiere.github.io/dbpq/reference/richness_plot.html</loc></url>
+<url><loc>https://adrientaudiere.github.io/dbpq/reference/search_taxa_db.html</loc></url>
 <url><loc>https://adrientaudiere.github.io/dbpq/reference/summarize_db.html</loc></url>
 <url><loc>https://adrientaudiere.github.io/dbpq/reference/tax_prefixes.html</loc></url>
 <url><loc>https://adrientaudiere.github.io/dbpq/reference/unwanted_tax_patterns_default.html</loc></url>

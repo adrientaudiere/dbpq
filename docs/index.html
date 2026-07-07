@@ -15,7 +15,8 @@
 <link href="deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Manage FASTA Reference Databases for Taxonomic Assignment">
+<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><link href="extra.css" rel="stylesheet">
+<meta property="og:title" content="Manage FASTA Reference Databases for Taxonomic Assignment">
 <meta name="description" content="Download, format, summarize, and modify FASTA reference databases used for taxonomic assignment in metabarcoding pipelines. Supports major databases (UNITE, SILVA, PR2, Greengenes2, RDP, MIDORI2, BOLD, Diat.barcode, MaarjAM, Eukaryome) and converts between taxonomy header formats (dada2, SINTAX, Greengenes2). Part of the pqverse ecosystem.">
 <meta property="og:description" content="Download, format, summarize, and modify FASTA reference databases used for taxonomic assignment in metabarcoding pipelines. Supports major databases (UNITE, SILVA, PR2, Greengenes2, RDP, MIDORI2, BOLD, Diat.barcode, MaarjAM, Eukaryome) and converts between taxonomy header formats (dada2, SINTAX, Greengenes2). Part of the pqverse ecosystem.">
 <meta property="og:image" content="https://adrientaudiere.github.io/dbpq/logo.svg">
@@ -165,7 +166,7 @@
 <col width="16%">
 <col width="23%">
 </colgroup>
-<thead><tr class="header">
+<thead><tr>
 <th>Database</th>
 <th>Function</th>
 <th>Marker</th>
@@ -175,7 +176,7 @@
 <th>Output format</th>
 </tr></thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td><a href="https://unite.ut.ee/" class="external-link">UNITE</a></td>
 <td><code><a href="reference/download_unite_db.html">download_unite_db()</a></code></td>
 <td>ITS</td>
@@ -184,7 +185,7 @@
 <td>Species Hypotheses (SH)</td>
 <td>UNITE <code>k__/p__</code> (<code>.tgz</code> archive) or SINTAX (<code>.gz</code>)</td>
 </tr>
-<tr class="even">
+<tr>
 <td><a href="https://unite.ut.ee/" class="external-link">UNITE</a></td>
 <td><code>download_unite_db(taxon_group = "eukaryotes")</code></td>
 <td>ITS</td>
@@ -193,7 +194,7 @@
 <td>Species Hypotheses (SH)</td>
 <td>UNITE <code>k__/p__</code> (<code>.tgz</code> archive) or SINTAX (<code>.gz</code>)</td>
 </tr>
-<tr class="odd">
+<tr>
 <td><a href="https://www.arb-silva.de/" class="external-link">SILVA</a></td>
 <td><code><a href="reference/download_silva_db.html">download_silva_db()</a></code></td>
 <td>SSU 16S/18S</td>
@@ -202,7 +203,7 @@
 <td>NR99 (99% identity; other versions available directly from SILVA)</td>
 <td>dada2 <code>k__/p__</code> (<code>.fa.gz</code>)</td>
 </tr>
-<tr class="even">
+<tr>
 <td><a href="https://www.arb-silva.de/" class="external-link">SILVA</a></td>
 <td><code>download_silva_db(target = "LSU")</code></td>
 <td>LSU 23S/28S</td>
@@ -211,7 +212,7 @@
 <td>NR99 (99% identity; other versions available directly from SILVA)</td>
 <td>Raw SILVA FASTA (<code>.fasta.gz</code>)</td>
 </tr>
-<tr class="odd">
+<tr>
 <td><a href="https://pr2-database.org/" class="external-link">PR2</a></td>
 <td><code><a href="reference/download_pr2_db.html">download_pr2_db()</a></code></td>
 <td>SSU 18S</td>
@@ -220,7 +221,7 @@
 <td>—</td>
 <td>dada2 (<code>.fasta.gz</code>)</td>
 </tr>
-<tr class="even">
+<tr>
 <td><a href="https://pr2-database.org/" class="external-link">PR2</a></td>
 <td><code>download_pr2_db(marker = "plastid")</code></td>
 <td>Plastid 16S</td>
@@ -229,7 +230,7 @@
 <td>—</td>
 <td>dada2 (<code>.fasta.gz</code>)</td>
 </tr>
-<tr class="odd">
+<tr>
 <td><a href="https://www.boldsystems.org/" class="external-link">BOLD</a></td>
 <td><code>download_bold_db(taxon, marker)</code></td>
 <td>COI-5P, ITS, matK, rbcL, …</td>
@@ -238,7 +239,7 @@
 <td>—</td>
 <td>dada2/sintax FASTA (ranked taxonomy from BOLD <code>combined</code>; <code>tax_format</code>)</td>
 </tr>
-<tr class="even">
+<tr>
 <td><a href="https://maarjam.ut.ee/" class="external-link">MaarjAM</a></td>
 <td><code><a href="reference/download_marjaam_db.html">download_marjaam_db()</a></code></td>
 <td>SSU 18S</td>
@@ -247,7 +248,7 @@
 <td>Virtual Taxa (VT; phylogeny-based)</td>
 <td>dada2/sintax FASTA (QIIME release; <code>tax_format</code>)</td>
 </tr>
-<tr class="odd">
+<tr>
 <td><a href="https://eukaryome.org/" class="external-link">Eukaryome</a></td>
 <td><code>download_eukaryome_db(url)</code></td>
 <td>SSU 18S</td>
@@ -256,7 +257,7 @@
 <td>—</td>
 <td>As-is from URL (dada2 / SINTAX / mothur / QIIME2)</td>
 </tr>
-<tr class="even">
+<tr>
 <td><a href="https://eukaryome.org/" class="external-link">Eukaryome</a></td>
 <td><code>download_eukaryome_db(url)</code></td>
 <td>ITS</td>
@@ -265,7 +266,7 @@
 <td>—</td>
 <td>As-is from URL (dada2 / SINTAX / mothur / QIIME2)</td>
 </tr>
-<tr class="odd">
+<tr>
 <td><a href="https://eukaryome.org/" class="external-link">Eukaryome</a></td>
 <td><code>download_eukaryome_db(url)</code></td>
 <td>LSU 28S</td>
@@ -274,7 +275,7 @@
 <td>—</td>
 <td>As-is from URL (dada2 / SINTAX / mothur / QIIME2)</td>
 </tr>
-<tr class="even">
+<tr>
 <td><a href="https://ftp.microbio.me/greengenes_release/" class="external-link">Greengenes2</a></td>
 <td><code><a href="reference/download_greengenes2_db.html">download_greengenes2_db()</a></code></td>
 <td>SSU 16S</td>
@@ -283,7 +284,7 @@
 <td>Reference phylogenetic tree (DEPP placement, not identity-based)</td>
 <td>dada2 (<code>d__</code> prefixes stripped by default; <code>tax_format</code>) (<code>.fa.gz</code>)</td>
 </tr>
-<tr class="odd">
+<tr>
 <td><a href="https://rdp.cme.msu.edu/" class="external-link">RDP</a></td>
 <td><code><a href="reference/download_rdp_db.html">download_rdp_db()</a></code></td>
 <td>SSU 16S</td>
@@ -292,7 +293,7 @@
 <td>Trainset (manually curated)</td>
 <td>dada2 <code>k__/p__</code> (<code>.fa.gz</code>)</td>
 </tr>
-<tr class="even">
+<tr>
 <td><a href="https://www.reference-midori.info/" class="external-link">MIDORI2</a></td>
 <td><code>download_midori2_db(url)</code></td>
 <td>COI, 12S, 16S, Cytb</td>
@@ -301,7 +302,7 @@
 <td>UNIQ (all haplotypes) or LONGEST (one per species)</td>
 <td>dada2 / SINTAX / RDP / BLAST (from URL)</td>
 </tr>
-<tr class="odd">
+<tr>
 <td><a href="https://www.reference-midori.info/" class="external-link">Diat.barcode</a></td>
 <td><code>download_diatbarcode_db(url)</code></td>
 <td>rbcL</td>
@@ -310,7 +311,7 @@
 <td>Curated (species-level)</td>
 <td>dada2 (<code>.fasta.gz</code>)</td>
 </tr>
-<tr class="even">
+<tr>
 <td><a href="https://ksgp.earlham.ac.uk/" class="external-link">KSGP</a></td>
 <td><code><a href="reference/download_ksgp_db.html">download_ksgp_db()</a></code></td>
 <td>SSU 16S/18S</td>
@@ -319,7 +320,7 @@
 <td>None</td>
 <td>dada2/sintax FASTA (<code>.tax</code> merged into headers by default via <code>tax_format</code>; partial coverage)</td>
 </tr>
-<tr class="odd">
+<tr>
 <td><a href="https://ksgp.earlham.ac.uk/" class="external-link">KSGP — GTDB+</a></td>
 <td><code>download_ksgp_db(database = "GTDB_plus")</code></td>
 <td>SSU 16S</td>
@@ -329,7 +330,7 @@
 <td>Plain FASTA (<code>.fasta</code>) + <code>.tax</code>
 </td>
 </tr>
-<tr class="even">
+<tr>
 <td><a href="https://ksgp.earlham.ac.uk/" class="external-link">KSGP — GTDB_cleaned</a></td>
 <td><code>download_ksgp_db(database = "GTDB_cleaned")</code></td>
 <td>SSU 16S</td>
@@ -339,7 +340,7 @@
 <td>Plain FASTA (<code>.fasta</code>) + <code>.tax</code>
 </td>
 </tr>
-<tr class="odd">
+<tr>
 <td><a href="https://bioinfo.uib.es/ltp/" class="external-link">LTPlus</a></td>
 <td><code><a href="reference/download_ltplus_db.html">download_ltplus_db()</a></code></td>
 <td>SSU 16S</td>
@@ -368,33 +369,33 @@ Derivation adjacency matrix of dbpq reference databases
 <col width="23%">
 <col width="60%">
 </colgroup>
-<thead><tr class="header">
+<thead><tr>
 <th>Database</th>
 <th>Marker</th>
 <th>Why independent</th>
 </tr></thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td>UNITE</td>
 <td>ITS</td>
 <td>Fungal ITS, distinct marker (but feeds Eukaryome)</td>
 </tr>
-<tr class="even">
+<tr>
 <td>BOLD</td>
 <td>COI, matK, rbcL, …</td>
 <td>Barcode markers, independently curated</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>MaarjAM</td>
 <td>SSU 18S</td>
 <td>AMF-specific, independent curation</td>
 </tr>
-<tr class="even">
+<tr>
 <td>Diat.barcode</td>
 <td>rbcL (plastid)</td>
 <td>Diatom-specific, independent curation</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>RDP</td>
 <td>SSU 16S</td>
 <td>Independent curation, trainset-based</td>

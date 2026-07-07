@@ -2,6 +2,16 @@
 
 ## dbpq 0.1.0 (Development version)
 
+- [`search_taxa_db()`](https://adrientaudiere.github.io/dbpq/reference/search_taxa_db.md)
+  retrieves sequences from a FASTA database (plain or gzip) by one or
+  more taxonomic name parts and returns a
+  [`Biostrings::DNAStringSet`](https://rdrr.io/pkg/Biostrings/man/XStringSet-class.html)
+  with original headers preserved. Multi-part `match = "all"` (default)
+  requires every name part to be present, so the same query works across
+  header formats (UNITE, SINTAX, dada2, …); `match = "any"` matches at
+  least one. An optional `output_path` writes the matched sequences to a
+  (gzipped) FASTA file.
+
 ## dbpq 0.0.0
 
 - [`download_ksgp_db()`](https://adrientaudiere.github.io/dbpq/reference/download_ksgp_db.md)

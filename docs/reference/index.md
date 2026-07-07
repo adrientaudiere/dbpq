@@ -73,7 +73,7 @@ cross-database overlap.
 Assign taxonomy to sequences.
 
 - [`add_sh_to_taxonomy()`](https://adrientaudiere.github.io/dbpq/reference/add_sh_to_taxonomy.md)
-  **\[expérimentale\]** : Annotate query sequences with UNITE Species
+  **\[experimental\]** : Annotate query sequences with UNITE Species
   Hypothesis (SH) names
 
 ## Modify databases
@@ -84,6 +84,13 @@ Filter, trim, and transform FASTA databases.
   : Filter a FASTA database by taxonomic pattern
 - [`cutadapt_rm_primers_db()`](https://adrientaudiere.github.io/dbpq/reference/cutadapt_rm_primers_db.md)
   : Remove primers from a FASTA database using cutadapt
+
+## Search sequences
+
+Retrieve sequences by taxonomic name.
+
+- [`search_taxa_db()`](https://adrientaudiere.github.io/dbpq/reference/search_taxa_db.md)
+  : Search sequences by taxonomic name in a FASTA database
 
 ## Utilities
 
