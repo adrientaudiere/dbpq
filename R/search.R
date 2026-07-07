@@ -88,13 +88,17 @@ search_taxa_db <- function(
   do.call(Sys.setenv, as.list(env_vals))
   on.exit(Sys.unsetenv(env_names), add = TRUE)
 
-  cond_parts <- vapply(seq_len(n), function(i) {
-    if (case_sensitive) {
-      sprintf("index($1, ENVIRON[\"%s\"])", env_names[i])
-    } else {
-      sprintf("index(tolower($1), ENVIRON[\"%s\"])", env_names[i])
-    }
-  }, character(1))
+  cond_parts <- vapply(
+    seq_len(n),
+    function(i) {
+      if (case_sensitive) {
+        sprintf("index($1, ENVIRON[\"%s\"])", env_names[i])
+      } else {
+        sprintf("index(tolower($1), ENVIRON[\"%s\"])", env_names[i])
+      }
+    },
+    character(1)
+  )
   op <- if (match == "all") " && " else " || "
   condition <- paste(cond_parts, collapse = op)
 
@@ -110,9 +114,12 @@ search_taxa_db <- function(
   on.exit(unlink(tmp), add = TRUE)
 
   cmd <- paste(
-    reader, shQuote(normalizePath(file)),
-    "| awk", shQuote(awk_script),
-    ">", shQuote(tmp)
+    reader,
+    shQuote(normalizePath(file)),
+    "| awk",
+    shQuote(awk_script),
+    ">",
+    shQuote(tmp)
   )
   status <- system(cmd)
 
