@@ -1,6 +1,6 @@
 # Changelog
 
-## dbpq 0.1.0 (Development version)
+## dbpq 0.1.0
 
 - [`search_taxa_db()`](https://adrientaudiere.github.io/dbpq/reference/search_taxa_db.md)
   retrieves sequences from a FASTA database (plain or gzip) by one or
