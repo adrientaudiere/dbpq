@@ -6,6 +6,9 @@ template:
     fg: "#124444"
     primary: "#63450f"
     secondary: "#3e135a"
+    base_font: "Fira Mono, monospace"
+    heading_font: "Fira Sans, sans-serif"
+    code_font: "Fira Code, monospace"
 
 articles:
 - title: Articles
