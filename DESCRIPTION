@@ -43,6 +43,7 @@ Suggests:
     testthat (>= 3.0.0),
     visNetwork
 Remotes:
+    adrientaudiere/MiscMetabar,
     krassowski/complex-upset
 VignetteBuilder: knitr
 RdMacros: lifecycle

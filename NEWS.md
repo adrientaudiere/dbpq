@@ -1,5 +1,7 @@
 # dbpq 0.2.0 (Development version)
 
+* Add `adrientaudiere/MiscMetabar` to the `Remotes` field in `DESCRIPTION` so that `pak::pkg_install()` can resolve `MiscMetabar` (listed in Suggests) when installing dbpq standalone.
+
 # dbpq 0.1.0
 * `search_taxa_db()` retrieves sequences from a FASTA database (plain or gzip) by one or more taxonomic name parts and returns a `Biostrings::DNAStringSet` with original headers preserved. Multi-part `match = "all"` (default) requires every name part to be present, so the same query works across header formats (UNITE, SINTAX, dada2, ...); `match = "any"` matches at least one. An optional `output_path` writes the matched sequences to a (gzipped) FASTA file.
 
