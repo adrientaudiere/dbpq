@@ -1,6 +1,14 @@
 # Changelog
 
-## dbpq 0.1.0 (Development version)
+## dbpq 0.2.0 (Development version)
+
+- Add `adrientaudiere/MiscMetabar` to the `Remotes` field in
+  `DESCRIPTION` so that
+  [`pak::pkg_install()`](https://pak.r-lib.org/reference/pkg_install.html)
+  can resolve `MiscMetabar` (listed in Suggests) when installing dbpq
+  standalone.
+
+## dbpq 0.1.0
 
 - [`search_taxa_db()`](https://adrientaudiere.github.io/dbpq/reference/search_taxa_db.md)
   retrieves sequences from a FASTA database (plain or gzip) by one or
