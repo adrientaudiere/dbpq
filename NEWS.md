@@ -1,6 +1,16 @@
 # dbpq 0.2.0 (Development version)
 
+## Breaking changes
+
+* `cutadapt_rm_primers_db()` now reverse-complements `primer_rev` before building the linked adapter, so a database trimmed with the same primers as before gives a different output: the 3' end of each reference is now trimmed at the reverse primer site. Set `rc_primer_rev = FALSE` to rebuild the previous command.
+
+## New features and fixes
+
 * Add `adrientaudiere/MiscMetabar` to the `Remotes` field in `DESCRIPTION` so that `pak::pkg_install()` can resolve `MiscMetabar` (listed in Suggests) when installing dbpq standalone.
+
+* `cutadapt_rm_primers_db()` reverse-complements `primer_rev` by default (`rc_primer_rev = TRUE`, with `Biostrings::reverseComplement()`). Note that `min_overlap` sets the cutadapt minimum overlap (`-O`) so that a few bases at the end of a sequence are not taken for a primer, `min_length` discards the sequences shorter than a length after trimming (`-m`), and the function stops when `primer_fw` or `primer_rev` is missing.
+
+* `download_unite_db()` gains `url` and `extract` arguments. `url` downloads a UNITE file from a direct link, such as the 19.02.2025 general releases whose DOIs resolve to an HTML page. `extract = TRUE` unpacks a general-release `.tgz` into `dest_dir`, removes the archive and returns the path of the FASTA that is not the `_dev` variant. 
 
 # dbpq 0.1.0
 * `search_taxa_db()` retrieves sequences from a FASTA database (plain or gzip) by one or more taxonomic name parts and returns a `Biostrings::DNAStringSet` with original headers preserved. Multi-part `match = "all"` (default) requires every name part to be present, so the same query works across header formats (UNITE, SINTAX, dada2, ...); `match = "any"` matches at least one. An optional `output_path` writes the matched sequences to a (gzipped) FASTA file.

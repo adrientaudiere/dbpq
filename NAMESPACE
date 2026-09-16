@@ -32,17 +32,21 @@ export(profile_db)
 export(search_taxa_db)
 export(summarize_db)
 export(tax_prefixes)
-importFrom(Biostrings,readDNAStringSet)
-importFrom(Biostrings,width)
-importFrom(Biostrings,writeXStringSet)
+importFrom(Biostrings,
+  readDNAStringSet,
+  width,
+  writeXStringSet
+)
 importFrom(dplyr,pull)
 importFrom(methods,as)
 importFrom(purrr,map_chr)
 importFrom(rlang,.data)
-importFrom(stringr,str_count)
-importFrom(stringr,str_extract)
-importFrom(stringr,str_remove)
-importFrom(stringr,str_split_fixed)
+importFrom(stringr,
+  str_count,
+  str_extract,
+  str_remove,
+  str_split_fixed
+)
 importFrom(tibble,as_tibble)
 importFrom(tidyr,unite)
 importFrom(tools,file_ext)

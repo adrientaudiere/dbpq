@@ -96,9 +96,32 @@ filter_db <- function(
 #' @param output (Character) Path to the output FASTA file. If NULL, defaults
 #'   to `{basename}_cutadapted.fasta`.
 #' @param primer_fw (Character, required) The forward primer DNA sequence.
-#' @param primer_rev (Character, required) The reverse primer DNA sequence.
+#' @param primer_rev (Character, required) The reverse primer DNA sequence, as
+#'   ordered (5' to 3' on the reverse strand). See `rc_primer_rev`.
+#' @param rc_primer_rev (Logical, default `TRUE`) Reverse-complement
+#'   `primer_rev` before building the linked adapter. Reference sequences are
+#'   in forward orientation, so only the reverse complement of the reverse
+#'   primer occurs at their 3' end. Set to `FALSE` when `primer_rev` is already
+#'   given in forward orientation.
+#' @param primer_fw_required (Logical, default `start_with_fw`) Mark the
+#'   forward primer as required (`;required`) or optional (`;optional`) in the
+#'   linked adapter.
+#' @param primer_rev_required (Logical, default `FALSE`) Mark the reverse
+#'   primer as required (`;required`) or optional (`;optional`) in the linked
+#'   adapter.
+#' @param min_overlap (Integer, default `NULL`) Minimum overlap between a
+#'   primer and a sequence (cutadapt `-O`, whose own default is 3). A partial
+#'   primer shorter than `min_overlap` at the end of a sequence is ignored: set
+#'   it to the primer length to require complete primer sites. If `NULL`, the
+#'   cutadapt default is used.
+#' @param min_length (Integer, default `NULL`) Discard sequences shorter than
+#'   `min_length` after trimming (cutadapt `-m`), such as references that
+#'   start at the reverse-primer site and are left empty. If `NULL`, no length
+#'   filter is applied.
 #' @param discard_untrimmed (Logical, default `TRUE`) Discard sequences where
-#'   primers were not found.
+#'   primers were not found: a sequence is kept when every required primer is
+#'   found, or when at least one primer is found if both are optional. Set to
+#'   `FALSE` to keep these sequences untrimmed.
 #' @param nproc (Integer, default `1`) Number of CPU cores for cutadapt.
 #' @param verbose (Logical, default `TRUE`) Print summary statistics.
 #' @param cmd_is_run (Logical, default `TRUE`) If FALSE, return the command
@@ -146,10 +169,30 @@ cutadapt_rm_primers_db <- function(
   args_before_cutadapt = paste0(
     "source ~/miniforge3/etc/profile.d/conda.sh ",
     "&& conda activate cutadaptenv && "
-  )
+  ),
+  rc_primer_rev = TRUE,
+  primer_fw_required = start_with_fw,
+  primer_rev_required = FALSE,
+  min_overlap = NULL,
+  min_length = NULL
 ) {
+  if (is.null(primer_fw) || is.null(primer_rev)) {
+    stop("Both `primer_fw` and `primer_rev` must be set.", call. = FALSE)
+  }
   if (is.null(output)) {
     output <- paste0(basename(file.path(ref_fasta)), "_cutadapted.fasta")
+  }
+  if (rc_primer_rev) {
+    primer_rev <- as.character(
+      Biostrings::reverseComplement(Biostrings::DNAString(primer_rev))
+    )
+  }
+  adapter_flag <- function(required) {
+    if (required) {
+      ";required"
+    } else {
+      ";optional"
+    }
   }
 
   cmd <- paste0(
@@ -161,11 +204,20 @@ cutadapt_rm_primers_db <- function(
     " -a '",
     ifelse(start_with_fw, "^", ""),
     primer_fw,
+    adapter_flag(primer_fw_required),
     "...",
     primer_rev,
+    adapter_flag(primer_rev_required),
     "' -o ",
     output
   )
+
+  if (!is.null(min_overlap)) {
+    cmd <- paste0(cmd, " -O ", min_overlap)
+  }
+  if (!is.null(min_length)) {
+    cmd <- paste0(cmd, " -m ", min_length)
+  }
 
   if (output_json) {
     cmd <- paste0(

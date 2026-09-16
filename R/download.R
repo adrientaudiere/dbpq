@@ -110,7 +110,17 @@ download_file <- function(url, dest_path, verbose = TRUE, timeout = Inf) {
 #'   VSEARCH SINTAX classification (with `tax=d:...` headers).
 #' @param doi (Character) If provided, overrides version-based URL
 #'   construction with a direct DOI download. Useful for older or
-#'   alternative releases.
+#'   alternative releases. Note that UNITE DOIs currently resolve to an
+#'   HTML landing page rather than to the archive; prefer `url`.
+#' @param url (Character) Direct download URL of a UNITE file, for
+#'   example the S3 link of a general FASTA release. Takes precedence
+#'   over `version`, `type`, `taxon_group` and `doi`; the downloaded
+#'   file keeps the basename of the URL. See Details to find the URL of
+#'   a release.
+#' @param extract (Logical, default `FALSE`) If `TRUE`, extract the
+#'   downloaded general-release `.tgz` archive into `dest_dir`, delete the
+#'   archive and return the path of the FASTA file that is not the `_dev`
+#'   variant. Only valid for `.tgz` archives.
 #' @param verbose (Logical, default `TRUE`) Print progress messages.
 #'
 #' @returns The path to the downloaded file (invisibly).
@@ -131,6 +141,12 @@ download_file <- function(url, dest_path, verbose = TRUE, timeout = Inf) {
 #' <https://unite.ut.ee/repository.php> to find the current DOI and pass
 #' it via the `doi` parameter, or download manually.
 #'
+#' To download a release that is not hard-coded (for example the
+#' 19.02.2025 releases), query the public PlutoF API with its DOI, e.g.
+#' `https://api.plutof.ut.ee/v1/public/dois/?identifier=10.15156/BIO/3301232`,
+#' and pass the `url` of the attached archive together with
+#' `extract = TRUE`.
+#'
 #' Please cite UNITE: Abarenkov K et al. (2024) UNITE general FASTA
 #' release for Fungi. UNITE Community.
 #' \doi{10.15156/BIO/2959336}
@@ -149,6 +165,17 @@ download_file <- function(url, dest_path, verbose = TRUE, timeout = Inf) {
 #'   taxon_group = "eukaryotes",
 #'   taxonomic_format = "sintax"
 #' )
+#'
+#' # UNITE 19.02.2025 general release for all eukaryotes, with
+#' # singletons, from its direct URL, keeping only the non-dev FASTA
+#' download_unite_db(
+#'   dest_dir = "databases",
+#'   url = paste0(
+#'     "https://s3.hpc.ut.ee/plutof-public/original/",
+#'     "b02db549-5f04-43fc-afb6-02888b594d10.tgz"
+#'   ),
+#'   extract = TRUE
+#' )
 #' }
 download_unite_db <- function(
   dest_dir = ".",
@@ -157,6 +184,8 @@ download_unite_db <- function(
   version = "10.0",
   taxonomic_format = c("default", "sintax"),
   doi = NULL,
+  url = NULL,
+  extract = FALSE,
   verbose = TRUE
 ) {
   type <- match.arg(type)
@@ -165,6 +194,25 @@ download_unite_db <- function(
 
   if (!dir.exists(dest_dir)) {
     dir.create(dest_dir, recursive = TRUE)
+  }
+
+  if (!is.null(url)) {
+    dest_file <- file.path(dest_dir, basename(url))
+    download_file(url, dest_file, verbose = verbose)
+    if (extract) {
+      return(invisible(
+        .extract_unite_archive(dest_file, dest_dir, verbose = verbose)
+      ))
+    }
+    return(invisible(dest_file))
+  }
+
+  if (extract && taxonomic_format == "sintax") {
+    stop(
+      "`extract = TRUE` only applies to general-release .tgz archives ",
+      "(taxonomic_format = 'default').",
+      call. = FALSE
+    )
   }
 
   if (!is.null(doi)) {
@@ -304,6 +352,12 @@ download_unite_db <- function(
 
   download_file(url, dest_file, verbose = verbose)
 
+  if (extract) {
+    return(invisible(
+      .extract_unite_archive(dest_file, dest_dir, verbose = verbose)
+    ))
+  }
+
   if (verbose) {
     message(
       "UNITE database saved as: ",
@@ -318,6 +372,37 @@ download_unite_db <- function(
   }
 
   invisible(dest_file)
+}
+
+
+# Extract a UNITE general-release .tgz into `dest_dir`, delete the archive and
+# return the path of the FASTA that is not the "_dev" variant.
+.extract_unite_archive <- function(archive, dest_dir, verbose = TRUE) {
+  if (!grepl("\\.(tgz|tar\\.gz)$", archive, ignore.case = TRUE)) {
+    stop(
+      "`extract = TRUE` expects a .tgz archive, got: ",
+      basename(archive),
+      call. = FALSE
+    )
+  }
+  members <- utils::untar(archive, list = TRUE)
+  utils::untar(archive, exdir = dest_dir)
+  unlink(archive)
+  fasta <- members[
+    grepl("\\.fasta$", members) & !grepl("_dev\\.fasta$", members)
+  ]
+  if (length(fasta) != 1L) {
+    stop(
+      "Expected exactly one non-dev FASTA in the UNITE archive, found: ",
+      paste(members, collapse = ", "),
+      call. = FALSE
+    )
+  }
+  path <- file.path(dest_dir, fasta)
+  if (verbose) {
+    message("UNITE FASTA extracted to: ", path)
+  }
+  path
 }
 
 

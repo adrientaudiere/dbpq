@@ -18,7 +18,12 @@ cutadapt_rm_primers_db(
   output_json = FALSE,
   error_tolerance = 0.1,
   args_before_cutadapt = paste0("source ~/miniforge3/etc/profile.d/conda.sh ",
-    "&& conda activate cutadaptenv && ")
+    "&& conda activate cutadaptenv && "),
+  rc_primer_rev = TRUE,
+  primer_fw_required = start_with_fw,
+  primer_rev_required = FALSE,
+  min_overlap = NULL,
+  min_length = NULL
 )
 }
 \arguments{
@@ -30,10 +35,13 @@ to \verb{\{basename\}_cutadapted.fasta}.}
 
 \item{primer_fw}{(Character, required) The forward primer DNA sequence.}
 
-\item{primer_rev}{(Character, required) The reverse primer DNA sequence.}
+\item{primer_rev}{(Character, required) The reverse primer DNA sequence, as
+ordered (5' to 3' on the reverse strand). See \code{rc_primer_rev}.}
 
 \item{discard_untrimmed}{(Logical, default \code{TRUE}) Discard sequences where
-primers were not found.}
+primers were not found: a sequence is kept when every required primer is
+found, or when at least one primer is found if both are optional. Set to
+\code{FALSE} to keep these sequences untrimmed.}
 
 \item{nproc}{(Integer, default \code{1}) Number of CPU cores for cutadapt.}
 
@@ -56,6 +64,31 @@ primer matching.}
 
 \item{args_before_cutadapt}{(Character) Shell commands to run before
 cutadapt (e.g., conda activation).}
+
+\item{rc_primer_rev}{(Logical, default \code{TRUE}) Reverse-complement
+\code{primer_rev} before building the linked adapter. Reference sequences are
+in forward orientation, so only the reverse complement of the reverse
+primer occurs at their 3' end. Set to \code{FALSE} when \code{primer_rev} is already
+given in forward orientation.}
+
+\item{primer_fw_required}{(Logical, default \code{start_with_fw}) Mark the
+forward primer as required (\verb{;required}) or optional (\verb{;optional}) in the
+linked adapter.}
+
+\item{primer_rev_required}{(Logical, default \code{FALSE}) Mark the reverse
+primer as required (\verb{;required}) or optional (\verb{;optional}) in the linked
+adapter.}
+
+\item{min_overlap}{(Integer, default \code{NULL}) Minimum overlap between a
+primer and a sequence (cutadapt \code{-O}, whose own default is 3). A partial
+primer shorter than \code{min_overlap} at the end of a sequence is ignored: set
+it to the primer length to require complete primer sites. If \code{NULL}, the
+cutadapt default is used.}
+
+\item{min_length}{(Integer, default \code{NULL}) Discard sequences shorter than
+\code{min_length} after trimming (cutadapt \code{-m}), such as references that
+start at the reverse-primer site and are left empty. If \code{NULL}, no length
+filter is applied.}
 }
 \value{
 The cutadapt command string, or the output file path if

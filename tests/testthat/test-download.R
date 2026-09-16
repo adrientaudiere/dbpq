@@ -166,6 +166,86 @@ test_that("download_unite_db creates dest_dir if needed", {
   unlink(tmp_dir, recursive = TRUE)
 })
 
+test_that("download_unite_db(url) keeps the basename of the URL", {
+  testthat::local_mocked_bindings(
+    download_file = function(url, dest_path, verbose = TRUE, timeout = Inf) {
+      writeLines("placeholder", dest_path)
+      invisible(dest_path)
+    }
+  )
+  dest <- tempfile("unite_url_")
+  on.exit(unlink(dest, recursive = TRUE), add = TRUE)
+  out <- download_unite_db(
+    dest_dir = dest,
+    url = "https://example.org/original/b02db549.tgz",
+    verbose = FALSE
+  )
+  expect_equal(basename(out), "b02db549.tgz")
+  expect_true(file.exists(out))
+})
+
+test_that("download_unite_db(url, extract = TRUE) returns the non-dev FASTA", {
+  src_dir <- tempfile("unite_archive_src_")
+  dir.create(src_dir)
+  on.exit(unlink(src_dir, recursive = TRUE), add = TRUE)
+  writeLines(
+    c(">a|KF1|SH1.10FU|refs|k__Fungi;p__Ascomycota", "ACGT"),
+    file.path(src_dir, "sh_general_release_dynamic_s_all_19.02.2025.fasta")
+  )
+  writeLines(
+    c(">a", "acgtACGTacgt"),
+    file.path(src_dir, "sh_general_release_dynamic_s_all_19.02.2025_dev.fasta")
+  )
+  archive <- tempfile(fileext = ".tgz")
+  on.exit(unlink(archive), add = TRUE)
+  local({
+    old_wd <- setwd(src_dir)
+    on.exit(setwd(old_wd))
+    utils::tar(archive, files = list.files(), compression = "gzip")
+  })
+
+  testthat::local_mocked_bindings(
+    download_file = function(url, dest_path, verbose = TRUE, timeout = Inf) {
+      file.copy(archive, dest_path, overwrite = TRUE)
+      invisible(dest_path)
+    }
+  )
+  dest <- tempfile("unite_extract_")
+  on.exit(unlink(dest, recursive = TRUE), add = TRUE)
+  out <- download_unite_db(
+    dest_dir = dest,
+    url = "https://example.org/original/b02db549.tgz",
+    extract = TRUE,
+    verbose = FALSE
+  )
+  expect_equal(
+    basename(out),
+    "sh_general_release_dynamic_s_all_19.02.2025.fasta"
+  )
+  expect_match(readLines(out, n = 1), "k__Fungi", fixed = TRUE)
+  expect_false(file.exists(file.path(dest, "b02db549.tgz")))
+})
+
+test_that("download_unite_db refuses extract = TRUE on a non-archive file", {
+  testthat::local_mocked_bindings(
+    download_file = function(url, dest_path, verbose = TRUE, timeout = Inf) {
+      writeLines(">a;tax=k:Fungi", dest_path)
+      invisible(dest_path)
+    }
+  )
+  dest <- tempfile("unite_bad_extract_")
+  on.exit(unlink(dest, recursive = TRUE), add = TRUE)
+  expect_error(
+    download_unite_db(
+      dest_dir = dest,
+      url = "https://example.org/original/sintax.fasta.gz",
+      extract = TRUE,
+      verbose = FALSE
+    ),
+    "expects a .tgz archive"
+  )
+})
+
 test_that("download_file sets options(timeout) for the call and restores it", {
   old_timeout <- getOption("timeout")
   observed <- NULL

@@ -11,6 +11,8 @@ download_unite_db(
   version = "10.0",
   taxonomic_format = c("default", "sintax"),
   doi = NULL,
+  url = NULL,
+  extract = FALSE,
   verbose = TRUE
 )
 }
@@ -38,7 +40,19 @@ VSEARCH SINTAX classification (with \code{tax=d:...} headers).}
 
 \item{doi}{(Character) If provided, overrides version-based URL
 construction with a direct DOI download. Useful for older or
-alternative releases.}
+alternative releases. Note that UNITE DOIs currently resolve to an
+HTML landing page rather than to the archive; prefer \code{url}.}
+
+\item{url}{(Character) Direct download URL of a UNITE file, for
+example the S3 link of a general FASTA release. Takes precedence
+over \code{version}, \code{type}, \code{taxon_group} and \code{doi}; the downloaded
+file keeps the basename of the URL. See Details to find the URL of
+a release.}
+
+\item{extract}{(Logical, default \code{FALSE}) If \code{TRUE}, extract the
+downloaded general-release \code{.tgz} archive into \code{dest_dir}, delete the
+archive and return the path of the FASTA file that is not the \verb{_dev}
+variant. Only valid for \code{.tgz} archives.}
 
 \item{verbose}{(Logical, default \code{TRUE}) Print progress messages.}
 }
@@ -75,6 +89,12 @@ If the automatic URL fails, visit
 \url{https://unite.ut.ee/repository.php} to find the current DOI and pass
 it via the \code{doi} parameter, or download manually.
 
+To download a release that is not hard-coded (for example the
+19.02.2025 releases), query the public PlutoF API with its DOI, e.g.
+\verb{https://api.plutof.ut.ee/v1/public/dois/?identifier=10.15156/BIO/3301232},
+and pass the \code{url} of the attached archive together with
+\code{extract = TRUE}.
+
 Please cite UNITE: Abarenkov K et al. (2024) UNITE general FASTA
 release for Fungi. UNITE Community.
 \doi{10.15156/BIO/2959336}
@@ -92,6 +112,17 @@ download_unite_db(
   dest_dir = "databases",
   taxon_group = "eukaryotes",
   taxonomic_format = "sintax"
+)
+
+# UNITE 19.02.2025 general release for all eukaryotes, with
+# singletons, from its direct URL, keeping only the non-dev FASTA
+download_unite_db(
+  dest_dir = "databases",
+  url = paste0(
+    "https://s3.hpc.ut.ee/plutof-public/original/",
+    "b02db549-5f04-43fc-afb6-02888b594d10.tgz"
+  ),
+  extract = TRUE
 )
 }
 }
