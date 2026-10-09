@@ -1,6 +1,5 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-
 <!-- devtools::build_readme() -->
 
 # dbpq <img src="man/figures/logo.png" align="right" height="138" />
@@ -135,27 +134,27 @@ One row per marker, since each marker targets a different set of
 organisms. The “Output format” column shows what the download function
 produces with default parameters.
 
-| Database | Function | Marker | Taxonomic focus | Secondary coverage | Clustering | Output format |
-|----|----|----|----|----|----|----|
-| [UNITE](https://unite.ut.ee/) | `download_unite_db()` | ITS | Fungi | No | Species Hypotheses (SH) | UNITE `k__/p__` (`.tgz` archive) or SINTAX (`.gz`) |
-| [UNITE](https://unite.ut.ee/) | `download_unite_db(taxon_group = "eukaryotes")` | ITS | Fungi | Yes — Viridiplantae, Metazoa, other eukaryotes | Species Hypotheses (SH) | UNITE `k__/p__` (`.tgz` archive) or SINTAX (`.gz`) |
-| [SILVA](https://www.arb-silva.de/) | `download_silva_db()` | SSU 16S/18S | Bacteria, Archaea, Eukaryotes | — | NR99 (99% identity; other versions available directly from SILVA) | dada2 `k__/p__` (`.fa.gz`) |
-| [SILVA](https://www.arb-silva.de/) | `download_silva_db(target = "LSU")` | LSU 23S/28S | Bacteria, Archaea, Eukaryotes | — | NR99 (99% identity; other versions available directly from SILVA) | Raw SILVA FASTA (`.fasta.gz`) |
-| [PR2](https://pr2-database.org/) | `download_pr2_db()` | SSU 18S | Protists | Yes — Metazoa, Fungi, Viridiplantae, organelles | — | dada2 (`.fasta.gz`) |
-| [PR2](https://pr2-database.org/) | `download_pr2_db(marker = "plastid")` | Plastid 16S | Plastid-bearing organisms | — | — | dada2 (`.fasta.gz`) |
-| [BOLD](https://www.boldsystems.org/) | `download_bold_db(taxon, marker)` | COI-5P, ITS, matK, rbcL, … | All taxa (defined by `taxon` query) | — | — | dada2/sintax FASTA (ranked taxonomy from BOLD `combined`; `tax_format`) |
-| [MaarjAM](https://maarjam.ut.ee/) | `download_marjaam_db()` | SSU 18S | AMF (Glomeromycota) | No | Virtual Taxa (VT; phylogeny-based) | dada2/sintax FASTA (QIIME release; `tax_format`) |
-| [Eukaryome](https://eukaryome.org/) | `download_eukaryome_db(url)` | SSU 18S | Eukaryotes | — | — | As-is from URL (dada2 / SINTAX / mothur / QIIME2) |
-| [Eukaryome](https://eukaryome.org/) | `download_eukaryome_db(url)` | ITS | Eukaryotes | — | — | As-is from URL (dada2 / SINTAX / mothur / QIIME2) |
-| [Eukaryome](https://eukaryome.org/) | `download_eukaryome_db(url)` | LSU 28S | Eukaryotes | — | — | As-is from URL (dada2 / SINTAX / mothur / QIIME2) |
-| [Greengenes2](https://ftp.microbio.me/greengenes_release/) | `download_greengenes2_db()` | SSU 16S | Bacteria, Archaea | — | Reference phylogenetic tree (DEPP placement, not identity-based) | dada2 (`d__` prefixes stripped by default; `tax_format`) (`.fa.gz`) |
-| [RDP](https://rdp.cme.msu.edu/) | `download_rdp_db()` | SSU 16S | Bacteria, Archaea | — | Trainset (manually curated) | dada2 `k__/p__` (`.fa.gz`) |
-| [MIDORI2](https://www.reference-midori.info/) | `download_midori2_db(url)` | COI, 12S, 16S, Cytb | Metazoa | — | UNIQ (all haplotypes) or LONGEST (one per species) | dada2 / SINTAX / RDP / BLAST (from URL) |
-| [Diat.barcode](https://www.reference-midori.info/) | `download_diatbarcode_db(url)` | rbcL | Diatoms (Bacillariophyta) | No | Curated (species-level) | dada2 (`.fasta.gz`) |
-| [KSGP](https://ksgp.earlham.ac.uk/) | `download_ksgp_db()` | SSU 16S/18S | Archaea (optimized), Bacteria | Yes — Eukaryota (PR2 + MIDORI2, for contamination control) | None | dada2/sintax FASTA (`.tax` merged into headers by default via `tax_format`; partial coverage) |
-| [KSGP — GTDB+](https://ksgp.earlham.ac.uk/) | `download_ksgp_db(database = "GTDB_plus")` | SSU 16S | Bacteria, Archaea | Yes — Eukaryota (PR2 + MIDORI2) | Cleaned (chimera/domain checks) | Plain FASTA (`.fasta`) + `.tax` |
-| [KSGP — GTDB_cleaned](https://ksgp.earlham.ac.uk/) | `download_ksgp_db(database = "GTDB_cleaned")` | SSU 16S | Bacteria, Archaea | No | Cleaned (chimera/domain checks) | Plain FASTA (`.fasta`) + `.tax` |
-| [LTPlus](https://bioinfo.uib.es/ltp/) | `download_ltplus_db()` | SSU 16S | Bacteria, Archaea | No | Non-redundant (98.7% identity); type strains + curated non-type | 16S FASTA (`.fasta`, unaligned; DNA + dada2/sintax taxonomy headers by default) |
+| Database                                                   | Function                                        | Marker                     | Taxonomic focus                     | Secondary coverage                                         | Clustering                                                        | Output format                                                                                 |
+|------------------------------------------------------------|-------------------------------------------------|----------------------------|-------------------------------------|------------------------------------------------------------|-------------------------------------------------------------------|-----------------------------------------------------------------------------------------------|
+| [UNITE](https://unite.ut.ee/)                              | `download_unite_db()`                           | ITS                        | Fungi                               | No                                                         | Species Hypotheses (SH)                                           | UNITE `k__/p__` (`.tgz` archive) or SINTAX (`.gz`)                                            |
+| [UNITE](https://unite.ut.ee/)                              | `download_unite_db(taxon_group = "eukaryotes")` | ITS                        | Fungi                               | Yes — Viridiplantae, Metazoa, other eukaryotes             | Species Hypotheses (SH)                                           | UNITE `k__/p__` (`.tgz` archive) or SINTAX (`.gz`)                                            |
+| [SILVA](https://www.arb-silva.de/)                         | `download_silva_db()`                           | SSU 16S/18S                | Bacteria, Archaea, Eukaryotes       | —                                                          | NR99 (99% identity; other versions available directly from SILVA) | dada2 `k__/p__` (`.fa.gz`)                                                                    |
+| [SILVA](https://www.arb-silva.de/)                         | `download_silva_db(target = "LSU")`             | LSU 23S/28S                | Bacteria, Archaea, Eukaryotes       | —                                                          | NR99 (99% identity; other versions available directly from SILVA) | Raw SILVA FASTA (`.fasta.gz`)                                                                 |
+| [PR2](https://pr2-database.org/)                           | `download_pr2_db()`                             | SSU 18S                    | Protists                            | Yes — Metazoa, Fungi, Viridiplantae, organelles            | —                                                                 | dada2 (`.fasta.gz`)                                                                           |
+| [PR2](https://pr2-database.org/)                           | `download_pr2_db(marker = "plastid")`           | Plastid 16S                | Plastid-bearing organisms           | —                                                          | —                                                                 | dada2 (`.fasta.gz`)                                                                           |
+| [BOLD](https://www.boldsystems.org/)                       | `download_bold_db(taxon, marker)`               | COI-5P, ITS, matK, rbcL, … | All taxa (defined by `taxon` query) | —                                                          | —                                                                 | dada2/sintax FASTA (ranked taxonomy from BOLD `combined`; `tax_format`)                       |
+| [MaarjAM](https://maarjam.ut.ee/)                          | `download_marjaam_db()`                         | SSU 18S                    | AMF (Glomeromycota)                 | No                                                         | Virtual Taxa (VT; phylogeny-based)                                | dada2/sintax FASTA (QIIME release; `tax_format`)                                              |
+| [Eukaryome](https://eukaryome.org/)                        | `download_eukaryome_db(url)`                    | SSU 18S                    | Eukaryotes                          | —                                                          | —                                                                 | As-is from URL (dada2 / SINTAX / mothur / QIIME2)                                             |
+| [Eukaryome](https://eukaryome.org/)                        | `download_eukaryome_db(url)`                    | ITS                        | Eukaryotes                          | —                                                          | —                                                                 | As-is from URL (dada2 / SINTAX / mothur / QIIME2)                                             |
+| [Eukaryome](https://eukaryome.org/)                        | `download_eukaryome_db(url)`                    | LSU 28S                    | Eukaryotes                          | —                                                          | —                                                                 | As-is from URL (dada2 / SINTAX / mothur / QIIME2)                                             |
+| [Greengenes2](https://ftp.microbio.me/greengenes_release/) | `download_greengenes2_db()`                     | SSU 16S                    | Bacteria, Archaea                   | —                                                          | Reference phylogenetic tree (DEPP placement, not identity-based)  | dada2 (`d__` prefixes stripped by default; `tax_format`) (`.fa.gz`)                           |
+| [RDP](https://rdp.cme.msu.edu/)                            | `download_rdp_db()`                             | SSU 16S                    | Bacteria, Archaea                   | —                                                          | Trainset (manually curated)                                       | dada2 `k__/p__` (`.fa.gz`)                                                                    |
+| [MIDORI2](https://www.reference-midori.info/)              | `download_midori2_db(url)`                      | COI, 12S, 16S, Cytb        | Metazoa                             | —                                                          | UNIQ (all haplotypes) or LONGEST (one per species)                | dada2 / SINTAX / RDP / BLAST (from URL)                                                       |
+| [Diat.barcode](https://www.reference-midori.info/)         | `download_diatbarcode_db(url)`                  | rbcL                       | Diatoms (Bacillariophyta)           | No                                                         | Curated (species-level)                                           | dada2 (`.fasta.gz`)                                                                           |
+| [KSGP](https://ksgp.earlham.ac.uk/)                        | `download_ksgp_db()`                            | SSU 16S/18S                | Archaea (optimized), Bacteria       | Yes — Eukaryota (PR2 + MIDORI2, for contamination control) | None                                                              | dada2/sintax FASTA (`.tax` merged into headers by default via `tax_format`; partial coverage) |
+| [KSGP — GTDB+](https://ksgp.earlham.ac.uk/)                | `download_ksgp_db(database = "GTDB_plus")`      | SSU 16S                    | Bacteria, Archaea                   | Yes — Eukaryota (PR2 + MIDORI2)                            | Cleaned (chimera/domain checks)                                   | Plain FASTA (`.fasta`) + `.tax`                                                               |
+| [KSGP — GTDB_cleaned](https://ksgp.earlham.ac.uk/)         | `download_ksgp_db(database = "GTDB_cleaned")`   | SSU 16S                    | Bacteria, Archaea                   | No                                                         | Cleaned (chimera/domain checks)                                   | Plain FASTA (`.fasta`) + `.tax`                                                               |
+| [LTPlus](https://bioinfo.uib.es/ltp/)                      | `download_ltplus_db()`                          | SSU 16S                    | Bacteria, Archaea                   | No                                                         | Non-redundant (98.7% identity); type strains + curated non-type   | 16S FASTA (`.fasta`, unaligned; DNA + dada2/sintax taxonomy headers by default)               |
 
 ### Database relationships
 
@@ -189,13 +188,13 @@ cross-database sequence incorporation (though all ultimately draw from
 INSDc/GenBank); use them in parallel based on marker and taxonomic
 scope:
 
-| Database | Marker | Why independent |
-|----|----|----|
-| UNITE | ITS | Fungal ITS, distinct marker (but feeds Eukaryome) |
-| BOLD | COI, matK, rbcL, … | Barcode markers, independently curated |
-| MaarjAM | SSU 18S | AMF-specific, independent curation |
-| Diat.barcode | rbcL (plastid) | Diatom-specific, independent curation |
-| RDP | SSU 16S | Independent curation, trainset-based |
+| Database     | Marker             | Why independent                                   |
+|--------------|--------------------|---------------------------------------------------|
+| UNITE        | ITS                | Fungal ITS, distinct marker (but feeds Eukaryome) |
+| BOLD         | COI, matK, rbcL, … | Barcode markers, independently curated            |
+| MaarjAM      | SSU 18S            | AMF-specific, independent curation                |
+| Diat.barcode | rbcL (plastid)     | Diatom-specific, independent curation             |
+| RDP          | SSU 16S            | Independent curation, trainset-based              |
 
 ## Navigating the seven properties
 
