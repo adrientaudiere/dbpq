@@ -24,6 +24,8 @@ download_unite_db(
   version = "10.0",
   taxonomic_format = c("default", "sintax"),
   doi = NULL,
+  url = NULL,
+  extract = FALSE,
   verbose = TRUE
 )
 ```
@@ -62,7 +64,23 @@ download_unite_db(
 - doi:
 
   (Character) If provided, overrides version-based URL construction with
-  a direct DOI download. Useful for older or alternative releases.
+  a direct DOI download. Useful for older or alternative releases. Note
+  that UNITE DOIs currently resolve to an HTML landing page rather than
+  to the archive; prefer `url`.
+
+- url:
+
+  (Character) Direct download URL of a UNITE file, for example the S3
+  link of a general FASTA release. Takes precedence over `version`,
+  `type`, `taxon_group` and `doi`; the downloaded file keeps the
+  basename of the URL. See Details to find the URL of a release.
+
+- extract:
+
+  (Logical, default `FALSE`) If `TRUE`, extract the downloaded
+  general-release `.tgz` archive into `dest_dir`, delete the archive and
+  return the path of the FASTA file that is not the `_dev` variant. Only
+  valid for `.tgz` archives.
 
 - verbose:
 
@@ -87,6 +105,12 @@ The S3 download URLs use opaque UUIDs that change between releases. If
 the automatic URL fails, visit <https://unite.ut.ee/repository.php> to
 find the current DOI and pass it via the `doi` parameter, or download
 manually.
+
+To download a release that is not hard-coded (for example the 19.02.2025
+releases), query the public PlutoF API with its DOI, e.g.
+`https://api.plutof.ut.ee/v1/public/dois/?identifier=10.15156/BIO/3301232`,
+and pass the `url` of the attached archive together with
+`extract = TRUE`.
 
 Please cite UNITE: Abarenkov K et al. (2024) UNITE general FASTA release
 for Fungi. UNITE Community.
@@ -116,6 +140,17 @@ download_unite_db(
   dest_dir = "databases",
   taxon_group = "eukaryotes",
   taxonomic_format = "sintax"
+)
+
+# UNITE 19.02.2025 general release for all eukaryotes, with
+# singletons, from its direct URL, keeping only the non-dev FASTA
+download_unite_db(
+  dest_dir = "databases",
+  url = paste0(
+    "https://s3.hpc.ut.ee/plutof-public/original/",
+    "b02db549-5f04-43fc-afb6-02888b594d10.tgz"
+  ),
+  extract = TRUE
 )
 } # }
 ```

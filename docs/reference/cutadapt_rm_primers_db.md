@@ -23,7 +23,12 @@ cutadapt_rm_primers_db(
   output_json = FALSE,
   error_tolerance = 0.1,
   args_before_cutadapt = paste0("source ~/miniforge3/etc/profile.d/conda.sh ",
-    "&& conda activate cutadaptenv && ")
+    "&& conda activate cutadaptenv && "),
+  rc_primer_rev = TRUE,
+  primer_fw_required = start_with_fw,
+  primer_rev_required = FALSE,
+  min_overlap = NULL,
+  min_length = NULL
 )
 ```
 
@@ -44,12 +49,15 @@ cutadapt_rm_primers_db(
 
 - primer_rev:
 
-  (Character, required) The reverse primer DNA sequence.
+  (Character, required) The reverse primer DNA sequence, as ordered (5'
+  to 3' on the reverse strand). See `rc_primer_rev`.
 
 - discard_untrimmed:
 
   (Logical, default `TRUE`) Discard sequences where primers were not
-  found.
+  found: a sequence is kept when every required primer is found, or when
+  at least one primer is found if both are optional. Set to `FALSE` to
+  keep these sequences untrimmed.
 
 - nproc:
 
@@ -87,6 +95,39 @@ cutadapt_rm_primers_db(
 
   (Character) Shell commands to run before cutadapt (e.g., conda
   activation).
+
+- rc_primer_rev:
+
+  (Logical, default `TRUE`) Reverse-complement `primer_rev` before
+  building the linked adapter. Reference sequences are in forward
+  orientation, so only the reverse complement of the reverse primer
+  occurs at their 3' end. Set to `FALSE` when `primer_rev` is already
+  given in forward orientation.
+
+- primer_fw_required:
+
+  (Logical, default `start_with_fw`) Mark the forward primer as required
+  (`;required`) or optional (`;optional`) in the linked adapter.
+
+- primer_rev_required:
+
+  (Logical, default `FALSE`) Mark the reverse primer as required
+  (`;required`) or optional (`;optional`) in the linked adapter.
+
+- min_overlap:
+
+  (Integer, default `NULL`) Minimum overlap between a primer and a
+  sequence (cutadapt `-O`, whose own default is 3). A partial primer
+  shorter than `min_overlap` at the end of a sequence is ignored: set it
+  to the primer length to require complete primer sites. If `NULL`, the
+  cutadapt default is used.
+
+- min_length:
+
+  (Integer, default `NULL`) Discard sequences shorter than `min_length`
+  after trimming (cutadapt `-m`), such as references that start at the
+  reverse-primer site and are left empty. If `NULL`, no length filter is
+  applied.
 
 ## Value
 

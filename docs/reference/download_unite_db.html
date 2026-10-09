@@ -23,7 +23,7 @@ reformatting with format2dada2() or format2sintax().'><meta property="og:image" 
 
     <a class="navbar-brand me-2" href="../index.html">dbpq</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -74,6 +74,8 @@ reformatting with <code><a href="format2dada2.html">format2dada2()</a></code> or
 <span>  version <span class="op">=</span> <span class="st">"10.0"</span>,</span>
 <span>  taxonomic_format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"default"</span>, <span class="st">"sintax"</span><span class="op">)</span>,</span>
 <span>  doi <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  url <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  extract <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -116,7 +118,23 @@ VSEARCH SINTAX classification (with <code>tax=d:...</code> headers).</p></dd>
 <dt id="arg-doi">doi<a class="anchor" aria-label="anchor" href="#arg-doi"></a></dt>
 <dd><p>(Character) If provided, overrides version-based URL
 construction with a direct DOI download. Useful for older or
-alternative releases.</p></dd>
+alternative releases. Note that UNITE DOIs currently resolve to an
+HTML landing page rather than to the archive; prefer <code>url</code>.</p></dd>
+
+
+<dt id="arg-url">url<a class="anchor" aria-label="anchor" href="#arg-url"></a></dt>
+<dd><p>(Character) Direct download URL of a UNITE file, for
+example the S3 link of a general FASTA release. Takes precedence
+over <code>version</code>, <code>type</code>, <code>taxon_group</code> and <code>doi</code>; the downloaded
+file keeps the basename of the URL. See Details to find the URL of
+a release.</p></dd>
+
+
+<dt id="arg-extract">extract<a class="anchor" aria-label="anchor" href="#arg-extract"></a></dt>
+<dd><p>(Logical, default <code>FALSE</code>) If <code>TRUE</code>, extract the
+downloaded general-release <code>.tgz</code> archive into <code>dest_dir</code>, delete the
+archive and return the path of the FASTA file that is not the <code>_dev</code>
+variant. Only valid for <code>.tgz</code> archives.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
@@ -140,6 +158,11 @@ directly with <code>vsearch --sintax</code>.</p>
 If the automatic URL fails, visit
 <a href="https://unite.ut.ee/repository.php" class="external-link">https://unite.ut.ee/repository.php</a> to find the current DOI and pass
 it via the <code>doi</code> parameter, or download manually.</p>
+<p>To download a release that is not hard-coded (for example the
+19.02.2025 releases), query the public PlutoF API with its DOI, e.g.
+<code>https://api.plutof.ut.ee/v1/public/dois/?identifier=10.15156/BIO/3301232</code>,
+and pass the <code>url</code> of the attached archive together with
+<code>extract = TRUE</code>.</p>
 <p>Please cite UNITE: Abarenkov K et al. (2024) UNITE general FASTA
 release for Fungi. UNITE Community.
 <a href="https://doi.org/10.15156/BIO/2959336" class="external-link">doi:10.15156/BIO/2959336</a></p>
@@ -168,6 +191,17 @@ release for Fungi. UNITE Community.
 <span class="r-in"><span>  taxon_group <span class="op">=</span> <span class="st">"eukaryotes"</span>,</span></span>
 <span class="r-in"><span>  taxonomic_format <span class="op">=</span> <span class="st">"sintax"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># UNITE 19.02.2025 general release for all eukaryotes, with</span></span></span>
+<span class="r-in"><span><span class="co"># singletons, from its direct URL, keeping only the non-dev FASTA</span></span></span>
+<span class="r-in"><span><span class="fu">download_unite_db</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  dest_dir <span class="op">=</span> <span class="st">"databases"</span>,</span></span>
+<span class="r-in"><span>  url <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="st">"https://s3.hpc.ut.ee/plutof-public/original/"</span>,</span></span>
+<span class="r-in"><span>    <span class="st">"b02db549-5f04-43fc-afb6-02888b594d10.tgz"</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span>,</span></span>
+<span class="r-in"><span>  extract <span class="op">=</span> <span class="cn">TRUE</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
@@ -180,7 +214,7 @@ release for Fungi. UNITE Community.
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

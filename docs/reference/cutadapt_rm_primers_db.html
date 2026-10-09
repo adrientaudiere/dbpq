@@ -17,7 +17,7 @@ Uses linked adapters to trim between forward and reverse primers."><meta propert
 
     <a class="navbar-brand me-2" href="../index.html">dbpq</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -72,7 +72,12 @@ Uses linked adapters to trim between forward and reverse primers.</p>
 <span>  output_json <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  error_tolerance <span class="op">=</span> <span class="fl">0.1</span>,</span>
 <span>  args_before_cutadapt <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"source ~/miniforge3/etc/profile.d/conda.sh "</span>,</span>
-<span>    <span class="st">"&amp;&amp; conda activate cutadaptenv &amp;&amp; "</span><span class="op">)</span></span>
+<span>    <span class="st">"&amp;&amp; conda activate cutadaptenv &amp;&amp; "</span><span class="op">)</span>,</span>
+<span>  rc_primer_rev <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  primer_fw_required <span class="op">=</span> <span class="va">start_with_fw</span>,</span>
+<span>  primer_rev_required <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  min_overlap <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  min_length <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -95,12 +100,15 @@ to <code>{basename}_cutadapted.fasta</code>.</p></dd>
 
 
 <dt id="arg-primer-rev">primer_rev<a class="anchor" aria-label="anchor" href="#arg-primer-rev"></a></dt>
-<dd><p>(Character, required) The reverse primer DNA sequence.</p></dd>
+<dd><p>(Character, required) The reverse primer DNA sequence, as
+ordered (5' to 3' on the reverse strand). See <code>rc_primer_rev</code>.</p></dd>
 
 
 <dt id="arg-discard-untrimmed">discard_untrimmed<a class="anchor" aria-label="anchor" href="#arg-discard-untrimmed"></a></dt>
 <dd><p>(Logical, default <code>TRUE</code>) Discard sequences where
-primers were not found.</p></dd>
+primers were not found: a sequence is kept when every required primer is
+found, or when at least one primer is found if both are optional. Set to
+<code>FALSE</code> to keep these sequences untrimmed.</p></dd>
 
 
 <dt id="arg-nproc">nproc<a class="anchor" aria-label="anchor" href="#arg-nproc"></a></dt>
@@ -140,6 +148,41 @@ primer matching.</p></dd>
 <dd><p>(Character) Shell commands to run before
 cutadapt (e.g., conda activation).</p></dd>
 
+
+<dt id="arg-rc-primer-rev">rc_primer_rev<a class="anchor" aria-label="anchor" href="#arg-rc-primer-rev"></a></dt>
+<dd><p>(Logical, default <code>TRUE</code>) Reverse-complement
+<code>primer_rev</code> before building the linked adapter. Reference sequences are
+in forward orientation, so only the reverse complement of the reverse
+primer occurs at their 3' end. Set to <code>FALSE</code> when <code>primer_rev</code> is already
+given in forward orientation.</p></dd>
+
+
+<dt id="arg-primer-fw-required">primer_fw_required<a class="anchor" aria-label="anchor" href="#arg-primer-fw-required"></a></dt>
+<dd><p>(Logical, default <code>start_with_fw</code>) Mark the
+forward primer as required (<code>;required</code>) or optional (<code>;optional</code>) in the
+linked adapter.</p></dd>
+
+
+<dt id="arg-primer-rev-required">primer_rev_required<a class="anchor" aria-label="anchor" href="#arg-primer-rev-required"></a></dt>
+<dd><p>(Logical, default <code>FALSE</code>) Mark the reverse
+primer as required (<code>;required</code>) or optional (<code>;optional</code>) in the linked
+adapter.</p></dd>
+
+
+<dt id="arg-min-overlap">min_overlap<a class="anchor" aria-label="anchor" href="#arg-min-overlap"></a></dt>
+<dd><p>(Integer, default <code>NULL</code>) Minimum overlap between a
+primer and a sequence (cutadapt <code>-O</code>, whose own default is 3). A partial
+primer shorter than <code>min_overlap</code> at the end of a sequence is ignored: set
+it to the primer length to require complete primer sites. If <code>NULL</code>, the
+cutadapt default is used.</p></dd>
+
+
+<dt id="arg-min-length">min_length<a class="anchor" aria-label="anchor" href="#arg-min-length"></a></dt>
+<dd><p>(Integer, default <code>NULL</code>) Discard sequences shorter than
+<code>min_length</code> after trimming (cutadapt <code>-m</code>), such as references that
+start at the reverse-primer site and are left empty. If <code>NULL</code>, no length
+filter is applied.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -178,7 +221,7 @@ Please cite cutadapt (<a href="https://doi.org/10.14806/ej.17.1.200" class="exte
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>
