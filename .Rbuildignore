@@ -13,3 +13,6 @@
 ^docs$
 ^pkgdown$
 ^cran-comments\.md$
+^\.entire$
+^vignettes/\.quarto$
+^README_files$

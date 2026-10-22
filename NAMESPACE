@@ -38,6 +38,7 @@ importFrom(Biostrings,
   writeXStringSet
 )
 importFrom(dplyr,pull)
+importFrom(lifecycle,deprecated)
 importFrom(methods,as)
 importFrom(purrr,map_chr)
 importFrom(rlang,.data)

@@ -125,20 +125,6 @@ count_pattern_db <- function(file, pattern = ">") {
 #' # From a FASTA file (no unwanted values in example data)
 #' db <- system.file("extdata", "example_unite.fasta", package = "dbpq")
 #' count_unwanted_tax(db)
-#'
-#' if(requireNamespace("MiscMetabar", quietly = TRUE)) {
-#'  ref_fasta <- Biostrings::readDNAStringSet(system.file("extdata",
-#'    "mini_UNITE_fungi.fasta.gz",
-#'    package = "MiscMetabar", mustWork = TRUE
-#'  ))
-#' data("data_fungi_mini", package = "MiscMetabar")
-#' physeq_new <- MiscMetabar::assign_mmseqs2(
-#'    MiscMetabar::data_fungi_mini,
-#'    ref_fasta = ref_fasta,
-#'    behavior = "add_to_phyloseq"
-#'  )
-#' count_unwanted_tax(physeq_new)
-#' }
 
 count_unwanted_tax <- function(
   x,

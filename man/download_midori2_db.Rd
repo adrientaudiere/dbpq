@@ -50,7 +50,7 @@ FASTA files for multiple classifiers (dada2, SINTAX, RDP, BLAST).
 \details{
 MIDORI2 download URLs include a date-stamped directory path that
 changes with each GenBank release, making fully programmatic access
-fragile. Visit \url{https://www.reference-midori.info/download.php} to
+fragile. Visit \url{https://www.reference-midori.info/download.html} to
 find the current download URL for your desired gene and format, then
 pass it via the \code{url} parameter.
 

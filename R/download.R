@@ -1384,7 +1384,7 @@ download_rdp_db <- function(
 #' @details
 #' MIDORI2 download URLs include a date-stamped directory path that
 #' changes with each GenBank release, making fully programmatic access
-#' fragile. Visit <https://www.reference-midori.info/download.php> to
+#' fragile. Visit <https://www.reference-midori.info/download.html> to
 #' find the current download URL for your desired gene and format, then
 #' pass it via the `url` parameter.
 #'
@@ -1431,7 +1431,7 @@ download_midori2_db <- function(
       "MIDORI2 download URLs change with each GenBank release.\n",
       "Please visit the download page to get the URL for your desired ",
       "gene and format:\n",
-      "  https://www.reference-midori.info/download.php\n\n",
+      "  https://www.reference-midori.info/download.html\n\n",
       "Look for a file matching this pattern:\n",
       "  MIDORI2_",
       seq_type,

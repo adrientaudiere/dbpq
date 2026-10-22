@@ -246,7 +246,7 @@ add_sh_to_taxonomy <- function(
   # Parse blast6 output
   # Columns: query, target, pct_id, aln_len, mismatches, gap_opens,
   #          q_start, q_end, t_start, t_end, e_value, bit_score
-  blast6 <- read.table(
+  blast6 <- utils::read.table(
     blast6_file,
     sep = "\t",
     header = FALSE,

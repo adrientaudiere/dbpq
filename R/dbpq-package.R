@@ -11,5 +11,6 @@
 #' @importFrom tidyr unite
 #' @importFrom tools file_ext
 #' @importFrom methods as
+#' @importFrom lifecycle deprecated
 ## usethis namespace: end
 NULL
