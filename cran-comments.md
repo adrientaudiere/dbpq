@@ -28,3 +28,5 @@ modifying FASTA reference databases used in metabarcoding pipelines.
 
 * local Linux (Pop!_OS 24.04), R 4.6.1, `R CMD check --as-cran --run-donttest`
   against the CRAN version of 'MiscMetabar' (0.16.8), 2026-10-22.
+* win-builder R-devel (Windows Server 2022, 2026-10-22): 1 note (new
+  submission; possibly misspelled technical words in DESCRIPTION).
