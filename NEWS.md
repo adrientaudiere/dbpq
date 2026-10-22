@@ -8,6 +8,8 @@
 
 * Add `adrientaudiere/MiscMetabar` to the `Remotes` field in `DESCRIPTION` so that `pak::pkg_install()` can resolve `MiscMetabar` (listed in Suggests) when installing dbpq standalone.
 
+* `count_pattern_db()` (and therefore `count_seq_db()`, `diagnose_db()` and `profile_db()`) now works on Windows: lines are counted in R instead of through `cat`/`zcat` and `grep`. `pattern` is read as a Perl-compatible regular expression.
+
 * `cutadapt_rm_primers_db()` reverse-complements `primer_rev` by default (`rc_primer_rev = TRUE`, with `Biostrings::reverseComplement()`). Note that `min_overlap` sets the cutadapt minimum overlap (`-O`) so that a few bases at the end of a sequence are not taken for a primer, `min_length` discards the sequences shorter than a length after trimming (`-m`), and the function stops when `primer_fw` or `primer_rev` is missing.
 
 * `download_unite_db()` gains `url` and `extract` arguments. `url` downloads a UNITE file from a direct link, such as the 19.02.2025 general releases whose DOIs resolve to an HTML page. `extract = TRUE` unpacks a general-release `.tgz` into `dest_dir`, removes the archive and returns the path of the FASTA that is not the `_dev` variant. 
