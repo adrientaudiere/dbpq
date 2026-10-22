@@ -138,6 +138,7 @@ test_that("download_ksgp_db has expected formals", {
 })
 
 test_that("download_file cleans up on failure", {
+  skip_on_cran()
   tmp <- tempfile(fileext = ".fasta")
   expect_error(
     suppressWarnings(download_file(
@@ -151,6 +152,7 @@ test_that("download_file cleans up on failure", {
 })
 
 test_that("download_unite_db creates dest_dir if needed", {
+  skip_on_cran()
   tmp_dir <- file.path(tempdir(), "test_unite_dir_check")
   if (dir.exists(tmp_dir)) {
     unlink(tmp_dir, recursive = TRUE)

@@ -28,7 +28,8 @@ count_seq_db <- function(file) {
 #' <img src="https://img.shields.io/badge/lifecycle-experimental-orange" alt="lifecycle-experimental"></a>
 #'
 #' Count lines (sequences if fasta file) matching a pattern.
-#' Accepts gzip files. May not work on Windows.
+#' Accepts gzip files. The pattern is a Perl-compatible regular expression
+#' (see [grepl()]).
 #'
 #' @param file (Character, required) Path to a file (plain or gzip),
 #'   often a FASTA file.
@@ -38,27 +39,22 @@ count_seq_db <- function(file) {
 #' @export
 #' @author Adrien Taudière
 #' @seealso [filter_db()], [count_seq_db()]
-#' @examplesIf tolower(Sys.info()[["sysname"]]) != "windows"
+#' @examples
 #' db <- system.file("extdata", "example_unite.fasta", package = "dbpq")
 #' count_pattern_db(db, "Amanita")
 count_pattern_db <- function(file, pattern = ">") {
-  reader <- if (is_gzipped(file)) {
-    "zcat "
-  } else {
-    "cat "
+  # Pure R so it also works on Windows; file() reads gzip transparently, and
+  # reading by chunks keeps memory flat on large databases.
+  con <- file(file, open = "r")
+  on.exit(close(con), add = TRUE)
+  count <- 0L
+  repeat {
+    lines <- readLines(con, n = 1e5, warn = FALSE)
+    if (length(lines) == 0) {
+      break
+    }
+    count <- count + sum(grepl(pattern, lines, perl = TRUE))
   }
-  # `grep -c` exits with status 1 (and prints "0") when there are no matches,
-  # which makes `system()` emit a spurious warning; suppress it. `shQuote()`
-  # protects the path and pattern from shell metacharacters.
-  count <- suppressWarnings(as.numeric(system(
-    paste0(
-      reader,
-      shQuote(normalizePath(file)),
-      " | grep -c ",
-      shQuote(pattern)
-    ),
-    intern = TRUE
-  )))
   return(count)
 }
 
