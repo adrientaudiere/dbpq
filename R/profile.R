@@ -91,11 +91,9 @@ order_ranks <- function(ranks) {
 #' prof$richness
 #'
 #' # Compare two databases (needs ggVennDiagram / ComplexUpset for the plots)
-#' \donttest{
 #' sintax <- system.file("extdata", "example_sintax.fasta", package = "dbpq")
 #' prof2 <- profile_db(c(unite, sintax), verbose = FALSE)
 #' prof2$comparison$signatures
-#' }
 profile_db <- function(
   files,
   tax_format = "auto",

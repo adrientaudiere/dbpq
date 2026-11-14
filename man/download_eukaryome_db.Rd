@@ -50,6 +50,9 @@ database for identification of all eukaryotes. Database.
 \doi{10.1093/database/baae043}
 }
 \examples{
+# Get the pages where the download links are (no download)
+download_eukaryome_db()
+
 \dontrun{
 # Download with a specific URL from the Eukaryome website
 download_eukaryome_db(

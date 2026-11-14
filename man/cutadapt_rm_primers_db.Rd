@@ -110,16 +110,15 @@ This function is mainly a wrapper of the work of others.
 Please cite cutadapt (\doi{10.14806/ej.17.1.200}).
 }
 \examples{
-\dontshow{if (tolower(Sys.info()[["sysname"]]) != "windows") withAutoprint(\{ # examplesIf}
-\dontrun{
+# Build the cutadapt command without running it (the default
+# `cmd_is_run = TRUE` runs it, which needs cutadapt)
 cutadapt_rm_primers_db(
-  "database.fasta.gz",
-  output = "db_cutadapted.fasta",
+  system.file("extdata", "example_unite.fasta", package = "dbpq"),
+  output = tempfile(fileext = ".fasta"),
   primer_fw = "GCATCGATGAAGAACGCAGC",
-  primer_rev = "TCCTCCGCTTATTGATATGC"
+  primer_rev = "TCCTCCGCTTATTGATATGC",
+  cmd_is_run = FALSE
 )
-}
-\dontshow{\}) # examplesIf}
 }
 \author{
 Adrien Taudière

@@ -89,25 +89,22 @@ This function ports the logic of the nf-core/ampliseq
 instead of requiring external lookup tables.
 }
 \examples{
-\dontrun{
-# Download a UNITE database first
-unite_file <- download_unite_db(
-  version = "10.0",
-  taxonomic_format = "sintax",
-  taxon_group = "fungi"
-)
+\dontshow{if (dbpq::is_vsearch_installed()) withAutoprint(\{ # examplesIf}
+# A tiny UNITE-style database (headers start with an SH name); use
+# download_unite_db() to get the real one
+query <- system.file("extdata", "example_unite.fasta", package = "dbpq")
+seqs <- Biostrings::readDNAStringSet(query)
+names(seqs) <- paste0("SH", seq_along(seqs), "000.10FU|", names(seqs))
+unite_db <- tempfile(fileext = ".fasta")
+Biostrings::writeXStringSet(seqs, unite_db)
 
-# Annotate ASVs with SH names
-sh_res <- add_sh_to_taxonomy(
-  query_fasta = "asvs.fasta",
-  unite_db = unite_file,
-  id = 0.97
-)
-head(sh_res)
+# Annotate the query sequences with SH names
+sh_res <- add_sh_to_taxonomy(query_fasta = query, unite_db = unite_db)
+sh_res[, c("sh_name", "pct_id", "is_ambiguous")]
 
 # Check for ambiguous assignments
 sh_res[sh_res$is_ambiguous, ]
-}
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 \code{\link[=download_unite_db]{download_unite_db()}}, \code{\link[=is_vsearch_installed]{is_vsearch_installed()}},

@@ -11,12 +11,15 @@ This is the first submission of dbpq to CRAN.
 
 ## Examples in \dontrun{}
 
-The `download_*_db()` functions download reference databases of tens to
-hundreds of MB from the providers' servers, and `cutadapt_rm_primers_db()` /
-`add_sh_to_taxonomy()` need such a downloaded database plus external software
-(cutadapt, vsearch). Their examples are in `\dontrun{}` because they cannot
-run without these files and must not trigger large downloads. All other
-examples run on the small FASTA files shipped in `inst/extdata`.
+Only the 12 `download_*_db()` functions keep a `\dontrun{}` block: they
+download reference databases of tens to hundreds of MB from the providers'
+servers, which examples must not trigger. `download_midori2_db()` and
+`download_eukaryome_db()` also run a plain example (without `url`, they only
+print where to find the download link). `add_sh_to_taxonomy()` needs vsearch,
+so its example is in `@examplesIf is_vsearch_installed()`;
+`cutadapt_rm_primers_db()` runs with `cmd_is_run = FALSE`, which only builds
+the cutadapt command. All other examples run on the small FASTA files
+shipped in `inst/extdata`.
 
 ## Method References
 

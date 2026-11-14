@@ -63,10 +63,10 @@ for taxonomic assignment of eukaryotic mitochondrial sequences.
 Environmental DNA 4:894-907. \doi{10.1002/edn3.303}
 }
 \examples{
-\dontrun{
-# Get instructions for downloading MIDORI2
+# Get instructions for downloading MIDORI2 (no download)
 download_midori2_db()
 
+\dontrun{
 # Download with a specific URL
 download_midori2_db(
   dest_dir = "databases",

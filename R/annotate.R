@@ -124,26 +124,21 @@ is_vsearch_installed <- function(path = find_vsearch()) {
 #' @author Adrien Taudière
 #' @seealso [download_unite_db()], [is_vsearch_installed()],
 #'   [find_vsearch()]
-#' @examples
-#' \dontrun{
-#' # Download a UNITE database first
-#' unite_file <- download_unite_db(
-#'   version = "10.0",
-#'   taxonomic_format = "sintax",
-#'   taxon_group = "fungi"
-#' )
+#' @examplesIf dbpq::is_vsearch_installed()
+#' # A tiny UNITE-style database (headers start with an SH name); use
+#' # download_unite_db() to get the real one
+#' query <- system.file("extdata", "example_unite.fasta", package = "dbpq")
+#' seqs <- Biostrings::readDNAStringSet(query)
+#' names(seqs) <- paste0("SH", seq_along(seqs), "000.10FU|", names(seqs))
+#' unite_db <- tempfile(fileext = ".fasta")
+#' Biostrings::writeXStringSet(seqs, unite_db)
 #'
-#' # Annotate ASVs with SH names
-#' sh_res <- add_sh_to_taxonomy(
-#'   query_fasta = "asvs.fasta",
-#'   unite_db = unite_file,
-#'   id = 0.97
-#' )
-#' head(sh_res)
+#' # Annotate the query sequences with SH names
+#' sh_res <- add_sh_to_taxonomy(query_fasta = query, unite_db = unite_db)
+#' sh_res[, c("sh_name", "pct_id", "is_ambiguous")]
 #'
 #' # Check for ambiguous assignments
 #' sh_res[sh_res$is_ambiguous, ]
-#' }
 add_sh_to_taxonomy <- function(
   query_fasta,
   unite_db,

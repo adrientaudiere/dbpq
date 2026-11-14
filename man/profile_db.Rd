@@ -90,11 +90,9 @@ prof <- profile_db(unite, verbose = FALSE)
 prof$richness
 
 # Compare two databases (needs ggVennDiagram / ComplexUpset for the plots)
-\donttest{
 sintax <- system.file("extdata", "example_sintax.fasta", package = "dbpq")
 prof2 <- profile_db(c(unite, sintax), verbose = FALSE)
 prof2$comparison$signatures
-}
 }
 \seealso{
 \code{\link[=diagnose_db]{diagnose_db()}}, \code{\link[=summarize_db]{summarize_db()}}, \code{\link[=list_ranks_db]{list_ranks_db()}}

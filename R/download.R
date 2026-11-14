@@ -1069,6 +1069,9 @@ download_marjaam_db <- function(
 #' database for identification of all eukaryotes. Database.
 #' \doi{10.1093/database/baae043}
 #' @examples
+#' # Get the pages where the download links are (no download)
+#' download_eukaryome_db()
+#'
 #' \dontrun{
 #' # Download with a specific URL from the Eukaryome website
 #' download_eukaryome_db(
@@ -1397,10 +1400,10 @@ download_rdp_db <- function(
 #' Environmental DNA 4:894-907. \doi{10.1002/edn3.303}
 #' @seealso [format2sintax()], [format2dada2()]
 #' @examples
-#' \dontrun{
-#' # Get instructions for downloading MIDORI2
+#' # Get instructions for downloading MIDORI2 (no download)
 #' download_midori2_db()
 #'
+#' \dontrun{
 #' # Download with a specific URL
 #' download_midori2_db(
 #'   dest_dir = "databases",
