@@ -147,12 +147,14 @@ Adrien Taudière
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
+# Build the cutadapt command without running it (the default
+# `cmd_is_run = TRUE` runs it, which needs cutadapt)
 cutadapt_rm_primers_db(
-  "database.fasta.gz",
-  output = "db_cutadapted.fasta",
+  system.file("extdata", "example_unite.fasta", package = "dbpq"),
+  output = tempfile(fileext = ".fasta"),
   primer_fw = "GCATCGATGAAGAACGCAGC",
-  primer_rev = "TCCTCCGCTTATTGATATGC"
+  primer_rev = "TCCTCCGCTTATTGATATGC",
+  cmd_is_run = FALSE
 )
-} # }
+#> [1] "source ~/miniforge3/etc/profile.d/conda.sh && conda activate cutadaptenv && cutadapt --cores=1 -e 0.1 -a 'GCATCGATGAAGAACGCAGC;optional...GCATATCAATAAGCGGAGGA;optional' -o /tmp/RtmpZ6bjrw/file2fe32d64858720.fasta --discard-untrimmed /tmp/RtmpfIg8cw/temp_libpath2fe03b794b12a3/dbpq/extdata/example_unite.fasta"
 ```

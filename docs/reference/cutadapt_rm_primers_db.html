@@ -202,14 +202,16 @@ Please cite cutadapt (<a href="https://doi.org/10.14806/ej.17.1.200" class="exte
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Build the cutadapt command without running it (the default</span></span></span>
+<span class="r-in"><span><span class="co"># `cmd_is_run = TRUE` runs it, which needs cutadapt)</span></span></span>
 <span class="r-in"><span><span class="fu">cutadapt_rm_primers_db</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="st">"database.fasta.gz"</span>,</span></span>
-<span class="r-in"><span>  output <span class="op">=</span> <span class="st">"db_cutadapted.fasta"</span>,</span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"example_unite.fasta"</span>, package <span class="op">=</span> <span class="st">"dbpq"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  output <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".fasta"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  primer_fw <span class="op">=</span> <span class="st">"GCATCGATGAAGAACGCAGC"</span>,</span></span>
-<span class="r-in"><span>  primer_rev <span class="op">=</span> <span class="st">"TCCTCCGCTTATTGATATGC"</span></span></span>
+<span class="r-in"><span>  primer_rev <span class="op">=</span> <span class="st">"TCCTCCGCTTATTGATATGC"</span>,</span></span>
+<span class="r-in"><span>  cmd_is_run <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "source ~/miniforge3/etc/profile.d/conda.sh &amp;&amp; conda activate cutadaptenv &amp;&amp; cutadapt --cores=1 -e 0.1 -a 'GCATCGATGAAGAACGCAGC;optional...GCATATCAATAAGCGGAGGA;optional' -o /tmp/RtmpZ6bjrw/file2fe32d64858720.fasta --discard-untrimmed /tmp/RtmpfIg8cw/temp_libpath2fe03b794b12a3/dbpq/extdata/example_unite.fasta"</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

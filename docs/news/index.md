@@ -1,6 +1,6 @@
 # Changelog
 
-## dbpq 0.2.0 (Development version)
+## dbpq 0.2.0
 
 ### Breaking changes
 
@@ -18,6 +18,16 @@
   [`pak::pkg_install()`](https://pak.r-lib.org/reference/pkg_install.html)
   can resolve `MiscMetabar` (listed in Suggests) when installing dbpq
   standalone.
+
+- [`count_pattern_db()`](https://adrientaudiere.github.io/dbpq/reference/count_pattern_db.md)
+  (and therefore
+  [`count_seq_db()`](https://adrientaudiere.github.io/dbpq/reference/count_seq_db.md),
+  [`diagnose_db()`](https://adrientaudiere.github.io/dbpq/reference/diagnose_db.md)
+  and
+  [`profile_db()`](https://adrientaudiere.github.io/dbpq/reference/profile_db.md))
+  now works on Windows: lines are counted in R instead of through
+  `cat`/`zcat` and `grep`. `pattern` is read as a Perl-compatible
+  regular expression.
 
 - [`cutadapt_rm_primers_db()`](https://adrientaudiere.github.io/dbpq/reference/cutadapt_rm_primers_db.md)
   reverse-complements `primer_rev` by default (`rc_primer_rev = TRUE`,

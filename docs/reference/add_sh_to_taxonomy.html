@@ -173,25 +173,29 @@ the same top identity disagree on the SH name.</p></li>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span><span class="co"># Download a UNITE database first</span></span></span>
-<span class="r-in"><span><span class="va">unite_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="download_unite_db.html">download_unite_db</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  version <span class="op">=</span> <span class="st">"10.0"</span>,</span></span>
-<span class="r-in"><span>  taxonomic_format <span class="op">=</span> <span class="st">"sintax"</span>,</span></span>
-<span class="r-in"><span>  taxon_group <span class="op">=</span> <span class="st">"fungi"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># A tiny UNITE-style database (headers start with an SH name); use</span></span></span>
+<span class="r-in"><span><span class="co"># download_unite_db() to get the real one</span></span></span>
+<span class="r-in"><span><span class="va">query</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"example_unite.fasta"</span>, package <span class="op">=</span> <span class="st">"dbpq"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">seqs</span> <span class="op">&lt;-</span> <span class="fu">Biostrings</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/Biostrings/man/XStringSet-io.html" class="external-link">readDNAStringSet</a></span><span class="op">(</span><span class="va">query</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">seqs</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"SH"</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">seqs</span><span class="op">)</span>, <span class="st">"000.10FU|"</span>, <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">seqs</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">unite_db</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".fasta"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">Biostrings</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/Biostrings/man/XStringSet-io.html" class="external-link">writeXStringSet</a></span><span class="op">(</span><span class="va">seqs</span>, <span class="va">unite_db</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Annotate ASVs with SH names</span></span></span>
-<span class="r-in"><span><span class="va">sh_res</span> <span class="op">&lt;-</span> <span class="fu">add_sh_to_taxonomy</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  query_fasta <span class="op">=</span> <span class="st">"asvs.fasta"</span>,</span></span>
-<span class="r-in"><span>  unite_db <span class="op">=</span> <span class="va">unite_file</span>,</span></span>
-<span class="r-in"><span>  id <span class="op">=</span> <span class="fl">0.97</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">sh_res</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># Annotate the query sequences with SH names</span></span></span>
+<span class="r-in"><span><span class="va">sh_res</span> <span class="op">&lt;-</span> <span class="fu">add_sh_to_taxonomy</span><span class="op">(</span>query_fasta <span class="op">=</span> <span class="va">query</span>, unite_db <span class="op">=</span> <span class="va">unite_db</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">sh_res</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sh_name"</span>, <span class="st">"pct_id"</span>, <span class="st">"is_ambiguous"</span><span class="op">)</span><span class="op">]</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       sh_name pct_id is_ambiguous</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 SH1000.10FU    100        FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 SH2000.10FU    100        FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 SH1000.10FU    100        FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 SH4000.10FU    100        FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 SH5000.10FU    100        FALSE</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Check for ambiguous assignments</span></span></span>
 <span class="r-in"><span><span class="va">sh_res</span><span class="op">[</span><span class="va">sh_res</span><span class="op">$</span><span class="va">is_ambiguous</span>, <span class="op">]</span></span></span>
-<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] query        sh_name      target       pct_id       aln_len     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [6] mismatches   e_value      is_ambiguous</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;0 rows&gt; (or 0-length row.names)</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

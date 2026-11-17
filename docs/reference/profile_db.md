@@ -143,7 +143,6 @@ prof$richness
 #> 7 example_unite.fasta s            5                5
 
 # Compare two databases (needs ggVennDiagram / ComplexUpset for the plots)
-# \donttest{
 sintax <- system.file("extdata", "example_sintax.fasta", package = "dbpq")
 prof2 <- profile_db(c(unite, sintax), verbose = FALSE)
 prof2$comparison$signatures
@@ -159,5 +158,4 @@ prof2$comparison$signatures
 #> 7 g     example_unite.fasta & example_sintax.fasta         2      3      8
 #> 8 s     example_unite.fasta                                1      2      2
 #> 9 s     example_unite.fasta & example_sintax.fasta         2      3      6
-# }
 ```

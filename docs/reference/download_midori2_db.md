@@ -58,7 +58,7 @@ instructions if no URL is provided.
 
 MIDORI2 download URLs include a date-stamped directory path that changes
 with each GenBank release, making fully programmatic access fragile.
-Visit <https://www.reference-midori.info/download.php> to find the
+Visit <https://www.reference-midori.info/download.html> to find the
 current download URL for your desired gene and format, then pass it via
 the `url` parameter.
 
@@ -83,10 +83,19 @@ Adrien Taudière
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
-# Get instructions for downloading MIDORI2
+# Get instructions for downloading MIDORI2 (no download)
 download_midori2_db()
+#> MIDORI2 download URLs change with each GenBank release.
+#> Please visit the download page to get the URL for your desired gene and format:
+#>   https://www.reference-midori.info/download.html
+#> 
+#> Look for a file matching this pattern:
+#>   MIDORI2_UNIQ_NUC_SP_GB{VERSION}_CO1_DADA2.fasta.gz
+#> 
+#> Then call:
+#>   download_midori2_db(url = 'https://...')
 
+if (FALSE) { # \dontrun{
 # Download with a specific URL
 download_midori2_db(
   dest_dir = "databases",

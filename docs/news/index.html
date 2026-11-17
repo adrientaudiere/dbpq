@@ -37,7 +37,7 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.2.0" id="dbpq-020-development-version">dbpq 0.2.0 (Development version)<a class="anchor" aria-label="anchor" href="#dbpq-020-development-version"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.2.0" id="dbpq-020">dbpq 0.2.0<a class="anchor" aria-label="anchor" href="#dbpq-020"></a></h2>
 <div class="section level3">
 <h3 id="breaking-changes-0-2-0">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-2-0"></a></h3>
 <ul><li>
@@ -46,6 +46,7 @@
 <div class="section level3">
 <h3 id="new-features-and-fixes-0-2-0">New features and fixes<a class="anchor" aria-label="anchor" href="#new-features-and-fixes-0-2-0"></a></h3>
 <ul><li><p>Add <code>adrientaudiere/MiscMetabar</code> to the <code>Remotes</code> field in <code>DESCRIPTION</code> so that <code><a href="https://pak.r-lib.org/reference/pkg_install.html" class="external-link">pak::pkg_install()</a></code> can resolve <code>MiscMetabar</code> (listed in Suggests) when installing dbpq standalone.</p></li>
+<li><p><code><a href="../reference/count_pattern_db.html">count_pattern_db()</a></code> (and therefore <code><a href="../reference/count_seq_db.html">count_seq_db()</a></code>, <code><a href="../reference/diagnose_db.html">diagnose_db()</a></code> and <code><a href="../reference/profile_db.html">profile_db()</a></code>) now works on Windows: lines are counted in R instead of through <code>cat</code>/<code>zcat</code> and <code>grep</code>. <code>pattern</code> is read as a Perl-compatible regular expression.</p></li>
 <li><p><code><a href="../reference/cutadapt_rm_primers_db.html">cutadapt_rm_primers_db()</a></code> reverse-complements <code>primer_rev</code> by default (<code>rc_primer_rev = TRUE</code>, with <code><a href="https://rdrr.io/pkg/Biostrings/man/reverseComplement.html" class="external-link">Biostrings::reverseComplement()</a></code>). Note that <code>min_overlap</code> sets the cutadapt minimum overlap (<code>-O</code>) so that a few bases at the end of a sequence are not taken for a primer, <code>min_length</code> discards the sequences shorter than a length after trimming (<code>-m</code>), and the function stops when <code>primer_fw</code> or <code>primer_rev</code> is missing.</p></li>
 <li><p><code><a href="../reference/download_unite_db.html">download_unite_db()</a></code> gains <code>url</code> and <code>extract</code> arguments. <code>url</code> downloads a UNITE file from a direct link, such as the 19.02.2025 general releases whose DOIs resolve to an HTML page. <code>extract = TRUE</code> unpacks a general-release <code>.tgz</code> into <code>dest_dir</code>, removes the archive and returns the path of the FASTA that is not the <code>_dev</code> variant.</p></li>
 </ul></div>

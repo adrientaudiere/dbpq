@@ -62,6 +62,19 @@ Adrien Taudière
 ## Examples
 
 ``` r
+# Get the pages where the download links are (no download)
+download_eukaryome_db()
+#> Eukaryome does not provide stable programmatic download URLs.
+#> Please visit one of these pages to get the download link:
+#>   - General FASTA: https://eukaryome.org/generalfasta/
+#>   - dada2 format:  https://eukaryome.org/dada2/
+#>   - mothur format: https://eukaryome.org/mothur/
+#>   - SINTAX format: https://eukaryome.org/sintax/
+#>   - QIIME2 format: https://eukaryome.org/qiime2/
+#> 
+#> Then call:
+#>   download_eukaryome_db(url = 'https://...')
+
 if (FALSE) { # \dontrun{
 # Download with a specific URL from the Eukaryome website
 download_eukaryome_db(

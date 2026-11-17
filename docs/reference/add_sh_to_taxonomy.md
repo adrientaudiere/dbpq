@@ -121,23 +121,27 @@ Adrien Taudière
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
-# Download a UNITE database first
-unite_file <- download_unite_db(
-  version = "10.0",
-  taxonomic_format = "sintax",
-  taxon_group = "fungi"
-)
+# A tiny UNITE-style database (headers start with an SH name); use
+# download_unite_db() to get the real one
+query <- system.file("extdata", "example_unite.fasta", package = "dbpq")
+seqs <- Biostrings::readDNAStringSet(query)
+names(seqs) <- paste0("SH", seq_along(seqs), "000.10FU|", names(seqs))
+unite_db <- tempfile(fileext = ".fasta")
+Biostrings::writeXStringSet(seqs, unite_db)
 
-# Annotate ASVs with SH names
-sh_res <- add_sh_to_taxonomy(
-  query_fasta = "asvs.fasta",
-  unite_db = unite_file,
-  id = 0.97
-)
-head(sh_res)
+# Annotate the query sequences with SH names
+sh_res <- add_sh_to_taxonomy(query_fasta = query, unite_db = unite_db)
+sh_res[, c("sh_name", "pct_id", "is_ambiguous")]
+#>       sh_name pct_id is_ambiguous
+#> 1 SH1000.10FU    100        FALSE
+#> 2 SH2000.10FU    100        FALSE
+#> 3 SH1000.10FU    100        FALSE
+#> 4 SH4000.10FU    100        FALSE
+#> 5 SH5000.10FU    100        FALSE
 
 # Check for ambiguous assignments
 sh_res[sh_res$is_ambiguous, ]
-} # }
+#> [1] query        sh_name      target       pct_id       aln_len     
+#> [6] mismatches   e_value      is_ambiguous
+#> <0 rows> (or 0-length row.names)
 ```
